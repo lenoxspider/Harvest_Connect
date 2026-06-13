@@ -18,3 +18,36 @@ create table refresh_tokens(
     token VARCHAR(255),
     expires_at TIMESTAMP
 );
+
+
+--Produce Marketplace Service--
+create type order_status as enum ('PENDING', 'CONFIRMED', 'PAID', 'DELIVERED', 'CANCELLED');
+
+create table produce_listings(
+    id UUID PRIMARY KEY,
+    farmer_id UUID,
+    title VARCHAR(255),
+    description TEXT,
+    category VARCHAR(100),
+    quantity_kg DECIMAL,
+    price_per_kg DECIMAL,
+    location VARCHAR(255),
+    latitude DECIMAL,
+    longitude DECIMAL,
+    is_available BOOLEAN,
+    is_premium BOOLEAN,
+    images TEXT[],
+    created_at TIMESTAMP,
+    expires_at TIMESTAMP
+);
+
+create table produce_orders(
+    id UUID PRIMARY KEY,
+    listing_id UUID REFERENCES produce_listings(id),
+    buyer_id UUID,
+    quantity_kg DECIMAL,
+    total_price DECIMAL,
+    status order_status,
+    created_at TIMESTAMP
+);
+
