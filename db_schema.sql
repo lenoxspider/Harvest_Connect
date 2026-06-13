@@ -65,3 +65,41 @@ create table transactions(
     transaction_type transaction_type
 );
 
+
+-- Storage & Warehousing Service--
+
+create TYPE storage_booking_status AS ENUM (
+    'PENDING',
+    'CONFIRMED',
+    'PAID',
+    'ACTIVE',
+    'COMPLETED',
+    'CANCELLED'
+);
+
+create table storage_listings(
+    id UUID PRIMARY KEY,
+    owner_id UUID,
+    facility_name VARCHAR(255),
+    location VARCHAR(255),
+    latitude DECIMAL,
+    longitude DECIMAL,
+    capacity_tons DECIMAL,
+    available_tons DECIMAL,
+    price_per_ton_per_day DECIMAL,
+    temperature_range VARCHAR(100),
+    is_available BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT now()
+);
+
+create table storage_bookings(
+    id UUID PRIMARY KEY,
+    storage_listing_id UUID REFERENCES storage_listings(id),
+    farmer_id UUID,
+    quantity_tons DECIMAL,
+    start_date DATE,
+    end_date DATE,
+    total_price DECIMAL,
+    status storage_booking_status DEFAULT 'PENDING',
+    created_at TIMESTAMP DEFAULT now()
+);
