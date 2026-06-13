@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/payment_db
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+momo:
+  sandbox:
+    base-url: https://sandbox.momodeveloper.mtn.com
+    environment: ${MOMO_ENVIRONMENT}
+    subscription-key: ${MOMO_SUBSCRIPTION_KEY}
+    api-key: ${MOMO_API_KEY}
