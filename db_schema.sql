@@ -18,8 +18,6 @@ create table refresh_tokens(
     token VARCHAR(255),
     expires_at TIMESTAMP
 );
-
-
 --Produce Marketplace Service--
 create type order_status as enum ('PENDING', 'CONFIRMED', 'PAID', 'DELIVERED', 'CANCELLED');
 
