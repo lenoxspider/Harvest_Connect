@@ -1,0 +1,3 @@
+public enum Role {
+    FARMER, BUYER, TRANSPORTER, STORAGE_OWNER
+}
