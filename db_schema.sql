@@ -48,4 +48,28 @@ create table produce_orders(
     status order_status,
     created_at TIMESTAMP
 );
+create type escrow_status_enum as enum ('HELD', 'RELEASED', 'REFUNDED');
+create type payout_status_enum as enum ('PENDING', 'SUCCESSFUL', 'FAILED');
+
+create table escrow_holds(
+    id UUID PRIMARY KEY,
+    order_id UUID REFERENCES produce_orders(id),
+    transaction_id UUID,
+    amount DECIMAL,
+    status escrow_status_enum DEFAULT 'HELD',
+    release_condition VARCHAR(255),
+    created_at TIMESTAMP DEFAULT now()
+);
+
+create table escrow_payouts(
+    id UUID PRIMARY KEY,
+    escrow_hold_id UUID REFERENCES escrow_holds(id) ON DELETE CASCADE,
+    recipient_id UUID,
+    amount DECIMAL,
+    payment_method VARCHAR(50),
+    account_number VARCHAR(100),
+    status payout_status_enum DEFAULT 'PENDING',
+    initiated_at TIMESTAMP DEFAULT now(),
+    completed_at TIMESTAMP
+);
 
