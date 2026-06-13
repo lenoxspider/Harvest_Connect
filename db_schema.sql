@@ -9,7 +9,7 @@ create table users(
     role user_role,
     region VARCHAR(100),
     created_at TIMESTAMP DEFAULT now(),
-    is_verified BOOLEAN FALSE
+    is_verified BOOLEAN DEFAULT FALSE
 );
 
 create table refresh_tokens(
@@ -18,6 +18,7 @@ create table refresh_tokens(
     token VARCHAR(255),
     expires_at TIMESTAMP
 );
+
 --Produce Marketplace Service--
 create type order_status as enum ('PENDING', 'CONFIRMED', 'PAID', 'DELIVERED', 'CANCELLED');
 
@@ -47,5 +48,20 @@ create table produce_orders(
     total_price DECIMAL,
     status order_status,
     created_at TIMESTAMP
+);
+
+
+--Payment & Transactions Service--
+create TYPE transaction_type AS ENUM ('PRODUCE', 'TRANSPORT', 'STORAGE', 'SUBSCRIPTION', 'PREMIUM_LISTING');
+
+create table transactions(
+    id UUID PRIMARY KEY,
+    reference_id VARCHAR(255) UNIQUE,
+    payer_id UUID,
+    payee_id UUID,
+    amount DECIMAL,
+    commission DECIMAL,
+    net_amount DECIMAL,
+    transaction_type transaction_type
 );
 
