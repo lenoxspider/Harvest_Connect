@@ -103,3 +103,37 @@ create table storage_bookings(
     status storage_booking_status DEFAULT 'PENDING',
     created_at TIMESTAMP DEFAULT now()
 );
+
+-- ────────────────────────────────────────────────────────────
+-- 5. truck_listings
+-- ────────────────────────────────────────────────────────────
+CREATE TABLE truck_listings (
+    id               CHAR(36)      PRIMARY KEY DEFAULT (UUID()),
+    transporter_id   CHAR(36)      NOT NULL,
+    truck_type       VARCHAR(100)  NOT NULL,
+    capacity_tons    DECIMAL(10,2) NOT NULL,
+    current_location VARCHAR(255)  NOT NULL,
+    price_per_ton    DECIMAL(10,2) NOT NULL,
+    isavailable      BOOLEAN       NOT NULL DEFAULT TRUE,
+    createdat        TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- ────────────────────────────────────────────────────────────
+-- 6. transportbookings
+-- ────────────────────────────────────────────────────────────
+CREATE TABLE transportbookings (
+    id               CHAR(36)      PRIMARY KEY DEFAULT (UUID()),
+    trucklistingid   CHAR(36)      NOT NULL,
+    buyerid          CHAR(36)      NOT NULL,
+    destination      VARCHAR(255)  NOT NULL,
+    departure_date   DATE          NOT NULL,
+    quantitytons     DECIMAL(10,2) NOT NULL,
+    totalprice       DECIMAL(12,2) NOT NULL,
+    status           ENUM('PENDING','CONFIRMED','PAID','COMPLETED','CANCELLED') NOT NULL DEFAULT 'PENDING',
+    createdat        TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_trucklisting
+        FOREIGN KEY (trucklistingid)
+        REFERENCES truck_listings(id)
+        ON DELETE RESTRICT
+) ENGINE=InnoDB;
