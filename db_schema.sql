@@ -161,3 +161,26 @@ CREATE TABLE transportbookings (
         REFERENCES truck_listings(id)
         ON DELETE RESTRICT
 ) ENGINE=InnoDB;
+-- ============================================================
+--  HarvestConnect | Subscriptions Service
+
+
+-- ────────────────────────────────────────────────────────────
+-- subscriptions
+-- ────────────────────────────────────────────────────────────
+CREATE TABLE subscriptions (
+    id           CHAR(36)                                    PRIMARY KEY DEFAULT (UUID()),
+    user_id      CHAR(36)                                    NOT NULL,
+    plan         ENUM('BUYER_MONTHLY', 'PREMIUM_LISTING')    NOT NULL,
+    amount       DECIMAL(10,2)                               NOT NULL,
+    start_date   DATE                                        NOT NULL,
+    end_date     DATE                                        NOT NULL,
+    is_active    BOOLEAN                                     NOT NULL DEFAULT TRUE
+) ENGINE=InnoDB;
+
+-- ────────────────────────────────────────────────────────────
+-- Indexes
+-- ────────────────────────────────────────────────────────────
+CREATE INDEX idx_subscriptions_user      ON subscriptions(user_id);
+CREATE INDEX idx_subscriptions_plan      ON subscriptions(plan);
+CREATE INDEX idx_subscriptions_active    ON subscriptions(is_active);
