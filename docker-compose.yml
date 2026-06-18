@@ -1,0 +1,164 @@
+name: harvestconnect
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: harvestconnect-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: harvestconnect-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@harvestconnect.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+    ports:
+      - "5050:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: harvestconnect-api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      AUTH_SERVICE_URL: http://auth-service:8081
+      PRODUCE_SERVICE_URL: http://produce-service:8082
+      TRANSPORT_SERVICE_URL: http://transport-service:8083
+      STORAGE_SERVICE_URL: http://storage-service:8084
+      PAYMENT_SERVICE_URL: http://payment-service:8085
+      NOTIFICATION_SERVICE_URL: http://notification-service:8086
+    depends_on:
+      auth-service:
+        condition: service_started
+      produce-service:
+        condition: service_started
+      transport-service:
+        condition: service_started
+      storage-service:
+        condition: service_started
+      payment-service:
+        condition: service_started
+      notification-service:
+        condition: service_started
+
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: harvestconnect-auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      SERVER_PORT: "8081"
+      DB_URL: jdbc:postgresql://postgres:5432/auth_db
+      DB_USERNAME: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      JWT_SECRET: ${JWT_SECRET:-404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  produce-service:
+    build:
+      context: ./produce-service
+      dockerfile: Dockerfile
+    container_name: harvestconnect-produce-service
+    ports:
+      - "8082:8082"
+    environment:
+      SERVER_PORT: "8082"
+      DB_URL_PRODUCE: jdbc:postgresql://postgres:5432/produce_db
+      DB_USERNAME_PRODUCE: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD_PRODUCE: ${POSTGRES_PASSWORD:-password}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  transport-service:
+    build:
+      context: ./transport-service
+      dockerfile: Dockerfile
+    container_name: harvestconnect-transport-service
+    ports:
+      - "8083:8083"
+    environment:
+      SERVER_PORT: "8083"
+      DB_URL_TRANSPORT: jdbc:postgresql://postgres:5432/transport_db
+      DB_USERNAME_TRANSPORT: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD_TRANSPORT: ${POSTGRES_PASSWORD:-password}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  storage-service:
+    build:
+      context: ./storage-service
+      dockerfile: Dockerfile
+    container_name: harvestconnect-storage-service
+    ports:
+      - "8084:8084"
+    environment:
+      SERVER_PORT: "8084"
+      DB_URL_STORAGE: jdbc:postgresql://postgres:5432/storage_db
+      DB_USERNAME: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      AUTH_SERVICE_URL: http://auth-service:8081
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  payment-service:
+    build:
+      context: ./payment-service
+      dockerfile: Dockerfile
+    container_name: harvestconnect-payment-service
+    ports:
+      - "8085:8085"
+    environment:
+      SERVER_PORT: "8085"
+      DB_URL_PAYMENT: jdbc:postgresql://postgres:5432/payment_db
+      DB_USERNAME_PAYMENT: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD_PAYMENT: ${POSTGRES_PASSWORD:-password}
+      MOMO_ENVIRONMENT: ${MOMO_ENVIRONMENT:-sandbox}
+      MOMO_SUBSCRIPTION_KEY: ${MOMO_SUBSCRIPTION_KEY:-}
+      MOMO_API_KEY: ${MOMO_API_KEY:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    container_name: harvestconnect-notification-service
+    ports:
+      - "8086:8086"
+    environment:
+      SERVER_PORT: "8086"
+      DB_URL_NOTIFICATION: jdbc:postgresql://postgres:5432/notification_db
+      DB_USERNAME_NOTIFICATION: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD_NOTIFICATION: ${POSTGRES_PASSWORD:-password}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+
