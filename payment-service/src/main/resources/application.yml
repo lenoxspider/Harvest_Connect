@@ -1,8 +1,10 @@
 spring:
+  application:
+    name: payment-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/payment_db
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    url: ${DB_URL_PAYMENT:jdbc:postgresql://localhost:5432/payment_db}
+    username: ${DB_USERNAME_PAYMENT:postgres}
+    password: ${DB_PASSWORD_PAYMENT:password}
   jpa:
     hibernate:
       ddl-auto: update
@@ -10,9 +12,12 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
+server:
+  port: 8085
+
 momo:
   sandbox:
     base-url: https://sandbox.momodeveloper.mtn.com
-    environment: ${MOMO_ENVIRONMENT}
-    subscription-key: ${MOMO_SUBSCRIPTION_KEY}
-    api-key: ${MOMO_API_KEY}
+    environment: ${MOMO_ENVIRONMENT:sandbox}
+    subscription-key: ${MOMO_SUBSCRIPTION_KEY:}
+    api-key: ${MOMO_API_KEY:}
