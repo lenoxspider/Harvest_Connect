@@ -1,6 +1,16 @@
 spring:
   application:
     name: transport-service
+  datasource:
+    url: ${DB_URL_TRANSPORT:jdbc:postgresql://localhost:5432/transport_db}
+    username: ${DB_USERNAME_TRANSPORT:postgres}
+    password: ${DB_PASSWORD_TRANSPORT:password}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
 server:
-  port: 8083
+  port: ${SERVER_PORT:8083}
