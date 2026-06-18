@@ -1,0 +1,21 @@
+**/target/
+**/.mvn/wrapper/maven-wrapper.jar
+**/.classpath
+**/.project
+**/.settings/
+**/.idea/
+**/*.iml
+**/.DS_Store
+
+# Node / Expo
+**/node_modules/
+**/.expo/
+**/.expo-shared/
+**/dist/
+**/build/
+**/*.log
+
+# Env files
+**/.env
+**/.env.*
+
