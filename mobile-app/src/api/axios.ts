@@ -23,12 +23,16 @@ axiosInstance.interceptors.request.use(
     const url = config.url ?? '';
     // Never attach JWT for auth endpoints (avoids stale token breaking register/login).
     if (url.startsWith('/api/auth/')) {
+      // eslint-disable-next-line no-console
+      console.log('[HTTP]', (config.method ?? 'GET').toUpperCase(), (config.baseURL ?? '') + url, '(no auth header)');
       return config;
     }
     const token = await AsyncStorage.getItem('jwt_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    // eslint-disable-next-line no-console
+    console.log('[HTTP]', (config.method ?? 'GET').toUpperCase(), (config.baseURL ?? '') + url, token ? '(auth)' : '(no token)');
     return config;
   },
   (error) => {
@@ -40,6 +44,16 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
+    // eslint-disable-next-line no-console
+    console.log(
+      '[HTTP ERROR]',
+      error?.config?.method?.toUpperCase?.() ?? 'UNKNOWN',
+      (error?.config?.baseURL ?? '') + (error?.config?.url ?? ''),
+      'status=',
+      error?.response?.status,
+      'data=',
+      error?.response?.data
+    );
     if (error.response?.status === 401) {
       await AsyncStorage.removeItem('jwt_token');
       await AsyncStorage.removeItem('user');
