@@ -1,5 +1,14 @@
+package com.example.authservice.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
 @Data
 public class LoginRequest {
-    @NotBlank String phoneNumber;
-    @NotBlank String password;
+    @NotBlank
+    private String phoneNumber;
+
+    @NotBlank
+    private String password;
 }
+

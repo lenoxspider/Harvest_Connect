@@ -1,3 +1,22 @@
+package com.example.authservice.controller;
+
+import com.example.authservice.dto.AuthResponse;
+import com.example.authservice.dto.LoginRequest;
+import com.example.authservice.dto.RefreshTokenRequest;
+import com.example.authservice.dto.RegisterRequest;
+import com.example.authservice.dto.UserProfileDto;
+import com.example.authservice.entity.User;
+import com.example.authservice.service.AuthService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -31,3 +50,4 @@ public class AuthController {
         return ResponseEntity.ok(profile);
     }
 }
+

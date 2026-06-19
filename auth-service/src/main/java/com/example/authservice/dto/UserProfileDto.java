@@ -1,3 +1,9 @@
+package com.example.authservice.dto;
+
+import com.example.authservice.entity.Role;
+import lombok.Builder;
+import lombok.Data;
+
 @Data
 @Builder
 public class UserProfileDto {
@@ -6,3 +12,4 @@ public class UserProfileDto {
     private Role role;
     private String region;
 }
+
