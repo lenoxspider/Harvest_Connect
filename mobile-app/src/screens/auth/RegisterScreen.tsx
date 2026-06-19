@@ -28,14 +28,22 @@ const RegisterScreen: React.FC = () => {
   const { register } = useAuth();
 
   const handleRegister = async () => {
-    if (!formData.full_name || !formData.phone_number || !formData.password || !formData.region) {
+    const cleaned = {
+      full_name: formData.full_name.trim(),
+      phone_number: formData.phone_number.trim(),
+      password: formData.password.trim(),
+      role: formData.role,
+      region: formData.region.trim(),
+    };
+
+    if (!cleaned.full_name || !cleaned.phone_number || !cleaned.password || !cleaned.region) {
       Alert.alert('Error', 'Please fill all fields');
       return;
     }
 
     setIsLoading(true);
     try {
-      await register(formData);
+      await register(cleaned);
     } catch (error: any) {
       const serverMessage = error?.response?.data?.message;
       const fallback = error?.message ?? 'Could not reach server';
@@ -63,6 +71,7 @@ const RegisterScreen: React.FC = () => {
               placeholder="Enter your full name"
               placeholderTextColor={colors.muted}
               editable={!isLoading}
+              autoCapitalize="words"
             />
 
             <Text style={styles.label}>Phone Number</Text>
@@ -74,6 +83,7 @@ const RegisterScreen: React.FC = () => {
               placeholderTextColor={colors.muted}
               keyboardType="phone-pad"
               editable={!isLoading}
+              autoCapitalize="none"
             />
 
             <Text style={styles.label}>Password</Text>
@@ -86,6 +96,7 @@ const RegisterScreen: React.FC = () => {
                 placeholderTextColor={colors.muted}
                 secureTextEntry={!showPassword}
                 editable={!isLoading}
+                autoCapitalize="none"
               />
               <TouchableOpacity
                 onPress={() => setShowPassword((v) => !v)}
@@ -120,6 +131,7 @@ const RegisterScreen: React.FC = () => {
               placeholder="Enter your region"
               placeholderTextColor={colors.muted}
               editable={!isLoading}
+              autoCapitalize="words"
             />
 
             <TouchableOpacity

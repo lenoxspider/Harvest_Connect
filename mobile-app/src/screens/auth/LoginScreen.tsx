@@ -23,14 +23,17 @@ const LoginScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleLogin = async () => {
-    if (!phone_number || !password) {
+    const cleanPhone = phone_number.trim();
+    const cleanPassword = password.trim();
+
+    if (!cleanPhone || !cleanPassword) {
       Alert.alert('Error', 'Please fill all fields');
       return;
     }
 
     setIsLoading(true);
     try {
-      await login(phone_number, password);
+      await login(cleanPhone, cleanPassword);
     } catch (error: any) {
       const serverMessage = error?.response?.data?.message;
       const fallback = error?.message ?? 'Could not reach server';
@@ -59,6 +62,7 @@ const LoginScreen: React.FC = () => {
               placeholderTextColor={colors.muted}
               keyboardType="phone-pad"
               editable={!isLoading}
+              autoCapitalize="none"
             />
 
             <Text style={styles.label}>Password</Text>
@@ -71,6 +75,7 @@ const LoginScreen: React.FC = () => {
                 placeholderTextColor={colors.muted}
                 secureTextEntry={!showPassword}
                 editable={!isLoading}
+                autoCapitalize="none"
               />
               <TouchableOpacity
                 onPress={() => setShowPassword((v) => !v)}
