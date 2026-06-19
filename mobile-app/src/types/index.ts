@@ -2,8 +2,8 @@
 
 export interface User {
   id: string;
-  full_name: string;
-  phone_number: string;
+  fullName: string;
+  phoneNumber: string;
   role: 'FARMER' | 'BUYER' | 'TRANSPORTER' | 'STORAGE_OWNER';
   region: string;
 }

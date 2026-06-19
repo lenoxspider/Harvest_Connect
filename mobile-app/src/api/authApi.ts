@@ -2,24 +2,26 @@
 import axiosInstance from './axios';
 import { User } from '../types';
 
+type AuthResponse = {
+  accessToken: string;
+  refreshToken: string;
+};
+
 export const authApi = {
-  login: async (phone_number: string, password: string) => {
-    const response = await axiosInstance.post('/api/auth/login', {
-      phone_number,
-      password,
-    });
-    return response.data;
+  login: async (phoneNumber: string, password: string): Promise<AuthResponse> => {
+    const response = await axiosInstance.post('/api/auth/login', { phoneNumber, password });
+    return response.data as AuthResponse;
   },
 
   register: async (data: {
-    full_name: string;
-    phone_number: string;
+    fullName: string;
+    phoneNumber: string;
     password: string;
     role: string;
     region: string;
-  }) => {
+  }): Promise<AuthResponse> => {
     const response = await axiosInstance.post('/api/auth/register', data);
-    return response.data;
+    return response.data as AuthResponse;
   },
 
   getMe: async (): Promise<User> => {

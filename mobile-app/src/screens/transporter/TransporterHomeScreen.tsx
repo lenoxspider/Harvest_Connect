@@ -9,7 +9,7 @@ const TransporterHomeScreen: React.FC = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.welcomeText}>Welcome, {user?.full_name}!</Text>
+        <Text style={styles.welcomeText}>Welcome, {user?.fullName}!</Text>
         <Text style={styles.subtitle}>Manage your transport services</Text>
       </View>
 
