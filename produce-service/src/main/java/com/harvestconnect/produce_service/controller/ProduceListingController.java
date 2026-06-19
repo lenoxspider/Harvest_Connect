@@ -30,6 +30,19 @@ public ProduceListing createListing(
 
     return produceListingService.createListing(request);
 }
+@PutMapping("/{id}")
+public ProduceListing updateListing(
+        @PathVariable UUID id,
+        @RequestBody ProduceListing updatedListing) {
+
+    return produceListingService.updateListing(id, updatedListing);
+}
+
+@DeleteMapping("/{id}")
+public String deleteListing(@PathVariable UUID id) {
+    produceListingService.deleteListing(id);
+    return "Listing deleted successfully";
+}
 }
 
 
