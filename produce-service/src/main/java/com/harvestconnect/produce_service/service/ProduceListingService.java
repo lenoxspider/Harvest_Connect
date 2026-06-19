@@ -1,9 +1,14 @@
 
 package com.harvestconnect.produce_service.service;
 
+import com.harvestconnect.produce_service.dto.CreateListingRequest;
 import com.harvestconnect.produce_service.entity.ProduceListing;
+import com.harvestconnect.produce_service.exception.ResourceNotFoundException;
 import com.harvestconnect.produce_service.repository.ProduceListingRepository;
 import org.springframework.stereotype.Service;
+import com.harvestconnect.produce_service.exception.ResourceNotFoundException;
+import com.harvestconnect.produce_service.dto.CreateListingRequest;
+import com.harvestconnect.produce_service.entity.ProduceListing;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,9 +22,22 @@ public class ProduceListingService {
         this.produceListingRepository = produceListingRepository;
     }
 
-    public ProduceListing createListing(ProduceListing listing) {
-        return produceListingRepository.save(listing);
-    }
+    public ProduceListing createListing(CreateListingRequest request) {
+
+    ProduceListing listing = new ProduceListing();
+
+    listing.setTitle(request.getTitle());
+    listing.setDescription(request.getDescription());
+    listing.setCategory(request.getCategory());
+    listing.setQuantityKg(request.getQuantityKg());
+    listing.setPricePerKg(request.getPricePerKg());
+    listing.setLocation(request.getLocation());
+    listing.setLatitude(request.getLatitude());
+    listing.setLongitude(request.getLongitude());
+    listing.setImages(request.getImages());
+
+    return produceListingRepository.save(listing);
+}
 
     public List<ProduceListing> getAllListings() {
         return produceListingRepository.findAll();
@@ -27,7 +45,8 @@ public class ProduceListingService {
 
     public ProduceListing getListingById(UUID id) {
         return produceListingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Listing not found"));
+    .orElseThrow(() ->
+        new ResourceNotFoundException("Listing not found"));
     }
 
     public ProduceListing updateListing(UUID id, ProduceListing updatedListing) {
