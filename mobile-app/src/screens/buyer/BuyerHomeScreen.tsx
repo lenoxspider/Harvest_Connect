@@ -1,10 +1,14 @@
-// src/screens/buyer/BuyerHomeScreen.tsx
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { produceApi } from '../../api/produceApi';
 import { ProduceListing } from '../../types';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useNavigation } from '@react-navigation/native';
+import { colors } from '../../theme/colors';
+import { spacing } from '../../theme/spacing';
+import { typography } from '../../theme/typography';
+import { GlassCard } from '../../ui/GlassCard';
+import { Screen } from '../../ui/Screen';
 
 const BuyerHomeScreen: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -13,14 +17,14 @@ const BuyerHomeScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
 
   useEffect(() => {
-    fetchListings();
+    void fetchListings();
   }, []);
 
   const fetchListings = async () => {
     try {
       setIsLoading(true);
       const data = await produceApi.getListings();
-      setListings(data.filter(listing => listing.status === 'AVAILABLE'));
+      setListings(data.filter((listing) => listing.status === 'AVAILABLE'));
     } catch (error) {
       console.error('Error fetching listings:', error);
     } finally {
@@ -28,55 +32,64 @@ const BuyerHomeScreen: React.FC = () => {
     }
   };
 
-  const filteredListings = listings.filter(listing =>
-    listing.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    listing.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredListings = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return listings;
+    return listings.filter(
+      (listing) =>
+        listing.title.toLowerCase().includes(q) || listing.category.toLowerCase().includes(q)
+    );
+  }, [listings, searchQuery]);
 
   const renderListing = ({ item }: { item: ProduceListing }) => (
     <TouchableOpacity
-      style={styles.listingCard}
+      style={styles.cardTouchable}
       onPress={() => navigation.navigate('ProduceDetail', { listingId: item.id })}
+      activeOpacity={0.9}
     >
-      <View style={styles.listingHeader}>
-        <Text style={styles.listingTitle}>{item.title}</Text>
-        <Text style={styles.listingCategory}>{item.category}</Text>
-      </View>
-      
-      <View style={styles.listingDetails}>
-        <Text style={styles.listingPrice}>${item.price_per_kg}/kg</Text>
-        <Text style={styles.listingQuantity}>{item.quantity_kg}kg available</Text>
-      </View>
-      
-      <Text style={styles.listingLocation}>📍 {item.location}</Text>
-      
-      {item.description && (
-        <Text style={styles.listingDescription} numberOfLines={2}>
-          {item.description}
-        </Text>
-      )}
+      <GlassCard>
+        <View style={styles.listingHeader}>
+          <Text style={styles.listingTitle} numberOfLines={1}>
+            {item.title}
+          </Text>
+          <View style={styles.tag}>
+            <Text style={styles.tagText} numberOfLines={1}>
+              {item.category}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.row}>
+          <Text style={styles.price}>GHS {item.price_per_kg}/kg</Text>
+          <Text style={styles.meta}>{item.quantity_kg}kg</Text>
+        </View>
+
+        <Text style={styles.meta}>Location: {item.location}</Text>
+
+        {item.description ? (
+          <Text style={styles.desc} numberOfLines={2}>
+            {item.description}
+          </Text>
+        ) : null}
+      </GlassCard>
     </TouchableOpacity>
   );
 
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#2E7D32" />
-        <Text style={styles.loadingText}>Loading fresh produce...</Text>
-      </View>
-    );
-  }
-
   return (
-    <View style={styles.container}>
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholder="Search produce..."
-        />
+    <Screen>
+      <View style={styles.header}>
+        <Text style={styles.title}>Marketplace</Text>
+        <Text style={styles.subtitle}>Browse fresh produce</Text>
       </View>
+
+      <TextInput
+        style={styles.searchInput}
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        placeholder="Search produce, category…"
+        placeholderTextColor={colors.muted}
+        autoCapitalize="none"
+      />
 
       <FlatList
         data={filteredListings}
@@ -86,59 +99,38 @@ const BuyerHomeScreen: React.FC = () => {
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>
-              {searchQuery ? 'No produce found' : 'No produce available at the moment'}
+              {isLoading ? 'Loading…' : searchQuery ? 'No matching produce found.' : 'No produce available yet.'}
             </Text>
           </View>
         }
         refreshing={isLoading}
         onRefresh={fetchListings}
+        showsVerticalScrollIndicator={false}
       />
-    </View>
+    </Screen>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F5F5',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: '#666666',
-  },
-  searchContainer: {
-    padding: 15,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#DDDDDD',
-  },
+  header: { marginBottom: spacing.md },
+  title: { ...typography.h2, color: colors.text },
+  subtitle: { marginTop: 6, color: colors.muted, fontSize: 14, fontWeight: '600' },
   searchInput: {
-    height: 45,
-    backgroundColor: '#F5F5F5',
-    borderRadius: 25,
-    paddingHorizontal: 20,
+    height: 52,
+    backgroundColor: 'rgba(10, 14, 26, 0.55)',
+    borderRadius: 18,
+    paddingHorizontal: 16,
     fontSize: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
+    color: colors.text,
+    marginBottom: spacing.md,
   },
   listContainer: {
-    padding: 15,
+    paddingBottom: spacing.xl,
   },
-  listingCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  cardTouchable: {
+    marginBottom: spacing.md,
   },
   listingHeader: {
     flexDirection: 'row',
@@ -148,52 +140,38 @@ const styles = StyleSheet.create({
   },
   listingTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333333',
+    fontWeight: '800',
+    color: colors.text,
     flex: 1,
   },
-  listingCategory: {
-    fontSize: 12,
-    color: '#FF6F00',
-    backgroundColor: '#FFF3E0',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+  tag: {
+    marginLeft: spacing.sm,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(92, 200, 255, 0.25)',
+    backgroundColor: 'rgba(92, 200, 255, 0.10)',
   },
-  listingDetails: {
+  tagText: { color: colors.text, fontSize: 12, fontWeight: '700' },
+  row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 8,
+    marginTop: 10,
   },
-  listingPrice: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2E7D32',
-  },
-  listingQuantity: {
-    fontSize: 14,
-    color: '#666666',
-  },
-  listingLocation: {
-    fontSize: 14,
-    color: '#666666',
-    marginTop: 8,
-  },
-  listingDescription: {
-    fontSize: 14,
-    color: '#666666',
-    marginTop: 8,
-    lineHeight: 20,
-  },
+  price: { color: colors.accent, fontSize: 16, fontWeight: '800' },
+  meta: { color: colors.muted, fontSize: 13, fontWeight: '600' },
+  desc: { marginTop: 10, color: colors.muted, lineHeight: 20 },
   emptyContainer: {
     padding: 40,
     alignItems: 'center',
   },
   emptyText: {
     fontSize: 16,
-    color: '#666666',
+    color: colors.muted,
     textAlign: 'center',
   },
 });
 
 export default BuyerHomeScreen;
+
