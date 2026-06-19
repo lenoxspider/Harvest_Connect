@@ -2,6 +2,7 @@ package com.harvestconnect.produce_service.service;
 
 import com.harvestconnect.produce_service.entity.ProduceOrder;
 import com.harvestconnect.produce_service.repository.ProduceOrderRepository;
+import com.harvestconnect.produce_service.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,7 +27,8 @@ public class ProduceOrderService {
 
     public ProduceOrder getOrderById(UUID id) {
         return produceOrderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() ->
+        new ResourceNotFoundException("Order not found"));
     }
 
     public ProduceOrder updateOrder(ProduceOrder order) {
