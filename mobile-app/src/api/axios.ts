@@ -15,6 +15,11 @@ const axiosInstance = axios.create({
 // Request interceptor to add JWT token
 axiosInstance.interceptors.request.use(
   async (config) => {
+    const url = config.url ?? '';
+    // Never attach JWT for auth endpoints (avoids stale token breaking register/login).
+    if (url.startsWith('/api/auth/')) {
+      return config;
+    }
     const token = await AsyncStorage.getItem('jwt_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
