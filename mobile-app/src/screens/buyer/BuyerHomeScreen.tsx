@@ -9,6 +9,7 @@ import { spacing } from '../../theme/spacing';
 import { typography } from '../../theme/typography';
 import { GlassCard } from '../../ui/GlassCard';
 import { Screen } from '../../ui/Screen';
+import { GlassButton } from '../../ui/GlassButton';
 
 const BuyerHomeScreen: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -82,6 +83,12 @@ const BuyerHomeScreen: React.FC = () => {
         <Text style={styles.subtitle}>Browse fresh produce</Text>
       </View>
 
+      <View style={styles.actions}>
+        <GlassButton title="Orders" onPress={() => navigation.navigate('OrdersTab')} variant="secondary" style={{ flex: 1 }} />
+        <View style={{ width: spacing.sm }} />
+        <GlassButton title="Account" onPress={() => navigation.navigate('AccountTab')} variant="secondary" style={{ flex: 1 }} />
+      </View>
+
       <TextInput
         style={styles.searchInput}
         value={searchQuery}
@@ -115,6 +122,7 @@ const styles = StyleSheet.create({
   header: { marginBottom: spacing.md },
   title: { ...typography.h2, color: colors.text },
   subtitle: { marginTop: 6, color: colors.muted, fontSize: 14, fontWeight: '600' },
+  actions: { flexDirection: 'row', marginBottom: spacing.md },
   searchInput: {
     height: 52,
     backgroundColor: 'rgba(10, 14, 26, 0.55)',
@@ -174,4 +182,3 @@ const styles = StyleSheet.create({
 });
 
 export default BuyerHomeScreen;
-
