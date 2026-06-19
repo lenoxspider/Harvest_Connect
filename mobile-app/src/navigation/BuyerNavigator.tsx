@@ -7,6 +7,7 @@ import BuyerHomeScreen from '../screens/buyer/BuyerHomeScreen';
 import ProduceListScreen from '../screens/buyer/ProduceListScreen';
 import ProduceDetailScreen from '../screens/buyer/ProduceDetailScreen';
 import MyOrdersScreen from '../screens/buyer/MyOrdersScreen';
+import SearchScreen from '../screens/buyer/SearchScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
 import { navStyles } from './navStyles';
 
@@ -36,9 +37,21 @@ const BuyerNavigator: React.FC = () => {
         name="MarketTab"
         component={BuyerStack}
         options={{
-          title: 'Market',
+          title: 'Home',
           tabBarIcon: ({ focused }) => (
-            <Text style={{ opacity: focused ? 1 : 0.7 }}>🛒</Text>
+            <Text style={{ opacity: focused ? 1 : 0.7 }}>🏠</Text>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="SearchTab"
+        component={SearchScreen}
+        options={{
+          title: 'Search',
+          ...navStyles.header,
+          headerShown: true,
+          tabBarIcon: ({ focused }) => (
+            <Text style={{ opacity: focused ? 1 : 0.7 }}>🔎</Text>
           ),
         }}
       />
