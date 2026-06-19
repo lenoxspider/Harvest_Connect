@@ -1,100 +1,68 @@
-// src/screens/transporter/TransporterHomeScreen.tsx
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
+import { colors } from '../../theme/colors';
+import { spacing } from '../../theme/spacing';
+import { typography } from '../../theme/typography';
+import { GlassCard } from '../../ui/GlassCard';
+import { GlassButton } from '../../ui/GlassButton';
+import { Screen } from '../../ui/Screen';
 
 const TransporterHomeScreen: React.FC = () => {
   const { user, logout } = useAuth();
+  const navigation = useNavigation<NavigationProp<any>>();
 
   return (
-    <ScrollView style={styles.container}>
+    <Screen scroll>
       <View style={styles.header}>
-        <Text style={styles.welcomeText}>Welcome, {user?.full_name}!</Text>
-        <Text style={styles.subtitle}>Manage your transport services</Text>
+        <Text style={styles.title}>Welcome, {user?.fullName}.</Text>
+        <Text style={styles.subtitle}>Manage your transport listings</Text>
       </View>
 
       <View style={styles.grid}>
-        <TouchableOpacity style={styles.card}>
-          <Text style={styles.cardIcon}>🚚</Text>
-          <Text style={styles.cardTitle}>Add Truck</Text>
-          <Text style={styles.cardDescription}>Add a new truck to your fleet</Text>
+        <TouchableOpacity activeOpacity={0.9} style={styles.tile} onPress={() => navigation.navigate('AddTruck')}>
+          <GlassCard>
+            <Text style={styles.tileTitle}>Add Truck</Text>
+            <Text style={styles.tileDesc}>Create a truck listing</Text>
+          </GlassCard>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.card}>
-          <Text style={styles.cardIcon}>📋</Text>
-          <Text style={styles.cardTitle}>My Listings</Text>
-          <Text style={styles.cardDescription}>Manage your trucks</Text>
+        <TouchableOpacity activeOpacity={0.9} style={styles.tile} onPress={() => navigation.navigate('TrucksTab')}>
+          <GlassCard>
+            <Text style={styles.tileTitle}>My Listings</Text>
+            <Text style={styles.tileDesc}>View your available trucks</Text>
+          </GlassCard>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.card}>
-          <Text style={styles.cardIcon}>📦</Text>
-          <Text style={styles.cardTitle}>Incoming Bookings</Text>
-          <Text style={styles.cardDescription}>View and accept bookings</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.card} onPress={logout}>
-          <Text style={styles.cardIcon}>🚪</Text>
-          <Text style={styles.cardTitle}>Logout</Text>
-          <Text style={styles.cardDescription}>Sign out of your account</Text>
+        <TouchableOpacity activeOpacity={0.9} style={styles.tile} onPress={() => navigation.navigate('BookingsTab')}>
+          <GlassCard>
+            <Text style={styles.tileTitle}>Incoming Bookings</Text>
+            <Text style={styles.tileDesc}>Accept booking requests</Text>
+          </GlassCard>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+
+      <GlassButton title="Logout" onPress={logout} variant="secondary" style={{ marginTop: spacing.lg }} />
+    </Screen>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  header: {
-    padding: 20,
-    backgroundColor: '#F5F5F5',
-  },
-  welcomeText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2E7D32',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666666',
-  },
+  header: { marginBottom: spacing.lg },
+  title: { ...typography.h2, color: colors.text },
+  subtitle: { marginTop: 6, color: colors.muted, fontSize: 14, fontWeight: '600' },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    padding: 10,
     justifyContent: 'space-between',
+    gap: spacing.md,
   },
-  card: {
+  tile: {
     width: '48%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
   },
-  cardIcon: {
-    fontSize: 32,
-    marginBottom: 12,
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginBottom: 4,
-  },
-  cardDescription: {
-    fontSize: 12,
-    color: '#666666',
-  },
+  tileTitle: { color: colors.text, fontSize: 16, fontWeight: '800' },
+  tileDesc: { marginTop: 6, color: colors.muted, lineHeight: 18 },
 });
 
 export default TransporterHomeScreen;

@@ -1,6 +1,6 @@
 // src/navigation/AppNavigator.tsx
 import React from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useAuth } from '../context/AuthContext';
 import AuthNavigator from './AuthNavigator';
@@ -8,6 +8,8 @@ import FarmerNavigator from './FarmerNavigator';
 import BuyerNavigator from './BuyerNavigator';
 import TransporterNavigator from './TransporterNavigator';
 import StorageNavigator from './StorageNavigator';
+import { GlassBackground } from '../ui/GlassBackground';
+import { colors } from '../theme/colors';
 
 const Stack = createStackNavigator();
 
@@ -16,9 +18,12 @@ const AppNavigator: React.FC = () => {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFFFFF' }}>
-        <ActivityIndicator size="large" color="#2E7D32" />
-      </View>
+      <GlassBackground>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color={colors.accent} />
+          <Text style={{ marginTop: 12, color: colors.muted, fontWeight: '700' }}>Loading…</Text>
+        </View>
+      </GlassBackground>
     );
   }
 

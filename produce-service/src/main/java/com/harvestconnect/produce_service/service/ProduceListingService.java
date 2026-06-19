@@ -18,10 +18,9 @@ public class ProduceListingService {
         this.produceListingRepository = produceListingRepository;
     }
 
-    public ProduceListing createListing(CreateListingRequest request) {
-
+    public ProduceListing createListing(UUID farmerId, CreateListingRequest request) {
         ProduceListing listing = new ProduceListing();
-
+        listing.setFarmerId(farmerId);
         listing.setTitle(request.getTitle());
         listing.setDescription(request.getDescription());
         listing.setCategory(request.getCategory());
@@ -31,7 +30,6 @@ public class ProduceListingService {
         listing.setLatitude(request.getLatitude());
         listing.setLongitude(request.getLongitude());
         listing.setImages(request.getImages());
-
         return produceListingRepository.save(listing);
     }
 
@@ -39,14 +37,16 @@ public class ProduceListingService {
         return produceListingRepository.findAll();
     }
 
+    public List<ProduceListing> getListingsForFarmer(UUID farmerId) {
+        return produceListingRepository.findByFarmerId(farmerId);
+    }
+
     public ProduceListing getListingById(UUID id) {
         return produceListingRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Listing not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Listing not found"));
     }
 
     public ProduceListing updateListing(UUID id, ProduceListing updatedListing) {
-
         ProduceListing existing = getListingById(id);
 
         existing.setTitle(updatedListing.getTitle());
@@ -66,3 +66,4 @@ public class ProduceListingService {
         produceListingRepository.deleteById(id);
     }
 }
+

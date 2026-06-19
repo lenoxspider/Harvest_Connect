@@ -9,7 +9,7 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   isLoading: boolean;
-  login: (phone_number: string, password: string) => Promise<void>;
+  login: (phoneNumber: string, password: string) => Promise<void>;
   register: (data: {
     full_name: string;
     phone_number: string;
@@ -66,29 +66,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const login = async (phone_number: string, password: string) => {
+  const login = async (phoneNumber: string, password: string) => {
     try {
-      const response = await authApi.login(phone_number, password);
+      const response = await authApi.login(phoneNumber, password);
       
-      // Get location for region if not set
-      let userRegion = response.user.region;
-      if (!userRegion) {
-        try {
-          const { status } = await Location.requestForegroundPermissionsAsync();
-          if (status === 'granted') {
-            const location = await Location.getCurrentPositionAsync({});
-            // You could reverse geocode here, but for now use stored region
-          }
-        } catch (error) {
-          console.log('Location permission not granted');
-        }
-      }
+      await AsyncStorage.setItem('jwt_token', response.accessToken);
+      setToken(response.accessToken);
 
-      await AsyncStorage.setItem('jwt_token', response.token);
-      await AsyncStorage.setItem('user', JSON.stringify(response.user));
-      
-      setToken(response.token);
-      setUser(response.user);
+      const userData = await authApi.getMe();
+      await AsyncStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
+
+      // Optional: request location permission (non-blocking)
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status === 'granted') {
+          await Location.getCurrentPositionAsync({});
+        }
+      } catch {
+        // ignore
+      }
     } catch (error) {
       throw error;
     }
@@ -102,9 +99,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     region: string;
   }) => {
     try {
-      const response = await authApi.register(data);
-      
-      // Auto-login after registration
+      await authApi.register({
+        fullName: data.full_name,
+        phoneNumber: data.phone_number,
+        password: data.password,
+        role: data.role,
+        region: data.region,
+      });
+
       await login(data.phone_number, data.password);
     } catch (error) {
       throw error;

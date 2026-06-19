@@ -1,52 +1,94 @@
-// src/navigation/StorageNavigator.tsx
+﻿// src/navigation/StorageNavigator.tsx
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+import { Text } from 'react-native';
 import StorageOwnerHomeScreen from '../screens/storage/StorageOwnerHomeScreen';
 import AddStorageScreen from '../screens/storage/AddStorageScreen';
 import MyFacilitiesScreen from '../screens/storage/MyFacilitiesScreen';
 import StorageBookingsScreen from '../screens/storage/StorageBookingsScreen';
+import SearchScreen from '../screens/buyer/SearchScreen';
+import ProfileScreen from '../screens/common/ProfileScreen';
+import { navStyles } from './navStyles';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const StorageTabs: React.FC = () => {
+const tabIcon =
+  (codePoint: number) =>
+  ({ focused }: { focused: boolean }) => (
+    <Text style={{ opacity: focused ? 1 : 0.7 }}>
+      {String.fromCodePoint(codePoint)}
+    </Text>
+  );
+
+const StorageHomeStack: React.FC = () => {
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarActiveTintColor: '#2E7D32',
-        tabBarInactiveTintColor: '#666666',
-        tabBarStyle: { backgroundColor: '#FFFFFF' },
-        headerStyle: { backgroundColor: '#2E7D32' },
-        headerTintColor: '#FFFFFF',
-      }}
-    >
-      <Tab.Screen name="Home" component={StorageOwnerHomeScreen} />
-      <Tab.Screen name="My Facilities" component={MyFacilitiesScreen} />
-      <Tab.Screen name="Bookings" component={StorageBookingsScreen} />
-    </Tab.Navigator>
+    <Stack.Navigator screenOptions={navStyles.header}>
+      <Stack.Screen name="Home" component={StorageOwnerHomeScreen} options={{ title: 'Home' }} />
+      <Stack.Screen name="AddStorage" component={AddStorageScreen} options={{ title: 'Add Storage Facility' }} />
+    </Stack.Navigator>
   );
 };
 
 const StorageNavigator: React.FC = () => {
   return (
-    <Stack.Navigator
+    <Tab.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: '#2E7D32' },
-        headerTintColor: '#FFFFFF',
+        ...navStyles.tabBar,
+        headerShown: false,
+        tabBarLabelStyle: { fontWeight: '700' },
       }}
     >
-      <Stack.Screen 
-        name="StorageDashboard" 
-        component={StorageTabs} 
-        options={{ headerShown: false }}
+      <Tab.Screen
+        name="HomeTab"
+        component={StorageHomeStack}
+        options={{
+          title: 'Home',
+          tabBarIcon: tabIcon(0x1f3e0),
+        }}
       />
-      <Stack.Screen 
-        name="AddStorage" 
-        component={AddStorageScreen} 
-        options={{ title: 'Add Storage Facility' }}
+      <Tab.Screen
+        name="SearchTab"
+        component={SearchScreen}
+        options={{
+          title: 'Search',
+          ...navStyles.header,
+          headerShown: true,
+          tabBarIcon: tabIcon(0x1f50d),
+        }}
       />
-    </Stack.Navigator>
+      <Tab.Screen
+        name="FacilitiesTab"
+        component={MyFacilitiesScreen}
+        options={{
+          title: 'Facilities',
+          ...navStyles.header,
+          headerShown: true,
+          tabBarIcon: tabIcon(0x1f3ec),
+        }}
+      />
+      <Tab.Screen
+        name="BookingsTab"
+        component={StorageBookingsScreen}
+        options={{
+          title: 'Bookings',
+          ...navStyles.header,
+          headerShown: true,
+          tabBarIcon: tabIcon(0x1f4e6),
+        }}
+      />
+      <Tab.Screen
+        name="AccountTab"
+        component={ProfileScreen}
+        options={{
+          title: 'Account',
+          ...navStyles.header,
+          headerShown: true,
+          tabBarIcon: tabIcon(0x1f464),
+        }}
+      />
+    </Tab.Navigator>
   );
 };
 

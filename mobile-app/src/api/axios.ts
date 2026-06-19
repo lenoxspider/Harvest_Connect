@@ -2,7 +2,12 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_BASE_URL = 'http://10.1.4.1:8080';
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
+
+// Helps debug device networking issues (LAN vs tunnel).
+// Check Metro logs for this line when the app boots.
+// eslint-disable-next-line no-console
+console.log('[HarvestConnect] API_BASE_URL =', API_BASE_URL);
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -15,10 +20,25 @@ const axiosInstance = axios.create({
 // Request interceptor to add JWT token
 axiosInstance.interceptors.request.use(
   async (config) => {
+    const url = config.url ?? '';
+    // Don't attach JWT for login/register/refresh only.
+    // `/api/auth/me` MUST include the JWT.
+    const skipAuth =
+      url === '/api/auth/login' ||
+      url === '/api/auth/register' ||
+      url === '/api/auth/refresh';
+
+    if (skipAuth) {
+      // eslint-disable-next-line no-console
+      console.log('[HTTP]', (config.method ?? 'GET').toUpperCase(), (config.baseURL ?? '') + url, '(no auth header)');
+      return config;
+    }
     const token = await AsyncStorage.getItem('jwt_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    // eslint-disable-next-line no-console
+    console.log('[HTTP]', (config.method ?? 'GET').toUpperCase(), (config.baseURL ?? '') + url, token ? '(auth)' : '(no token)');
     return config;
   },
   (error) => {
@@ -30,6 +50,16 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
+    // eslint-disable-next-line no-console
+    console.log(
+      '[HTTP ERROR]',
+      error?.config?.method?.toUpperCase?.() ?? 'UNKNOWN',
+      (error?.config?.baseURL ?? '') + (error?.config?.url ?? ''),
+      'status=',
+      error?.response?.status,
+      'data=',
+      error?.response?.data
+    );
     if (error.response?.status === 401) {
       await AsyncStorage.removeItem('jwt_token');
       await AsyncStorage.removeItem('user');

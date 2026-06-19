@@ -4,9 +4,9 @@ import com.harvestconnect.produce_service.dto.CreateOrderRequest;
 import com.harvestconnect.produce_service.entity.ProduceListing;
 import com.harvestconnect.produce_service.entity.ProduceOrder;
 import com.harvestconnect.produce_service.enums.OrderStatus;
+import com.harvestconnect.produce_service.exception.ResourceNotFoundException;
 import com.harvestconnect.produce_service.repository.ProduceListingRepository;
 import com.harvestconnect.produce_service.repository.ProduceOrderRepository;
-import com.harvestconnect.produce_service.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,53 +20,51 @@ public class ProduceOrderService {
     private final ProduceListingRepository produceListingRepository;
 
     public ProduceOrderService(ProduceOrderRepository produceOrderRepository, ProduceListingRepository produceListingRepository) {
-        this.produceListingRepository = produceListingRepository;
         this.produceOrderRepository = produceOrderRepository;
+        this.produceListingRepository = produceListingRepository;
     }
 
-    public ProduceOrder placeOrder(CreateOrderRequest request) {
+    public ProduceOrder placeOrder(UUID buyerId, CreateOrderRequest request) {
+        ProduceListing listing = produceListingRepository
+                .findById(request.getListingId())
+                .orElseThrow(() -> new ResourceNotFoundException("Listing not found"));
 
-    ProduceListing listing = produceListingRepository
-            .findById(request.getListingId())
-            .orElseThrow(() ->
-                    new ResourceNotFoundException("Listing not found"));
+        if (listing.getQuantityKg() != null && request.getQuantityKg() != null && listing.getQuantityKg() < request.getQuantityKg()) {
+            throw new RuntimeException("Insufficient quantity available");
+        }
 
-    if (listing.getQuantityKg() < request.getQuantityKg()) {
-        throw new RuntimeException("Insufficient quantity available");
-    }
+        ProduceOrder order = new ProduceOrder();
+        order.setListingId(listing.getId());
+        order.setBuyerId(buyerId);
+        order.setQuantityKg(request.getQuantityKg());
 
-    ProduceOrder order = new ProduceOrder();
+        if (listing.getPricePerKg() != null && request.getQuantityKg() != null) {
+            BigDecimal totalPrice = listing.getPricePerKg().multiply(BigDecimal.valueOf(request.getQuantityKg()));
+            order.setTotalPrice(totalPrice);
+        }
 
-    order.setListingId(listing.getId());
-    order.setQuantityKg(request.getQuantityKg());
+        order.setStatus(OrderStatus.PENDING);
 
-    BigDecimal totalPrice =
-            listing.getPricePerKg()
-                    .multiply(BigDecimal.valueOf(request.getQuantityKg()));
+        if (listing.getQuantityKg() != null && request.getQuantityKg() != null) {
+            listing.setQuantityKg(listing.getQuantityKg() - request.getQuantityKg());
+            produceListingRepository.save(listing);
+        }
 
-    order.setTotalPrice(totalPrice);
-
-    order.setStatus(OrderStatus.PENDING);
-
-    listing.setQuantityKg(
-            listing.getQuantityKg() - request.getQuantityKg());
-
-    produceListingRepository.save(listing);
-
-    return produceOrderRepository.save(order);
-}
-
-    public List<ProduceOrder> getAllOrders() {
-        return produceOrderRepository.findAll();
-    }
-
-    public ProduceOrder getOrderById(UUID id) {
-        return produceOrderRepository.findById(id)
-                .orElseThrow(() ->
-        new ResourceNotFoundException("Order not found"));
-    }
-
-    public ProduceOrder updateOrder(ProduceOrder order) {
         return produceOrderRepository.save(order);
     }
+
+    public List<ProduceOrder> getOrdersForUser(UUID userId, String role) {
+        if (role != null && role.equalsIgnoreCase("FARMER")) {
+            List<UUID> listingIds = produceListingRepository.findByFarmerId(userId).stream()
+                    .map(ProduceListing::getId)
+                    .toList();
+            if (listingIds.isEmpty()) {
+                return List.of();
+            }
+            return produceOrderRepository.findByListingIdIn(listingIds);
+        }
+
+        return produceOrderRepository.findByBuyerId(userId);
+    }
 }
+

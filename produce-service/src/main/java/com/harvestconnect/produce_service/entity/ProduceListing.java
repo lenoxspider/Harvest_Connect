@@ -1,6 +1,7 @@
 package com.harvestconnect.produce_service.entity;
 
 import jakarta.persistence.*;
+import java.time.Instant;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
@@ -105,6 +106,22 @@ public class ProduceListing {
         this.images = images;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -132,6 +149,24 @@ public class ProduceListing {
 
     @ElementCollection
     private List<String> images;
+
+    private String status = "AVAILABLE";
+
+    @Column(nullable = false)
+    private Instant createdAt;
+
+    @PrePersist
+    void prePersist() {
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
+        if (status == null || status.isBlank()) {
+            status = "AVAILABLE";
+        }
+        if (premium == null) {
+            premium = false;
+        }
+    }
 
     // Getters and Setters
 }

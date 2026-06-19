@@ -1,10 +1,14 @@
-// src/screens/buyer/ProduceListScreen.tsx
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { produceApi } from '../../api/produceApi';
 import { ProduceListing } from '../../types';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useNavigation } from '@react-navigation/native';
+import { colors } from '../../theme/colors';
+import { spacing } from '../../theme/spacing';
+import { typography } from '../../theme/typography';
+import { GlassCard } from '../../ui/GlassCard';
+import { Screen } from '../../ui/Screen';
 
 const ProduceListScreen: React.FC = () => {
   const [listings, setListings] = useState<ProduceListing[]>([]);
@@ -12,14 +16,14 @@ const ProduceListScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
 
   useEffect(() => {
-    fetchListings();
+    void fetchListings();
   }, []);
 
   const fetchListings = async () => {
     try {
       setIsLoading(true);
       const data = await produceApi.getListings();
-      setListings(data.filter(listing => listing.status === 'AVAILABLE'));
+      setListings(data.filter((listing) => listing.status === 'AVAILABLE'));
     } catch (error) {
       console.error('Error fetching listings:', error);
     } finally {
@@ -29,29 +33,39 @@ const ProduceListScreen: React.FC = () => {
 
   const renderListing = ({ item }: { item: ProduceListing }) => (
     <TouchableOpacity
-      style={styles.listingCard}
+      style={styles.cardTouchable}
       onPress={() => navigation.navigate('ProduceDetail', { listingId: item.id })}
+      activeOpacity={0.9}
     >
-      <Text style={styles.listingTitle}>{item.title}</Text>
-      <Text style={styles.listingCategory}>{item.category}</Text>
-      <View style={styles.listingDetails}>
-        <Text style={styles.listingPrice}>${item.price_per_kg}/kg</Text>
-        <Text style={styles.listingQuantity}>{item.quantity_kg}kg available</Text>
-      </View>
-      <Text style={styles.listingLocation}>📍 {item.location}</Text>
+      <GlassCard>
+        <View style={styles.listingHeader}>
+          <Text style={styles.listingTitle} numberOfLines={1}>
+            {item.title}
+          </Text>
+          <View style={styles.tag}>
+            <Text style={styles.tagText} numberOfLines={1}>
+              {item.category}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.row}>
+          <Text style={styles.price}>GHS {item.price_per_kg}/kg</Text>
+          <Text style={styles.meta}>{item.quantity_kg}kg</Text>
+        </View>
+
+        <Text style={styles.meta}>Location: {item.location}</Text>
+      </GlassCard>
     </TouchableOpacity>
   );
 
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#2E7D32" />
-      </View>
-    );
-  }
-
   return (
-    <View style={styles.container}>
+    <Screen>
+      <View style={styles.header}>
+        <Text style={styles.title}>Available Produce</Text>
+        <Text style={styles.subtitle}>Tap an item to view details</Text>
+      </View>
+
       <FlatList
         data={listings}
         renderItem={renderListing}
@@ -59,77 +73,68 @@ const ProduceListScreen: React.FC = () => {
         contentContainerStyle={styles.listContainer}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No produce available at the moment</Text>
+            <Text style={styles.emptyText}>
+              {isLoading ? 'Loading…' : 'No produce available at the moment.'}
+            </Text>
           </View>
         }
+        refreshing={isLoading}
+        onRefresh={fetchListings}
+        showsVerticalScrollIndicator={false}
       />
-    </View>
+    </Screen>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F5F5',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-  },
+  header: { marginBottom: spacing.md },
+  title: { ...typography.h2, color: colors.text },
+  subtitle: { marginTop: 6, color: colors.muted, fontSize: 14, fontWeight: '600' },
   listContainer: {
-    padding: 15,
+    paddingBottom: spacing.xl,
   },
-  listingCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  cardTouchable: {
+    marginBottom: spacing.md,
+  },
+  listingHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
   },
   listingTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginBottom: 4,
+    fontWeight: '800',
+    color: colors.text,
+    flex: 1,
   },
-  listingCategory: {
-    fontSize: 14,
-    color: '#FF6F00',
-    marginBottom: 8,
+  tag: {
+    marginLeft: spacing.sm,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(92, 200, 255, 0.25)',
+    backgroundColor: 'rgba(92, 200, 255, 0.10)',
   },
-  listingDetails: {
+  tagText: { color: colors.text, fontSize: 12, fontWeight: '700' },
+  row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 8,
   },
-  listingPrice: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2E7D32',
-  },
-  listingQuantity: {
-    fontSize: 14,
-    color: '#666666',
-  },
-  listingLocation: {
-    fontSize: 14,
-    color: '#666666',
-  },
+  price: { color: colors.accent, fontSize: 16, fontWeight: '800' },
+  meta: { color: colors.muted, fontSize: 13, fontWeight: '600' },
   emptyContainer: {
     padding: 40,
     alignItems: 'center',
   },
   emptyText: {
     fontSize: 16,
-    color: '#666666',
+    color: colors.muted,
     textAlign: 'center',
   },
 });
 
 export default ProduceListScreen;
+
