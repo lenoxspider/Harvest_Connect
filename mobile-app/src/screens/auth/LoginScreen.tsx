@@ -17,6 +17,7 @@ type RootStackParamList = {
 const LoginScreen: React.FC = () => {
   const [phone_number, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -59,15 +60,25 @@ const LoginScreen: React.FC = () => {
             />
 
             <Text style={styles.label}>Password</Text>
-            <TextInput
-              style={styles.input}
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Enter your password"
-              placeholderTextColor={colors.muted}
-              secureTextEntry
-              editable={!isLoading}
-            />
+            <View style={styles.inputWrap}>
+              <TextInput
+                style={styles.input}
+                value={password}
+                onChangeText={setPassword}
+                placeholder="Enter your password"
+                placeholderTextColor={colors.muted}
+                secureTextEntry={!showPassword}
+                editable={!isLoading}
+              />
+              <TouchableOpacity
+                onPress={() => setShowPassword((v) => !v)}
+                disabled={isLoading}
+                style={styles.eyeButton}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Text style={styles.eyeText}>{showPassword ? 'Hide' : 'Show'}</Text>
+              </TouchableOpacity>
+            </View>
 
             <TouchableOpacity
               style={[styles.button, isLoading && styles.buttonDisabled]}
@@ -126,6 +137,26 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: 'rgba(10, 14, 26, 0.55)',
     color: colors.text,
+  },
+  inputWrap: {
+    position: 'relative',
+    justifyContent: 'center',
+  },
+  eyeButton: {
+    position: 'absolute',
+    right: 12,
+    height: 34,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.16)',
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+  },
+  eyeText: {
+    color: colors.muted,
+    fontSize: 13,
+    fontWeight: '600',
   },
   button: {
     height: 50,

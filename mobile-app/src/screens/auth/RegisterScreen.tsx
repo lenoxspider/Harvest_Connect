@@ -24,6 +24,7 @@ const RegisterScreen: React.FC = () => {
     region: '',
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { register } = useAuth();
 
   const handleRegister = async () => {
@@ -74,15 +75,25 @@ const RegisterScreen: React.FC = () => {
             />
 
             <Text style={styles.label}>Password</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.password}
-              onChangeText={(text) => setFormData({ ...formData, password: text })}
-              placeholder="Create a password"
-              placeholderTextColor={colors.muted}
-              secureTextEntry
-              editable={!isLoading}
-            />
+            <View style={styles.inputWrap}>
+              <TextInput
+                style={styles.input}
+                value={formData.password}
+                onChangeText={(text) => setFormData({ ...formData, password: text })}
+                placeholder="Create a password"
+                placeholderTextColor={colors.muted}
+                secureTextEntry={!showPassword}
+                editable={!isLoading}
+              />
+              <TouchableOpacity
+                onPress={() => setShowPassword((v) => !v)}
+                disabled={isLoading}
+                style={styles.eyeButton}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Text style={styles.eyeText}>{showPassword ? 'Hide' : 'Show'}</Text>
+              </TouchableOpacity>
+            </View>
 
             <Text style={styles.label}>I am a:</Text>
             <View style={styles.pickerContainer}>
@@ -163,6 +174,26 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: 'rgba(10, 14, 26, 0.55)',
     color: colors.text,
+  },
+  inputWrap: {
+    position: 'relative',
+    justifyContent: 'center',
+  },
+  eyeButton: {
+    position: 'absolute',
+    right: 12,
+    height: 34,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.16)',
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+  },
+  eyeText: {
+    color: colors.muted,
+    fontSize: 13,
+    fontWeight: '600',
   },
   pickerContainer: {
     borderWidth: 1,
