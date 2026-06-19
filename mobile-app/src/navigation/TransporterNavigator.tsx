@@ -1,4 +1,4 @@
-// src/navigation/TransporterNavigator.tsx
+﻿// src/navigation/TransporterNavigator.tsx
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -7,59 +7,88 @@ import TransporterHomeScreen from '../screens/transporter/TransporterHomeScreen'
 import AddTruckScreen from '../screens/transporter/AddTruckScreen';
 import MyListingsScreen from '../screens/transporter/MyListingsScreen';
 import IncomingBookingsScreen from '../screens/transporter/IncomingBookingsScreen';
+import SearchScreen from '../screens/buyer/SearchScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
 import { navStyles } from './navStyles';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const TransporterTabs: React.FC = () => {
+const tabIcon =
+  (codePoint: number) =>
+  ({ focused }: { focused: boolean }) => (
+    <Text style={{ opacity: focused ? 1 : 0.7 }}>
+      {String.fromCodePoint(codePoint)}
+    </Text>
+  );
+
+const TransporterHomeStack: React.FC = () => {
   return (
-    <Tab.Navigator
-      screenOptions={{
-        ...navStyles.tabBar,
-        ...navStyles.header,
-        tabBarLabelStyle: { fontWeight: '700' },
-      }}
-    >
-      <Tab.Screen
-        name="Home"
-        component={TransporterHomeScreen}
-        options={{ tabBarIcon: ({ focused }) => <Text style={{ opacity: focused ? 1 : 0.7 }}>🏡</Text> }}
-      />
-      <Tab.Screen
-        name="My Trucks"
-        component={MyListingsScreen}
-        options={{ tabBarIcon: ({ focused }) => <Text style={{ opacity: focused ? 1 : 0.7 }}>🚚</Text> }}
-      />
-      <Tab.Screen
-        name="Bookings"
-        component={IncomingBookingsScreen}
-        options={{ tabBarIcon: ({ focused }) => <Text style={{ opacity: focused ? 1 : 0.7 }}>📦</Text> }}
-      />
-      <Tab.Screen
-        name="Account"
-        component={ProfileScreen}
-        options={{ tabBarIcon: ({ focused }) => <Text style={{ opacity: focused ? 1 : 0.7 }}>👤</Text> }}
-      />
-    </Tab.Navigator>
+    <Stack.Navigator screenOptions={navStyles.header}>
+      <Stack.Screen name="Home" component={TransporterHomeScreen} options={{ title: 'Home' }} />
+      <Stack.Screen name="AddTruck" component={AddTruckScreen} options={{ title: 'Add Truck' }} />
+    </Stack.Navigator>
   );
 };
 
 const TransporterNavigator: React.FC = () => {
   return (
-    <Stack.Navigator screenOptions={navStyles.header}>
-      <Stack.Screen 
-        name="TransporterDashboard" 
-        component={TransporterTabs} 
-        options={{ headerShown: false }}
+    <Tab.Navigator
+      screenOptions={{
+        ...navStyles.tabBar,
+        headerShown: false,
+        tabBarLabelStyle: { fontWeight: '700' },
+      }}
+    >
+      <Tab.Screen
+        name="HomeTab"
+        component={TransporterHomeStack}
+        options={{
+          title: 'Home',
+          tabBarIcon: tabIcon(0x1f3e0),
+        }}
       />
-      <Stack.Screen 
-        name="AddTruck" 
-        component={AddTruckScreen} 
-        options={{ title: 'Add Truck' }}
+      <Tab.Screen
+        name="SearchTab"
+        component={SearchScreen}
+        options={{
+          title: 'Search',
+          ...navStyles.header,
+          headerShown: true,
+          tabBarIcon: tabIcon(0x1f50d),
+        }}
       />
-    </Stack.Navigator>
+      <Tab.Screen
+        name="TrucksTab"
+        component={MyListingsScreen}
+        options={{
+          title: 'Trucks',
+          ...navStyles.header,
+          headerShown: true,
+          tabBarIcon: tabIcon(0x1f69a),
+        }}
+      />
+      <Tab.Screen
+        name="BookingsTab"
+        component={IncomingBookingsScreen}
+        options={{
+          title: 'Bookings',
+          ...navStyles.header,
+          headerShown: true,
+          tabBarIcon: tabIcon(0x1f4e6),
+        }}
+      />
+      <Tab.Screen
+        name="AccountTab"
+        component={ProfileScreen}
+        options={{
+          title: 'Account',
+          ...navStyles.header,
+          headerShown: true,
+          tabBarIcon: tabIcon(0x1f464),
+        }}
+      />
+    </Tab.Navigator>
   );
 };
 

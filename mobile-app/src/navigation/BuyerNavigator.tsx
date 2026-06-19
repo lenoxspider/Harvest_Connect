@@ -1,4 +1,4 @@
-// src/navigation/BuyerNavigator.tsx
+﻿// src/navigation/BuyerNavigator.tsx
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -13,6 +13,14 @@ import { navStyles } from './navStyles';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
+const tabIcon =
+  (codePoint: number) =>
+  ({ focused }: { focused: boolean }) => (
+    <Text style={{ opacity: focused ? 1 : 0.7 }}>
+      {String.fromCodePoint(codePoint)}
+    </Text>
+  );
 
 const BuyerStack: React.FC = () => {
   return (
@@ -38,9 +46,7 @@ const BuyerNavigator: React.FC = () => {
         component={BuyerStack}
         options={{
           title: 'Home',
-          tabBarIcon: ({ focused }) => (
-            <Text style={{ opacity: focused ? 1 : 0.7 }}>🏠</Text>
-          ),
+          tabBarIcon: tabIcon(0x1f3e0),
         }}
       />
       <Tab.Screen
@@ -50,9 +56,7 @@ const BuyerNavigator: React.FC = () => {
           title: 'Search',
           ...navStyles.header,
           headerShown: true,
-          tabBarIcon: ({ focused }) => (
-            <Text style={{ opacity: focused ? 1 : 0.7 }}>🔎</Text>
-          ),
+          tabBarIcon: tabIcon(0x1f50d),
         }}
       />
       <Tab.Screen
@@ -62,9 +66,7 @@ const BuyerNavigator: React.FC = () => {
           title: 'Orders',
           ...navStyles.header,
           headerShown: true,
-          tabBarIcon: ({ focused }) => (
-            <Text style={{ opacity: focused ? 1 : 0.7 }}>📦</Text>
-          ),
+          tabBarIcon: tabIcon(0x1f4e6),
         }}
       />
       <Tab.Screen
@@ -74,9 +76,7 @@ const BuyerNavigator: React.FC = () => {
           title: 'Account',
           ...navStyles.header,
           headerShown: true,
-          tabBarIcon: ({ focused }) => (
-            <Text style={{ opacity: focused ? 1 : 0.7 }}>👤</Text>
-          ),
+          tabBarIcon: tabIcon(0x1f464),
         }}
       />
     </Tab.Navigator>

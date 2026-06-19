@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 import { colors } from '../../theme/colors';
 import { spacing } from '../../theme/spacing';
@@ -10,6 +11,7 @@ import { Screen } from '../../ui/Screen';
 
 const TransporterHomeScreen: React.FC = () => {
   const { user, logout } = useAuth();
+  const navigation = useNavigation<NavigationProp<any>>();
 
   return (
     <Screen scroll>
@@ -19,21 +21,21 @@ const TransporterHomeScreen: React.FC = () => {
       </View>
 
       <View style={styles.grid}>
-        <TouchableOpacity activeOpacity={0.9} style={styles.tile}>
+        <TouchableOpacity activeOpacity={0.9} style={styles.tile} onPress={() => navigation.navigate('AddTruck')}>
           <GlassCard>
             <Text style={styles.tileTitle}>Add Truck</Text>
             <Text style={styles.tileDesc}>Create a truck listing</Text>
           </GlassCard>
         </TouchableOpacity>
 
-        <TouchableOpacity activeOpacity={0.9} style={styles.tile}>
+        <TouchableOpacity activeOpacity={0.9} style={styles.tile} onPress={() => navigation.navigate('TrucksTab')}>
           <GlassCard>
             <Text style={styles.tileTitle}>My Listings</Text>
             <Text style={styles.tileDesc}>View your available trucks</Text>
           </GlassCard>
         </TouchableOpacity>
 
-        <TouchableOpacity activeOpacity={0.9} style={styles.tile}>
+        <TouchableOpacity activeOpacity={0.9} style={styles.tile} onPress={() => navigation.navigate('BookingsTab')}>
           <GlassCard>
             <Text style={styles.tileTitle}>Incoming Bookings</Text>
             <Text style={styles.tileDesc}>Accept booking requests</Text>
@@ -64,4 +66,3 @@ const styles = StyleSheet.create({
 });
 
 export default TransporterHomeScreen;
-

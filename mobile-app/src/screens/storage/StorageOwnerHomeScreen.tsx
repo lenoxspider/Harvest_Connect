@@ -27,14 +27,14 @@ const StorageOwnerHomeScreen: React.FC = () => {
           </GlassCard>
         </TouchableOpacity>
 
-        <TouchableOpacity activeOpacity={0.9} style={styles.tile} onPress={() => navigation.navigate('My Facilities')}>
+        <TouchableOpacity activeOpacity={0.9} style={styles.tile} onPress={() => navigation.navigate('FacilitiesTab')}>
           <GlassCard>
             <Text style={styles.tileTitle}>My Facilities</Text>
             <Text style={styles.tileDesc}>View and manage facilities</Text>
           </GlassCard>
         </TouchableOpacity>
 
-        <TouchableOpacity activeOpacity={0.9} style={styles.tile} onPress={() => navigation.navigate('Bookings')}>
+        <TouchableOpacity activeOpacity={0.9} style={styles.tile} onPress={() => navigation.navigate('BookingsTab')}>
           <GlassCard>
             <Text style={styles.tileTitle}>Bookings</Text>
             <Text style={styles.tileDesc}>Confirm incoming bookings</Text>
@@ -63,4 +63,3 @@ const styles = StyleSheet.create({
 });
 
 export default StorageOwnerHomeScreen;
-
