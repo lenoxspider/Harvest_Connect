@@ -21,8 +21,14 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   async (config) => {
     const url = config.url ?? '';
-    // Never attach JWT for auth endpoints (avoids stale token breaking register/login).
-    if (url.startsWith('/api/auth/')) {
+    // Don't attach JWT for login/register/refresh only.
+    // `/api/auth/me` MUST include the JWT.
+    const skipAuth =
+      url === '/api/auth/login' ||
+      url === '/api/auth/register' ||
+      url === '/api/auth/refresh';
+
+    if (skipAuth) {
       // eslint-disable-next-line no-console
       console.log('[HTTP]', (config.method ?? 'GET').toUpperCase(), (config.baseURL ?? '') + url, '(no auth header)');
       return config;
