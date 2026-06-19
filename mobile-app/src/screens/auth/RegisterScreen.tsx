@@ -37,7 +37,9 @@ const RegisterScreen: React.FC = () => {
     try {
       await register(formData);
     } catch (error: any) {
-      Alert.alert('Registration Failed', error.response?.data?.message || 'Could not register');
+      const serverMessage = error?.response?.data?.message;
+      const fallback = error?.message ?? 'Could not reach server';
+      Alert.alert('Registration Failed', serverMessage || fallback);
     } finally {
       setIsLoading(false);
     }

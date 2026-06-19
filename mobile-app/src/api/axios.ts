@@ -2,7 +2,12 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
+
+// Helps debug device networking issues (LAN vs tunnel).
+// Check Metro logs for this line when the app boots.
+// eslint-disable-next-line no-console
+console.log('[HarvestConnect] API_BASE_URL =', API_BASE_URL);
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,

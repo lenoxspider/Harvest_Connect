@@ -32,7 +32,9 @@ const LoginScreen: React.FC = () => {
     try {
       await login(phone_number, password);
     } catch (error: any) {
-      Alert.alert('Login Failed', error.response?.data?.message || 'Invalid credentials');
+      const serverMessage = error?.response?.data?.message;
+      const fallback = error?.message ?? 'Could not reach server';
+      Alert.alert('Login Failed', serverMessage || fallback);
     } finally {
       setIsLoading(false);
     }
