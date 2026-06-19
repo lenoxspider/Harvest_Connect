@@ -3,6 +3,7 @@ package com.harvestconnect.produce_service.entity;
 import com.harvestconnect.produce_service.enums.OrderStatus;
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -58,6 +59,14 @@ public class ProduceOrder {
         this.status = status;
     }
 
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -72,6 +81,19 @@ public class ProduceOrder {
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
+
+    @Column(nullable = false)
+    private Instant createdAt;
+
+    @PrePersist
+    void prePersist() {
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
+        if (status == null) {
+            status = OrderStatus.PENDING;
+        }
+    }
 
     // Getters and Setters
 }
