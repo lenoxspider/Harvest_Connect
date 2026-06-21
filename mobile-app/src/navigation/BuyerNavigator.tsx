@@ -3,13 +3,13 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Text } from 'react-native';
-import BuyerHomeScreen from '../screens/buyer/BuyerHomeScreen';
+import ExploreHomeScreen from '../screens/common/ExploreHomeScreen';
 import ProduceListScreen from '../screens/buyer/ProduceListScreen';
 import ProduceDetailScreen from '../screens/buyer/ProduceDetailScreen';
 import MyOrdersScreen from '../screens/buyer/MyOrdersScreen';
-import SearchScreen from '../screens/buyer/SearchScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
-import { navStyles } from './navStyles';
+import VideosScreen from '../screens/common/VideosScreen';
+import MapsScreen from '../screens/common/MapsScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -22,10 +22,17 @@ const tabIcon =
     </Text>
   );
 
-const BuyerStack: React.FC = () => {
+const ExploreStack: React.FC = () => {
   return (
-    <Stack.Navigator screenOptions={navStyles.header}>
-      <Stack.Screen name="BuyerHome" component={BuyerHomeScreen} options={{ title: 'Marketplace' }} />
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: '#fff' },
+        headerTintColor: '#111',
+        headerTitleStyle: { fontWeight: '900' },
+        headerShadowVisible: false,
+      }}
+    >
+      <Stack.Screen name="ExploreHome" component={ExploreHomeScreen} options={{ title: 'Explore' }} />
       <Stack.Screen name="ProduceList" component={ProduceListScreen} options={{ title: 'Produce' }} />
       <Stack.Screen name="ProduceDetail" component={ProduceDetailScreen} options={{ title: 'Details' }} />
     </Stack.Navigator>
@@ -36,46 +43,54 @@ const BuyerNavigator: React.FC = () => {
   return (
     <Tab.Navigator
       screenOptions={{
-        ...navStyles.tabBar,
         headerShown: false,
-        tabBarLabelStyle: { fontWeight: '700' },
+        tabBarActiveTintColor: '#C0392B',
+        tabBarInactiveTintColor: 'rgba(17,17,17,0.55)',
+        tabBarLabelStyle: { fontWeight: '800' },
+        tabBarStyle: {
+          backgroundColor: '#fff',
+          borderTopColor: 'rgba(0,0,0,0.08)',
+          borderTopWidth: 1,
+        },
       }}
     >
       <Tab.Screen
-        name="MarketTab"
-        component={BuyerStack}
+        name="ExploreTab"
+        component={ExploreStack}
         options={{
-          title: 'Home',
-          tabBarIcon: tabIcon(0x1f3e0),
+          title: 'Explore',
+          tabBarIcon: tabIcon(0x1f50e),
         }}
       />
       <Tab.Screen
-        name="SearchTab"
-        component={SearchScreen}
+        name="VideosTab"
+        component={VideosScreen}
         options={{
-          title: 'Search',
-          ...navStyles.header,
-          headerShown: true,
-          tabBarIcon: tabIcon(0x1f50d),
+          title: 'Videos',
+          tabBarIcon: tabIcon(0x1f3a5),
         }}
       />
       <Tab.Screen
-        name="OrdersTab"
+        name="MapsTab"
+        component={MapsScreen}
+        options={{
+          title: 'Maps',
+          tabBarIcon: tabIcon(0x1f5fa),
+        }}
+      />
+      <Tab.Screen
+        name="BookingsTab"
         component={MyOrdersScreen}
         options={{
-          title: 'Orders',
-          ...navStyles.header,
-          headerShown: true,
-          tabBarIcon: tabIcon(0x1f4e6),
+          title: 'Bookings',
+          tabBarIcon: tabIcon(0x1f4c5),
         }}
       />
       <Tab.Screen
-        name="AccountTab"
+        name="ProfileTab"
         component={ProfileScreen}
         options={{
-          title: 'Account',
-          ...navStyles.header,
-          headerShown: true,
+          title: 'Profile',
           tabBarIcon: tabIcon(0x1f464),
         }}
       />

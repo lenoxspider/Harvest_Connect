@@ -21,7 +21,7 @@ const AppNavigator: React.FC = () => {
       <GlassBackground>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size="large" color={colors.accent} />
-          <Text style={{ marginTop: 12, color: colors.muted, fontWeight: '700' }}>Loading…</Text>
+          <Text style={{ marginTop: 12, color: colors.muted, fontWeight: '700' }}>Loading...</Text>
         </View>
       </GlassBackground>
     );
