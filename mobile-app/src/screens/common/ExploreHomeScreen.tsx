@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+﻿import React, { useMemo, useRef, useState } from 'react';
 import {
   Image,
   ImageBackground,
@@ -20,6 +20,8 @@ type Category = {
   title: string;
   imageUri: string;
 };
+
+const tabIcon = (codePoint: number) => String.fromCodePoint(codePoint);
 
 const ExploreHomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<any>>();
@@ -64,19 +66,23 @@ const ExploreHomeScreen: React.FC = () => {
   };
 
   const openCategory = (cat: Category['id']) => {
+    // If we're authenticated (BuyerNavigator), ProduceList exists in the Explore stack.
     if (cat === 'produce') {
-      navigation.navigate('ProduceList');
-      return;
+      try {
+        navigation.navigate('ProduceList');
+        return;
+      } catch {}
     }
-    // For now, route to Search/Videos/Maps tabs depending on what exists.
-    navigation.navigate('MapsTab');
+
+    // Public mode: send user to login.
+    navigation.navigate('Login');
   };
 
   return (
     <ScrollView style={styles.root} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <View style={styles.headerRow}>
         <View style={styles.searchWrap}>
-          <Text style={styles.searchIcon}>🔎</Text>
+          <Text style={styles.searchIcon}>{tabIcon(0x1f50d)}</Text>
           <TextInput
             value={query}
             onChangeText={setQuery}
@@ -88,19 +94,33 @@ const ExploreHomeScreen: React.FC = () => {
         </View>
 
         <View style={styles.headerIcons}>
-          <TouchableOpacity activeOpacity={0.8} style={styles.iconBtn} onPress={() => navigation.navigate('ProfileTab')}>
-            <Text style={styles.iconText}>♡</Text>
+          <TouchableOpacity activeOpacity={0.8} style={styles.iconBtn} onPress={() => navigation.navigate('Login')}>
+            <Text style={styles.iconText}>{tabIcon(0x2661)}</Text>
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.8} style={styles.iconBtn} onPress={() => navigation.navigate('ProfileTab')}>
-            <Text style={styles.iconText}>🔔</Text>
+          <TouchableOpacity activeOpacity={0.8} style={styles.iconBtn} onPress={() => navigation.navigate('Login')}>
+            <Text style={styles.iconText}>{tabIcon(0x1f514)}</Text>
             <View style={styles.badgeDot} />
           </TouchableOpacity>
         </View>
       </View>
 
+      <View style={styles.authCtas}>
+        <TouchableOpacity activeOpacity={0.9} style={styles.ctaPrimary} onPress={() => navigation.navigate('Login')}>
+          <Text style={styles.ctaPrimaryText}>Login</Text>
+        </TouchableOpacity>
+        <TouchableOpacity activeOpacity={0.9} style={styles.ctaSecondary} onPress={() => navigation.navigate('Register')}>
+          <Text style={styles.ctaSecondaryText}>Create account</Text>
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.categoryRow}>
         {categories.map((c) => (
-          <TouchableOpacity key={c.id} activeOpacity={0.9} style={styles.categoryCard} onPress={() => openCategory(c.id)}>
+          <TouchableOpacity
+            key={c.id}
+            activeOpacity={0.9}
+            style={styles.categoryCard}
+            onPress={() => openCategory(c.id)}
+          >
             <ImageBackground source={{ uri: c.imageUri }} style={styles.categoryBg} imageStyle={styles.categoryBgImg}>
               <View style={styles.categoryOverlay} />
               <Text style={styles.categoryLabel}>{c.title}</Text>
@@ -126,8 +146,8 @@ const ExploreHomeScreen: React.FC = () => {
                 <Text style={styles.heroSub}>
                   Secure cold storage for your harvest — book by the ton, pay per day.
                 </Text>
-                <Text style={styles.heroLoc}>📍 Ghana, West Africa</Text>
-                <TouchableOpacity activeOpacity={0.9} style={styles.heroBtn} onPress={() => navigation.navigate('BookingsTab')}>
+                <Text style={styles.heroLoc}>{tabIcon(0x1f4cd)} Ghana, West Africa</Text>
+                <TouchableOpacity activeOpacity={0.9} style={styles.heroBtn} onPress={() => navigation.navigate('Login')}>
                   <Text style={styles.heroBtnText}>Book Now →</Text>
                 </TouchableOpacity>
               </View>
@@ -144,7 +164,7 @@ const ExploreHomeScreen: React.FC = () => {
 
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Featured Listings</Text>
-        <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('MapsTab')}>
+        <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('Login')}>
           <Text style={styles.seeMore}>See more</Text>
         </TouchableOpacity>
       </View>
@@ -158,7 +178,7 @@ const ExploreHomeScreen: React.FC = () => {
                 {f.name}
               </Text>
               <Text style={styles.hCardMeta} numberOfLines={1}>
-                📍 {f.location}
+                {tabIcon(0x1f4cd)} {f.location}
               </Text>
               <Text style={styles.hCardPrice}>{f.price}</Text>
             </View>
@@ -202,6 +222,26 @@ const styles = StyleSheet.create({
     borderColor: '#fff',
   },
 
+  authCtas: { flexDirection: 'row', gap: 10, marginTop: 12 },
+  ctaPrimary: {
+    flex: 1,
+    backgroundColor: ACCENT,
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  ctaPrimaryText: { color: '#fff', fontWeight: '900' },
+  ctaSecondary: {
+    flex: 1,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.10)',
+  },
+  ctaSecondaryText: { color: '#111', fontWeight: '900' },
+
   categoryRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 10, marginTop: 14 },
   categoryCard: { flex: 1, borderRadius: 12, overflow: 'hidden' },
   categoryBg: { height: 82, justifyContent: 'flex-end' },
@@ -237,7 +277,15 @@ const styles = StyleSheet.create({
   seeMore: { color: ACCENT, fontWeight: '900' },
 
   hList: { paddingRight: 6, marginTop: 12 },
-  hCard: { width: 210, marginRight: 12, borderRadius: 12, backgroundColor: '#fff', overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(0,0,0,0.06)' },
+  hCard: {
+    width: 210,
+    marginRight: 12,
+    borderRadius: 12,
+    backgroundColor: '#fff',
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.06)',
+  },
   hCardImg: { width: '100%', height: 105 },
   hCardBody: { padding: 12 },
   hCardTitle: { fontWeight: '900', color: '#111' },
@@ -246,4 +294,3 @@ const styles = StyleSheet.create({
 });
 
 export default ExploreHomeScreen;
-

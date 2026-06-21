@@ -4,6 +4,7 @@ import { ActivityIndicator, Text, View } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useAuth } from '../context/AuthContext';
 import AuthNavigator from './AuthNavigator';
+import PublicNavigator from './PublicNavigator';
 import FarmerNavigator from './FarmerNavigator';
 import BuyerNavigator from './BuyerNavigator';
 import TransporterNavigator from './TransporterNavigator';
@@ -28,7 +29,7 @@ const AppNavigator: React.FC = () => {
   }
 
   const getRoleNavigator = () => {
-    if (!user) return AuthNavigator;
+    if (!user) return PublicNavigator;
 
     switch (user.role) {
       case 'FARMER':
