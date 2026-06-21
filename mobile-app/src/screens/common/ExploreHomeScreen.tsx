@@ -18,6 +18,7 @@ import { typography } from '../../theme/typography';
 import { GlassCard } from '../../ui/GlassCard';
 import { GlassButton } from '../../ui/GlassButton';
 import { Screen } from '../../ui/Screen';
+import { useHomepageSettings } from '../../hooks/useHomepageSettings';
 
 const ACCENT = '#C0392B';
 
@@ -34,34 +35,40 @@ const ExploreHomeScreen: React.FC = () => {
   const heroScrollRef = useRef<ScrollView>(null);
   const [activeHero, setActiveHero] = useState(0);
   const [query, setQuery] = useState('');
+  const { settings } = useHomepageSettings();
 
   const categories: Category[] = useMemo(
     () => [
-      { id: 'storage', title: 'Storage', imageUri: 'https://picsum.photos/400/300?random=71' },
-      { id: 'produce', title: 'Produce', imageUri: 'https://picsum.photos/400/300?random=72' },
-      { id: 'transport', title: 'Transport', imageUri: 'https://picsum.photos/400/300?random=73' },
-      { id: 'logistics', title: 'Logistics', imageUri: 'https://picsum.photos/400/300?random=74' },
+      { id: 'storage', title: 'Storage', imageUri: settings.categoryStorageImage },
+      { id: 'produce', title: 'Produce', imageUri: settings.categoryProduceImage },
+      { id: 'transport', title: 'Transport', imageUri: settings.categoryTransportImage },
+      { id: 'logistics', title: 'Logistics', imageUri: settings.categoryLogisticsImage },
     ],
-    []
+    [
+      settings.categoryStorageImage,
+      settings.categoryProduceImage,
+      settings.categoryTransportImage,
+      settings.categoryLogisticsImage,
+    ]
   );
 
   const heroImages = useMemo(
     () => [
-      'https://picsum.photos/800/450?random=81',
-      'https://picsum.photos/800/450?random=82',
-      'https://picsum.photos/800/450?random=83',
-      'https://picsum.photos/800/450?random=84',
+      settings.heroImage1,
+      settings.heroImage2,
+      settings.heroImage3,
+      settings.heroImage4,
     ],
-    []
+    [settings.heroImage1, settings.heroImage2, settings.heroImage3, settings.heroImage4]
   );
 
   const featured = useMemo(
     () => [
-      { id: '1', name: 'Tema Cold Storage', location: 'Greater Accra', price: 'GHS 70/ton' },
-      { id: '2', name: 'Koforidua Warehouse', location: 'Eastern', price: 'GHS 58/ton' },
-      { id: '3', name: 'Takoradi Hub', location: 'Western', price: 'GHS 62/ton' },
+      { id: '1', name: 'Tema Cold Storage', location: 'Greater Accra', price: 'GHS 70/ton', imageUri: settings.featuredImage1 },
+      { id: '2', name: 'Koforidua Warehouse', location: 'Eastern', price: 'GHS 58/ton', imageUri: settings.featuredImage2 },
+      { id: '3', name: 'Takoradi Hub', location: 'Western', price: 'GHS 62/ton', imageUri: settings.featuredImage3 },
     ],
-    []
+    [settings.featuredImage1, settings.featuredImage2, settings.featuredImage3]
   );
 
   const onHeroScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -175,7 +182,7 @@ const ExploreHomeScreen: React.FC = () => {
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.hList}>
         {featured.map((f) => (
           <GlassCard key={f.id} style={styles.hCard}>
-            <Image source={{ uri: `https://picsum.photos/400/300?random=9${f.id}` }} style={styles.hCardImg} />
+            <Image source={{ uri: f.imageUri }} style={styles.hCardImg} />
             <View style={styles.hCardBody}>
               <Text style={styles.hCardTitle} numberOfLines={1}>
                 {f.name}
