@@ -10,6 +10,7 @@ import MyOrdersScreen from '../screens/buyer/MyOrdersScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
 import VideosScreen from '../screens/common/VideosScreen';
 import MapsScreen from '../screens/common/MapsScreen';
+import { navStyles } from './navStyles';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -26,10 +27,7 @@ const ExploreStack: React.FC = () => {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: '#fff' },
-        headerTintColor: '#111',
-        headerTitleStyle: { fontWeight: '900' },
-        headerShadowVisible: false,
+        ...navStyles.header,
       }}
     >
       <Stack.Screen name="ExploreHome" component={ExploreHomeScreen} options={{ title: 'Explore' }} />
@@ -44,14 +42,8 @@ const BuyerNavigator: React.FC = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#C0392B',
-        tabBarInactiveTintColor: 'rgba(17,17,17,0.55)',
+        ...navStyles.tabBar,
         tabBarLabelStyle: { fontWeight: '800' },
-        tabBarStyle: {
-          backgroundColor: '#fff',
-          borderTopColor: 'rgba(0,0,0,0.08)',
-          borderTopWidth: 1,
-        },
       }}
     >
       <Tab.Screen

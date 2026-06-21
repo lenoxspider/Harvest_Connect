@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import ExploreHomeScreen from '../screens/common/ExploreHomeScreen';
 import LoginScreen from '../screens/auth/LoginScreen';
 import RegisterScreen from '../screens/auth/RegisterScreen';
+import { navStyles } from './navStyles';
 
 const Stack = createStackNavigator();
 
@@ -10,10 +11,7 @@ const PublicNavigator: React.FC = () => {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: '#fff' },
-        headerTintColor: '#111',
-        headerTitleStyle: { fontWeight: '900' },
-        headerShadowVisible: false,
+        ...navStyles.header,
       }}
     >
       <Stack.Screen name="Explore" component={ExploreHomeScreen} options={{ title: 'HarvestConnect' }} />
@@ -24,4 +22,3 @@ const PublicNavigator: React.FC = () => {
 };
 
 export default PublicNavigator;
-
