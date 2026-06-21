@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Alert } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { colors } from '../../theme/colors';
 import { spacing } from '../../theme/spacing';
@@ -19,6 +20,7 @@ import { GlassCard } from '../../ui/GlassCard';
 import { GlassButton } from '../../ui/GlassButton';
 import { Screen } from '../../ui/Screen';
 import { useHomepageSettings } from '../../hooks/useHomepageSettings';
+import { useAuth } from '../../context/AuthContext';
 
 const ACCENT = '#C0392B';
 
@@ -36,6 +38,12 @@ const ExploreHomeScreen: React.FC = () => {
   const [activeHero, setActiveHero] = useState(0);
   const [query, setQuery] = useState('');
   const { settings } = useHomepageSettings();
+  const { user } = useAuth();
+
+  const canNavigateTo = (routeName: string) => {
+    const state = navigation.getState?.();
+    return Boolean(state && Array.isArray(state.routeNames) && state.routeNames.includes(routeName));
+  };
 
   const categories: Category[] = useMemo(
     () => [
@@ -80,13 +88,21 @@ const ExploreHomeScreen: React.FC = () => {
 
   const openCategory = (cat: Category['id']) => {
     if (cat === 'produce') {
-      try {
+      if (!user) {
+        if (canNavigateTo('Login')) navigation.navigate('Login');
+        return;
+      }
+
+      if (user.role === 'BUYER' && canNavigateTo('ProduceList')) {
         navigation.navigate('ProduceList');
         return;
-      } catch {}
+      }
+
+      Alert.alert('Not available', 'Produce listings are available for BUYER accounts only.');
+      return;
     }
     // Public flow: require login for now.
-    navigation.navigate('Login');
+    if (canNavigateTo('Login')) navigation.navigate('Login');
   };
 
   return (
