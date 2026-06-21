@@ -1,9 +1,9 @@
-# Harvest Connect – Team Instructions
+# Harvest Connect - Team Instructions
 
 This repo contains:
 - Spring Boot microservices (REST)
 - A Spring Cloud API Gateway
-- An Expo (React Native) mobile app
+- An Expo (React Native) mobile app (Expo Go)
 - A Docker Compose setup for Postgres + pgAdmin + all services
 
 ## Prerequisites
@@ -12,17 +12,14 @@ This repo contains:
 - Docker Desktop (Linux containers)
 - Node.js + npm (for the Expo app)
 
-## 1) First-time setup
+## 1) First-time setup (backend)
 
 From the repo root:
 
 1. Create your environment file:
    - Windows PowerShell: `copy .env.example .env`
-
 2. Start backend + database:
    - `docker compose up --build`
-
-This will take a while the first time (downloads images + Maven dependencies).
 
 ## 2) Verify everything is running
 
@@ -67,24 +64,23 @@ If you get errors, check logs:
 - `docker compose logs -f auth-service`
 - `docker compose logs -f api-gateway`
 
-## 5) Run the Expo app
+## 5) Run the Expo app (Expo Go)
 
 In a new terminal:
 
 1. Go to the app:
    - `cd mobile-app`
-
 2. Create Expo env file:
    - `copy .env.example .env`
-
-3. Set the API URL for your device/simulator in `mobile-app\.env`:
+3. Set the API URL for your device/simulator in `mobile-app/.env`:
    - Android emulator: `http://10.0.2.2:8080`
    - iOS simulator: `http://localhost:8080`
    - Physical phone: `http://<YOUR_PC_LAN_IP>:8080`
-
 4. Install and run:
    - `npm install`
-   - `npx expo start`
+   - `npm start`
+
+Demo steps live at `mobile-app/DEMO_CHECKLIST.md`.
 
 ## 6) Common issues
 
@@ -97,16 +93,20 @@ In a new terminal:
 
 - Mobile app can’t reach backend:
   - Don’t use `localhost` on a physical phone.
-  - Set `EXPO_PUBLIC_API_BASE_URL` correctly in `mobile-app\.env`.
+  - Set `EXPO_PUBLIC_API_BASE_URL` correctly in `mobile-app/.env`.
 
-
-## 7) Admin page (homepage images)
+## 7) Homepage images (admin)
 
 We use a local admin web page to manage the homepage image URLs (so they are not hardcoded in the app).
 
-- App folder: dmin-web/`r
-- Run instructions: dmin-web/README.md`r
+- App folder: `admin-web/`
+- Run instructions: `admin-web/README.md`
 - API endpoints (via gateway):
-  - GET http://localhost:8080/api/notifications/settings/homepage`r
-  - PUT http://localhost:8080/api/notifications/settings/homepage`r
+  - `GET /api/notifications/settings/homepage`
+  - `PUT /api/notifications/settings/homepage`
+
+## 8) Notes on current auth headers
+
+- Most mobile calls use `Authorization: Bearer <JWT>` (stored as `jwt_token` in AsyncStorage).
+- Notifications service currently uses `GET /api/notifications/my` with `X-User-Id` as a temporary auth mechanism.
 
