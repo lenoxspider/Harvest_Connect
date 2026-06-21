@@ -11,7 +11,7 @@ import {
   Switch,
 } from 'react-native';
 import { storageApi } from '../../api/storageApi';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { NavigationProp } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 
 const AddStorageScreen: React.FC = () => {
@@ -23,7 +23,7 @@ const AddStorageScreen: React.FC = () => {
     has_cooling: false,
   });
   const [isLoading, setIsLoading] = useState(false);
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const navigation = useNavigation<NavigationProp<any>>();
 
   const handleSubmit = async () => {
     if (

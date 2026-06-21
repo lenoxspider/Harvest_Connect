@@ -75,7 +75,7 @@ const StorageOwnerHomeScreen: React.FC = () => {
         <View style={styles.headerRow}>
           <Text style={styles.headerTitle}>Welcome, Storage Owner 🏭</Text>
 
-          <TouchableOpacity activeOpacity={0.85} style={styles.bellWrap} onPress={() => navigation.navigate('AccountTab')}>
+          <TouchableOpacity activeOpacity={0.85} style={styles.bellWrap} onPress={() => navigation.navigate('Notifications')}>
             <Text style={styles.bell}>{icon(0x1f514)}</Text>
             <View style={styles.badgeDot} />
           </TouchableOpacity>

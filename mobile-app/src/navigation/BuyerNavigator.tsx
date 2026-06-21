@@ -10,6 +10,7 @@ import MyOrdersScreen from '../screens/buyer/MyOrdersScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
 import VideosScreen from '../screens/common/VideosScreen';
 import MapsScreen from '../screens/common/MapsScreen';
+import NotificationsScreen from '../screens/common/NotificationsScreen';
 import { navStyles } from './navStyles';
 
 const Stack = createStackNavigator();
@@ -33,6 +34,7 @@ const ExploreStack: React.FC = () => {
       <Stack.Screen name="ExploreHome" component={ExploreHomeScreen} options={{ title: 'Explore' }} />
       <Stack.Screen name="ProduceList" component={ProduceListScreen} options={{ title: 'Produce' }} />
       <Stack.Screen name="ProduceDetail" component={ProduceDetailScreen} options={{ title: 'Details' }} />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
     </Stack.Navigator>
   );
 };

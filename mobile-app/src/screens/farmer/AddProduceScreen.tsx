@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { produceApi } from '../../api/produceApi';
 import * as Location from 'expo-location';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { NavigationProp } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 
 const AddProduceScreen: React.FC = () => {
@@ -24,7 +24,7 @@ const AddProduceScreen: React.FC = () => {
     description: '',
   });
   const [isLoading, setIsLoading] = useState(false);
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const navigation = useNavigation<NavigationProp<any>>();
 
   const getCurrentLocation = async () => {
     try {

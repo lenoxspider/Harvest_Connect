@@ -13,6 +13,11 @@ export const typography = {
     fontWeight: '800' as const,
     letterSpacing: 0.2,
   },
+  h3: {
+    fontSize: 18,
+    fontWeight: '800' as const,
+    letterSpacing: 0.2,
+  },
   body: {
     fontSize: 16,
     fontWeight: '500' as const,

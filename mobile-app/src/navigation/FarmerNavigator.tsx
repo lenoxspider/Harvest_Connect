@@ -9,6 +9,7 @@ import MyListingsScreen from '../screens/farmer/MyListingsScreen';
 import IncomingOrdersScreen from '../screens/farmer/IncomingOrdersScreen';
 import SearchScreen from '../screens/buyer/SearchScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
+import NotificationsScreen from '../screens/common/NotificationsScreen';
 import { navStyles } from './navStyles';
 
 const Stack = createStackNavigator();
@@ -27,6 +28,7 @@ const FarmerHomeStack: React.FC = () => {
     <Stack.Navigator screenOptions={navStyles.header}>
       <Stack.Screen name="Home" component={FarmerHomeScreen} options={{ title: 'Home' }} />
       <Stack.Screen name="AddProduce" component={AddProduceScreen} options={{ title: 'Add Produce' }} />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
     </Stack.Navigator>
   );
 };

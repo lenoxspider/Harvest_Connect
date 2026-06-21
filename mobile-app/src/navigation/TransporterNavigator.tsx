@@ -9,6 +9,7 @@ import MyListingsScreen from '../screens/transporter/MyListingsScreen';
 import IncomingBookingsScreen from '../screens/transporter/IncomingBookingsScreen';
 import SearchScreen from '../screens/buyer/SearchScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
+import NotificationsScreen from '../screens/common/NotificationsScreen';
 import { navStyles } from './navStyles';
 
 const Stack = createStackNavigator();
@@ -27,6 +28,7 @@ const TransporterHomeStack: React.FC = () => {
     <Stack.Navigator screenOptions={navStyles.header}>
       <Stack.Screen name="Home" component={TransporterHomeScreen} options={{ title: 'Home' }} />
       <Stack.Screen name="AddTruck" component={AddTruckScreen} options={{ title: 'Add Truck' }} />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
     </Stack.Navigator>
   );
 };

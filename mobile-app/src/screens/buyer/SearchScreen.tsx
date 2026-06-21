@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { NavigationProp } from '@react-navigation/native';
 import { produceApi } from '../../api/produceApi';
 import { ProduceListing } from '../../types';
 import { colors } from '../../theme/colors';
@@ -14,7 +14,7 @@ const SearchScreen: React.FC = () => {
   const [query, setQuery] = useState('');
   const [listings, setListings] = useState<ProduceListing[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const navigation = useNavigation<NavigationProp<any>>();
 
   const runSearch = async () => {
     try {

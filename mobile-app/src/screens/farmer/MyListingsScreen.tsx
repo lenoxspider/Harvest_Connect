@@ -11,14 +11,14 @@ import {
 } from 'react-native';
 import { produceApi } from '../../api/produceApi';
 import { ProduceListing } from '../../types';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { NavigationProp } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 
 const FarmerListingsScreen: React.FC = () => {
   const [listings, setListings] = useState<ProduceListing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const navigation = useNavigation<NavigationProp<any>>();
 
   useEffect(() => {
     fetchMyListings();

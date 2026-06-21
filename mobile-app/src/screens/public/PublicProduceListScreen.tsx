@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { produceApi } from '../../api/produceApi';
 import { ProduceListing } from '../../types';
@@ -8,12 +8,11 @@ import { spacing } from '../../theme/spacing';
 import { typography } from '../../theme/typography';
 import { GlassCard } from '../../ui/GlassCard';
 import { Screen } from '../../ui/Screen';
-import { GlassButton } from '../../ui/GlassButton';
 
-const BuyerHomeScreen: React.FC = () => {
+const PublicProduceListScreen: React.FC = () => {
+  const [searchQuery, setSearchQuery] = useState('');
   const [listings, setListings] = useState<ProduceListing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
   const navigation = useNavigation<NavigationProp<any>>();
 
   useEffect(() => {
@@ -27,6 +26,7 @@ const BuyerHomeScreen: React.FC = () => {
       setListings(data.filter((listing) => listing.status === 'AVAILABLE'));
     } catch (error) {
       console.error('Error fetching listings:', error);
+      Alert.alert('Error', 'Could not load produce listings');
     } finally {
       setIsLoading(false);
     }
@@ -44,7 +44,7 @@ const BuyerHomeScreen: React.FC = () => {
   const renderListing = ({ item }: { item: ProduceListing }) => (
     <TouchableOpacity
       style={styles.cardTouchable}
-      onPress={() => navigation.navigate('ProduceDetail', { listingId: item.id })}
+      onPress={() => navigation.navigate('PublicProduceDetail', { listingId: item.id })}
       activeOpacity={0.9}
     >
       <GlassCard>
@@ -65,12 +65,7 @@ const BuyerHomeScreen: React.FC = () => {
         </View>
 
         <Text style={styles.meta}>Location: {item.location}</Text>
-
-        {item.description ? (
-          <Text style={styles.desc} numberOfLines={2}>
-            {item.description}
-          </Text>
-        ) : null}
+        <Text style={styles.hint}>Login to order</Text>
       </GlassCard>
     </TouchableOpacity>
   );
@@ -78,14 +73,8 @@ const BuyerHomeScreen: React.FC = () => {
   return (
     <Screen>
       <View style={styles.header}>
-        <Text style={styles.title}>Marketplace</Text>
-        <Text style={styles.subtitle}>Browse fresh produce</Text>
-      </View>
-
-      <View style={styles.actions}>
-        <GlassButton title="Orders" onPress={() => navigation.navigate('OrdersTab')} variant="secondary" style={{ flex: 1 }} />
-        <View style={{ width: spacing.sm }} />
-        <GlassButton title="Account" onPress={() => navigation.navigate('AccountTab')} variant="secondary" style={{ flex: 1 }} />
+        <Text style={styles.title}>Produce</Text>
+        <Text style={styles.subtitle}>Browse public listings</Text>
       </View>
 
       <TextInput
@@ -105,7 +94,7 @@ const BuyerHomeScreen: React.FC = () => {
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>
-              {isLoading ? 'Loading…' : searchQuery ? 'No matching produce found.' : 'No produce available yet.'}
+              {isLoading ? 'Loading...' : searchQuery ? 'No matching produce found.' : 'No produce available yet.'}
             </Text>
           </View>
         }
@@ -121,7 +110,6 @@ const styles = StyleSheet.create({
   header: { marginBottom: spacing.md },
   title: { ...typography.h2, color: colors.text },
   subtitle: { marginTop: 6, color: colors.muted, fontSize: 14, fontWeight: '600' },
-  actions: { flexDirection: 'row', marginBottom: spacing.md },
   searchInput: {
     height: 52,
     backgroundColor: 'rgba(10, 14, 26, 0.55)',
@@ -168,7 +156,7 @@ const styles = StyleSheet.create({
   },
   price: { color: colors.accent, fontSize: 16, fontWeight: '800' },
   meta: { color: colors.muted, fontSize: 13, fontWeight: '600' },
-  desc: { marginTop: 10, color: colors.muted, lineHeight: 20 },
+  hint: { marginTop: 10, color: colors.muted, fontWeight: '700' },
   emptyContainer: {
     padding: 40,
     alignItems: 'center',
@@ -180,4 +168,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BuyerHomeScreen;
+export default PublicProduceListScreen;

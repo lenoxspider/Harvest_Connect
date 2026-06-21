@@ -89,7 +89,8 @@ const ExploreHomeScreen: React.FC = () => {
   const openCategory = (cat: Category['id']) => {
     if (cat === 'produce') {
       if (!user) {
-        if (canNavigateTo('Login')) navigation.navigate('Login');
+        if (canNavigateTo('ProduceListPublic')) navigation.navigate('ProduceListPublic');
+        else if (canNavigateTo('Login')) navigation.navigate('Login');
         return;
       }
 
@@ -118,24 +119,35 @@ const ExploreHomeScreen: React.FC = () => {
             style={styles.searchInput}
             returnKeyType="search"
           />
-          <TouchableOpacity activeOpacity={0.85} style={styles.iconBtn} onPress={() => navigation.navigate('Login')}>
-            <Text style={styles.iconText}>{icon(0x2661)}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.85} style={styles.iconBtn} onPress={() => navigation.navigate('Login')}>
-            <Text style={styles.iconText}>{icon(0x1f514)}</Text>
-            <View style={styles.badgeDot} />
-          </TouchableOpacity>
+          {!user ? (
+            <>
+              <TouchableOpacity activeOpacity={0.85} style={styles.iconBtn} onPress={() => navigation.navigate('Login')}>
+                <Text style={styles.iconText}>{icon(0x2661)}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity activeOpacity={0.85} style={styles.iconBtn} onPress={() => navigation.navigate('Login')}>
+                <Text style={styles.iconText}>{icon(0x1f514)}</Text>
+                <View style={styles.badgeDot} />
+              </TouchableOpacity>
+            </>
+          ) : (
+            <TouchableOpacity activeOpacity={0.85} style={styles.iconBtn} onPress={() => navigation.navigate('Notifications')}>
+              <Text style={styles.iconText}>{icon(0x1f514)}</Text>
+              <View style={styles.badgeDot} />
+            </TouchableOpacity>
+          )}
         </View>
 
-        <View style={styles.ctaRow}>
-          <GlassButton title="Login" onPress={() => navigation.navigate('Login')} style={{ flex: 1 }} />
-          <GlassButton
-            title="Create account"
-            onPress={() => navigation.navigate('Register')}
-            variant="secondary"
-            style={{ flex: 1 }}
-          />
-        </View>
+        {!user ? (
+          <View style={styles.ctaRow}>
+            <GlassButton title="Login" onPress={() => navigation.navigate('Login')} style={{ flex: 1 }} />
+            <GlassButton
+              title="Create account"
+              onPress={() => navigation.navigate('Register')}
+              variant="secondary"
+              style={{ flex: 1 }}
+            />
+          </View>
+        ) : null}
       </GlassCard>
 
       <View style={styles.categoryRow}>

@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
-import { useRoute } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { produceApi } from '../../api/produceApi';
 import { paymentApi } from '../../api/paymentApi';
 import { ProduceListing } from '../../types';
@@ -22,7 +21,7 @@ const ProduceDetailScreen: React.FC = () => {
   const [quantity, setQuantity] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isOrdering, setIsOrdering] = useState(false);
-  const route = useRoute<NativeStackScreenProps<RouteParams>['route']>();
+  const route = useRoute<RouteProp<RouteParams, 'ProduceDetail'>>();
 
   useEffect(() => {
     void fetchListing();

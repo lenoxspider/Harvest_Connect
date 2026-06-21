@@ -9,6 +9,7 @@ import MyFacilitiesScreen from '../screens/storage/MyFacilitiesScreen';
 import StorageBookingsScreen from '../screens/storage/StorageBookingsScreen';
 import SearchScreen from '../screens/buyer/SearchScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
+import NotificationsScreen from '../screens/common/NotificationsScreen';
 import { navStyles } from './navStyles';
 
 const Stack = createStackNavigator();
@@ -27,6 +28,7 @@ const StorageHomeStack: React.FC = () => {
     <Stack.Navigator screenOptions={navStyles.header}>
       <Stack.Screen name="Home" component={StorageOwnerHomeScreen} options={{ title: 'Home' }} />
       <Stack.Screen name="AddStorage" component={AddStorageScreen} options={{ title: 'Add Storage Facility' }} />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
     </Stack.Navigator>
   );
 };

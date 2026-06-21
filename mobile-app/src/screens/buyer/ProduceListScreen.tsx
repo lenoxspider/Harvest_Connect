@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { NavigationProp } from '@react-navigation/native';
 import { produceApi } from '../../api/produceApi';
 import { ProduceListing } from '../../types';
 import { colors } from '../../theme/colors';
@@ -13,7 +13,7 @@ import { Screen } from '../../ui/Screen';
 const ProduceListScreen: React.FC = () => {
   const [listings, setListings] = useState<ProduceListing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const navigation = useNavigation<NavigationProp<any>>();
 
   useEffect(() => {
     void fetchListings();

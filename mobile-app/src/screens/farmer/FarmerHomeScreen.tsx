@@ -7,7 +7,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -27,7 +26,6 @@ const FarmerHomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<any>>();
   const heroScrollRef = useRef<ScrollView>(null);
   const [activeHero, setActiveHero] = useState(0);
-  const [query, setQuery] = useState('');
 
   const heroImages = useMemo(
     () => [
@@ -61,24 +59,12 @@ const FarmerHomeScreen: React.FC = () => {
         <View style={styles.headerRow}>
           <Text style={styles.headerTitle}>Welcome, Farmer 🌾</Text>
 
-          <TouchableOpacity activeOpacity={0.85} style={styles.bellWrap} onPress={() => navigation.navigate('AccountTab')}>
+          <TouchableOpacity activeOpacity={0.85} style={styles.bellWrap} onPress={() => navigation.navigate('Notifications')}>
             <Text style={styles.bell}>{icon(0x1f514)}</Text>
             <View style={styles.badgeDot} />
           </TouchableOpacity>
         </View>
 
-        <View style={styles.searchWrap}>
-          <Text style={styles.searchIcon}>{icon(0x1f50d)}</Text>
-          <TextInput
-            value={query}
-            onChangeText={setQuery}
-            placeholder="Search storage or transport..."
-            placeholderTextColor={colors.muted}
-            style={styles.searchInput}
-            returnKeyType="search"
-            onSubmitEditing={() => navigation.navigate('SearchTab')}
-          />
-        </View>
       </GlassCard>
 
       <View style={styles.section}>
@@ -199,20 +185,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'rgba(0,0,0,0.25)',
   },
-
-  searchWrap: {
-    marginTop: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 16,
-    paddingHorizontal: 12,
-    height: 48,
-    backgroundColor: 'rgba(10, 14, 26, 0.55)',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  searchIcon: { fontSize: 16, marginRight: 10, color: colors.text },
-  searchInput: { flex: 1, color: colors.text, fontWeight: '800' },
 
   section: { marginTop: spacing.md },
 
