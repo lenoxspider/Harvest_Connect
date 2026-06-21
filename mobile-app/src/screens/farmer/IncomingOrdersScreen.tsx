@@ -49,7 +49,7 @@ const IncomingOrdersScreen: React.FC = () => {
           text: 'Accept',
           onPress: async () => {
             try {
-              // await produceApi.acceptOrder(order.id);
+              await produceApi.acceptOrder(order.id);
               Alert.alert('Success', 'Order accepted!');
               fetchOrders();
             } catch (error) {
@@ -72,7 +72,7 @@ const IncomingOrdersScreen: React.FC = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              // await produceApi.declineOrder(order.id);
+              await produceApi.declineOrder(order.id);
               Alert.alert('Success', 'Order declined');
               fetchOrders();
             } catch (error) {

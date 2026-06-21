@@ -54,6 +54,18 @@ public class StorageController {
     }
 
     // ─── 4. Book storage (FARMER only) ───────────────────────────────────────
+    @GetMapping("/listings/my")
+    public ResponseEntity<?> getMyListings(
+            @RequestHeader("X-User-Role") String role,
+            @RequestHeader("X-User-Id") UUID ownerId) {
+
+        if (!"STORAGE_OWNER".equals(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "Only STORAGE_OWNERs can access this endpoint"));
+        }
+        return ResponseEntity.ok(storageService.getMyListings(ownerId));
+    }
+
     @PostMapping("/bookings")
     public ResponseEntity<?> bookStorage(
             @RequestHeader("X-User-Role") String role,

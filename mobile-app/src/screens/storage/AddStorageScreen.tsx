@@ -8,7 +8,6 @@ import {
   StyleSheet,
   Alert,
   ScrollView,
-  Switch,
 } from 'react-native';
 import { storageApi } from '../../api/storageApi';
 import { NavigationProp } from '@react-navigation/native';
@@ -17,10 +16,10 @@ import { useNavigation } from '@react-navigation/native';
 const AddStorageScreen: React.FC = () => {
   const [formData, setFormData] = useState({
     facility_name: '',
-    capacity_kg: '',
-    price_per_kg_per_day: '',
+    capacity_tons: '',
+    price_per_ton_per_day: '',
     location: '',
-    has_cooling: false,
+    temperature_range: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation<NavigationProp<any>>();
@@ -28,8 +27,8 @@ const AddStorageScreen: React.FC = () => {
   const handleSubmit = async () => {
     if (
       !formData.facility_name ||
-      !formData.capacity_kg ||
-      !formData.price_per_kg_per_day ||
+      !formData.capacity_tons ||
+      !formData.price_per_ton_per_day ||
       !formData.location
     ) {
       Alert.alert('Error', 'Please fill all required fields');
@@ -40,8 +39,10 @@ const AddStorageScreen: React.FC = () => {
     try {
       await storageApi.addStorage({
         ...formData,
-        capacity_kg: parseFloat(formData.capacity_kg),
-        price_per_kg_per_day: parseFloat(formData.price_per_kg_per_day),
+        capacity_tons: parseFloat(formData.capacity_tons),
+        available_tons: parseFloat(formData.capacity_tons),
+        price_per_ton_per_day: parseFloat(formData.price_per_ton_per_day),
+        is_available: true,
       });
       Alert.alert('Success', 'Storage facility added successfully');
       navigation.goBack();
@@ -64,22 +65,22 @@ const AddStorageScreen: React.FC = () => {
           editable={!isLoading}
         />
 
-        <Text style={styles.label}>Capacity (kg) *</Text>
+        <Text style={styles.label}>Capacity (tons) *</Text>
         <TextInput
           style={styles.input}
-          value={formData.capacity_kg}
-          onChangeText={(text) => setFormData({ ...formData, capacity_kg: text })}
+          value={formData.capacity_tons}
+          onChangeText={(text) => setFormData({ ...formData, capacity_tons: text })}
           placeholder="Total storage capacity"
           keyboardType="numeric"
           editable={!isLoading}
         />
 
-        <Text style={styles.label}>Price per kg per day (USD) *</Text>
+        <Text style={styles.label}>Price per ton per day (GHS) *</Text>
         <TextInput
           style={styles.input}
-          value={formData.price_per_kg_per_day}
-          onChangeText={(text) => setFormData({ ...formData, price_per_kg_per_day: text })}
-          placeholder="Daily rate per kg"
+          value={formData.price_per_ton_per_day}
+          onChangeText={(text) => setFormData({ ...formData, price_per_ton_per_day: text })}
+          placeholder="Daily rate per ton"
           keyboardType="numeric"
           editable={!isLoading}
         />
@@ -93,14 +94,14 @@ const AddStorageScreen: React.FC = () => {
           editable={!isLoading}
         />
 
-        <View style={styles.switchContainer}>
-          <Text style={styles.label}>Has Cooling System</Text>
-          <Switch
-            value={formData.has_cooling}
-            onValueChange={(value) => setFormData({ ...formData, has_cooling: value })}
-            trackColor={{ false: '#CCCCCC', true: '#2E7D32' }}
-          />
-        </View>
+        <Text style={styles.label}>Temperature Range (optional)</Text>
+        <TextInput
+          style={styles.input}
+          value={formData.temperature_range}
+          onChangeText={(text) => setFormData({ ...formData, temperature_range: text })}
+          placeholder="e.g., 2°C - 8°C"
+          editable={!isLoading}
+        />
 
         <TouchableOpacity
           style={[styles.button, isLoading && styles.buttonDisabled]}
@@ -142,12 +143,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     fontSize: 16,
     backgroundColor: '#F5F5F5',
-  },
-  switchContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 16,
   },
   button: {
     height: 50,

@@ -57,11 +57,12 @@ export interface StorageListing {
   id: string;
   owner_id: string;
   facility_name: string;
-  capacity_kg: number;
-  price_per_kg_per_day: number;
+  capacity_tons: number;
+  available_tons: number;
+  price_per_ton_per_day: number;
   location: string;
-  has_cooling: boolean;
-  status: 'AVAILABLE' | 'FULL';
+  temperature_range?: string | null;
+  is_available: boolean;
 }
 
 export interface StorageBooking {

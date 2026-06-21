@@ -1,15 +1,19 @@
-// src/screens/storage/MyFacilitiesScreen.tsx
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { storageApi } from '../../api/storageApi';
 import { StorageListing } from '../../types';
+import { colors } from '../../theme/colors';
+import { spacing } from '../../theme/spacing';
+import { typography } from '../../theme/typography';
+import { GlassCard } from '../../ui/GlassCard';
+import { Screen } from '../../ui/Screen';
 
 const MyFacilitiesScreen: React.FC = () => {
   const [facilities, setFacilities] = useState<StorageListing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchFacilities();
+    void fetchFacilities();
   }, []);
 
   const fetchFacilities = async () => {
@@ -19,38 +23,45 @@ const MyFacilitiesScreen: React.FC = () => {
       setFacilities(data);
     } catch (error) {
       console.error('Error fetching facilities:', error);
+      setFacilities([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const renderFacility = ({ item }: { item: StorageListing }) => (
-    <View style={styles.facilityCard}>
-      <Text style={styles.name}>{item.facility_name}</Text>
-      <View style={styles.details}>
-        <Text style={styles.detail}>Capacity: {item.capacity_kg}kg</Text>
-        <Text style={styles.price}>${item.price_per_kg_per_day}/kg/day</Text>
-      </View>
-      <Text style={styles.location}>📍 {item.location}</Text>
-      <Text style={styles.features}>
-        {item.has_cooling ? '❄️ Cooling Available' : '📦 Standard Storage'}
-      </Text>
-      <Text style={[styles.status, { color: item.status === 'AVAILABLE' ? '#2E7D32' : '#FF6F00' }]}>
-        {item.status}
-      </Text>
-    </View>
-  );
+  const renderFacility = ({ item }: { item: StorageListing }) => {
+    const used = Math.max(0, item.capacity_tons - item.available_tons);
+    const usedPct = item.capacity_tons > 0 ? Math.round((used / item.capacity_tons) * 100) : 0;
 
-  if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>Loading facilities...</Text>
-      </View>
+      <GlassCard style={styles.facilityCard}>
+        <Text style={styles.name}>{item.facility_name}</Text>
+        <Text style={styles.location}>Location: {item.location}</Text>
+
+        <View style={{ height: spacing.sm }} />
+
+        <Text style={styles.meta}>Capacity: {item.capacity_tons} tons</Text>
+        <Text style={styles.meta}>Space left: {item.available_tons} tons</Text>
+        <Text style={styles.meta}>Used: {used} tons ({usedPct}%)</Text>
+
+        <View style={{ height: spacing.sm }} />
+
+        <Text style={styles.price}>GHS {item.price_per_ton_per_day}/ton/day</Text>
+        {item.temperature_range ? <Text style={styles.meta}>Temp: {item.temperature_range}</Text> : null}
+        <Text style={styles.meta}>{item.is_available ? 'Available' : 'Unavailable'}</Text>
+      </GlassCard>
     );
-  }
+  };
 
   return (
-    <View style={styles.container}>
+    <Screen>
+      <View style={styles.header}>
+        <Text style={styles.title}>My Facilities</Text>
+        <Text style={styles.subtitle}>
+          {isLoading ? 'Loading...' : 'Storage space remaining per facility'}
+        </Text>
+      </View>
+
       <FlatList
         data={facilities}
         renderItem={renderFacility}
@@ -58,86 +69,32 @@ const MyFacilitiesScreen: React.FC = () => {
         contentContainerStyle={styles.listContainer}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No storage facilities added yet</Text>
+            <Text style={styles.emptyText}>
+              {isLoading ? 'Loading...' : 'No storage facilities added yet'}
+            </Text>
           </View>
         }
+        refreshing={isLoading}
+        onRefresh={fetchFacilities}
+        showsVerticalScrollIndicator={false}
       />
-    </View>
+    </Screen>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F5F5',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-  },
-  loadingText: {
-    fontSize: 16,
-    color: '#666666',
-  },
-  listContainer: {
-    padding: 15,
-  },
-  facilityCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  name: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginBottom: 8,
-  },
-  details: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  detail: {
-    fontSize: 14,
-    color: '#666666',
-  },
-  price: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2E7D32',
-  },
-  location: {
-    fontSize: 14,
-    color: '#666666',
-    marginBottom: 4,
-  },
-  features: {
-    fontSize: 14,
-    color: '#666666',
-    marginBottom: 4,
-  },
-  status: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  emptyContainer: {
-    padding: 40,
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#666666',
-    textAlign: 'center',
-  },
+  header: { marginBottom: spacing.md },
+  title: { ...typography.h2, color: colors.text },
+  subtitle: { marginTop: 6, color: colors.muted, fontSize: 14, fontWeight: '600' },
+  listContainer: { paddingBottom: spacing.xl },
+  facilityCard: { padding: 16, marginBottom: spacing.md },
+  name: { fontSize: 18, fontWeight: '900', color: colors.text },
+  location: { marginTop: 6, fontSize: 14, color: colors.muted, fontWeight: '700' },
+  meta: { marginTop: 4, color: colors.muted, fontWeight: '700' },
+  price: { marginTop: 6, fontSize: 15, fontWeight: '900', color: colors.accent },
+  emptyContainer: { padding: 40, alignItems: 'center' },
+  emptyText: { fontSize: 16, color: colors.muted, fontWeight: '700', textAlign: 'center' },
 });
 
 export default MyFacilitiesScreen;
+

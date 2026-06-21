@@ -58,4 +58,14 @@ export const produceApi = {
     const response = await axiosInstance.get('/api/produce/orders/my');
     return (Array.isArray(response.data) ? response.data : []).map(normalizeOrder);
   },
+
+  acceptOrder: async (orderId: string): Promise<ProduceOrder> => {
+    const response = await axiosInstance.put(`/api/produce/orders/${orderId}/accept`);
+    return normalizeOrder(response.data);
+  },
+
+  declineOrder: async (orderId: string): Promise<ProduceOrder> => {
+    const response = await axiosInstance.put(`/api/produce/orders/${orderId}/decline`);
+    return normalizeOrder(response.data);
+  },
 };

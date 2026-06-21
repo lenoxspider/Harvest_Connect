@@ -54,6 +54,10 @@ public class StorageService {
                 .orElseThrow(() -> new RuntimeException("Storage listing not found: " + id));
     }
 
+    public List<StorageListing> getMyListings(UUID ownerId) {
+        return listingRepo.findByOwnerId(ownerId);
+    }
+
     // ─── Bookings ─────────────────────────────────────────────────────────────
 
     @Transactional

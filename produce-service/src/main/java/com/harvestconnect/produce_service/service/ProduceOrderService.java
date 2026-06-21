@@ -66,5 +66,36 @@ public class ProduceOrderService {
 
         return produceOrderRepository.findByBuyerId(userId);
     }
-}
 
+    public ProduceOrder acceptOrder(UUID orderId, UUID farmerId) {
+        return updateOrderStatus(orderId, farmerId, OrderStatus.CONFIRMED);
+    }
+
+    public ProduceOrder declineOrder(UUID orderId, UUID farmerId) {
+        return updateOrderStatus(orderId, farmerId, OrderStatus.CANCELLED);
+    }
+
+    private ProduceOrder updateOrderStatus(UUID orderId, UUID farmerId, OrderStatus newStatus) {
+        ProduceOrder order = produceOrderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+
+        ProduceListing listing = produceListingRepository.findById(order.getListingId())
+                .orElseThrow(() -> new ResourceNotFoundException("Listing not found"));
+
+        if (!listing.getFarmerId().equals(farmerId)) {
+            throw new IllegalStateException("You are not allowed to modify this order");
+        }
+
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new IllegalArgumentException("Only PENDING orders can be updated");
+        }
+
+        if (newStatus == OrderStatus.CANCELLED && listing.getQuantityKg() != null && order.getQuantityKg() != null) {
+            listing.setQuantityKg(listing.getQuantityKg() + order.getQuantityKg());
+            produceListingRepository.save(listing);
+        }
+
+        order.setStatus(newStatus);
+        return produceOrderRepository.save(order);
+    }
+}

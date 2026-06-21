@@ -41,5 +41,30 @@ public class ProduceOrderController {
                 .orElseThrow(() -> new IllegalStateException("Missing/invalid Authorization token"));
         return produceOrderService.getOrdersForUser(claims.userUuid(), claims.role());
     }
-}
 
+    @PutMapping("/{id}/accept")
+    public ProduceOrder acceptOrder(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,
+            @PathVariable("id") UUID id
+    ) {
+        JwtClaimsReader.Claims claims = jwtClaimsReader.readFromAuthorizationHeader(authorization)
+                .orElseThrow(() -> new IllegalStateException("Missing/invalid Authorization token"));
+        if (claims.role() == null || !claims.role().equalsIgnoreCase("FARMER")) {
+            throw new IllegalStateException("Only FARMER can accept orders");
+        }
+        return produceOrderService.acceptOrder(id, claims.userUuid());
+    }
+
+    @PutMapping("/{id}/decline")
+    public ProduceOrder declineOrder(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,
+            @PathVariable("id") UUID id
+    ) {
+        JwtClaimsReader.Claims claims = jwtClaimsReader.readFromAuthorizationHeader(authorization)
+                .orElseThrow(() -> new IllegalStateException("Missing/invalid Authorization token"));
+        if (claims.role() == null || !claims.role().equalsIgnoreCase("FARMER")) {
+            throw new IllegalStateException("Only FARMER can decline orders");
+        }
+        return produceOrderService.declineOrder(id, claims.userUuid());
+    }
+}
