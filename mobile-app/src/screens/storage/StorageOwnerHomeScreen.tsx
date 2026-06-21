@@ -10,9 +10,13 @@ import {
   View,
 } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { colors } from '../../theme/colors';
+import { spacing } from '../../theme/spacing';
+import { typography } from '../../theme/typography';
+import { GlassCard } from '../../ui/GlassCard';
+import { Screen } from '../../ui/Screen';
 
-const HEADER_BG = '#0D47A1';
-const CONTENT_BG = '#E3F2FD';
+const HEADER_TINT = 'rgba(13, 71, 161, 0.28)';
 const ACCENT = '#1565C0';
 
 type BookingItem = {
@@ -22,6 +26,8 @@ type BookingItem = {
   dates: string;
   status: 'PENDING' | 'CONFIRMED' | 'COMPLETED';
 };
+
+const icon = (codePoint: number) => String.fromCodePoint(codePoint);
 
 const StorageOwnerHomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<any>>();
@@ -64,53 +70,33 @@ const StorageOwnerHomeScreen: React.FC = () => {
   };
 
   return (
-    <ScrollView style={styles.root} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-      <View style={styles.header}>
+    <Screen scroll>
+      <GlassCard strength="strong" style={[styles.headerCard, { backgroundColor: HEADER_TINT }]}>
         <View style={styles.headerRow}>
           <Text style={styles.headerTitle}>Welcome, Storage Owner 🏭</Text>
 
-          <TouchableOpacity activeOpacity={0.8} style={styles.bellWrap} onPress={() => navigation.navigate('AccountTab')}>
-            <Text style={styles.bell}>🔔</Text>
+          <TouchableOpacity activeOpacity={0.85} style={styles.bellWrap} onPress={() => navigation.navigate('AccountTab')}>
+            <Text style={styles.bell}>{icon(0x1f514)}</Text>
             <View style={styles.badgeDot} />
           </TouchableOpacity>
         </View>
 
         <View style={styles.statsRow}>
           {stats.map((s) => (
-            <View key={s.label} style={styles.statCard}>
+            <GlassCard key={s.label} style={styles.statCard}>
               <Text style={styles.statValue}>{s.value}</Text>
               <Text style={styles.statLabel}>{s.label}</Text>
-            </View>
+            </GlassCard>
           ))}
         </View>
-      </View>
+      </GlassCard>
 
       <View style={styles.section}>
         <View style={styles.quickRow}>
-          <QuickAction
-            label="Add Listing"
-            imageUri="https://picsum.photos/400/300?random=41"
-            tint={ACCENT}
-            onPress={() => navigation.navigate('AddStorage')}
-          />
-          <QuickAction
-            label="Incoming Bookings"
-            imageUri="https://picsum.photos/400/300?random=42"
-            tint={ACCENT}
-            onPress={() => navigation.navigate('BookingsTab')}
-          />
-          <QuickAction
-            label="My Facilities"
-            imageUri="https://picsum.photos/400/300?random=43"
-            tint={ACCENT}
-            onPress={() => navigation.navigate('FacilitiesTab')}
-          />
-          <QuickAction
-            label="Earnings"
-            imageUri="https://picsum.photos/400/300?random=44"
-            tint={ACCENT}
-            onPress={() => navigation.navigate('AccountTab')}
-          />
+          <QuickAction label="Add Listing" onPress={() => navigation.navigate('AddStorage')} />
+          <QuickAction label="Incoming Bookings" onPress={() => navigation.navigate('BookingsTab')} />
+          <QuickAction label="My Facilities" onPress={() => navigation.navigate('FacilitiesTab')} />
+          <QuickAction label="Earnings" onPress={() => navigation.navigate('AccountTab')} />
         </View>
       </View>
 
@@ -124,16 +110,20 @@ const StorageOwnerHomeScreen: React.FC = () => {
           scrollEventThrottle={16}
         >
           {heroImages.map((uri) => (
-            <ImageBackground key={uri} source={{ uri }} style={styles.hero} imageStyle={styles.heroImg}>
-              <View style={styles.heroOverlay} />
-              <View style={styles.heroContent}>
-                <Text style={styles.heroTitle}>Monetise Your Cold Room</Text>
-                <Text style={styles.heroSub}>List your facility and connect with farmers across Ghana.</Text>
-                <TouchableOpacity activeOpacity={0.9} style={styles.heroBtn} onPress={() => navigation.navigate('AddStorage')}>
-                  <Text style={styles.heroBtnText}>List Now →</Text>
-                </TouchableOpacity>
-              </View>
-            </ImageBackground>
+            <View key={uri} style={styles.heroSlide}>
+              <GlassCard strength="strong" style={styles.heroCard}>
+                <ImageBackground source={{ uri }} style={styles.hero} imageStyle={styles.heroImg}>
+                  <View style={styles.heroOverlay} />
+                  <View style={styles.heroContent}>
+                    <Text style={styles.heroTitle}>Monetise Your Cold Room</Text>
+                    <Text style={styles.heroSub}>List your facility and connect with farmers across Ghana.</Text>
+                    <TouchableOpacity activeOpacity={0.9} style={styles.heroBtn} onPress={() => navigation.navigate('AddStorage')}>
+                      <Text style={styles.heroBtnText}>List Now →</Text>
+                    </TouchableOpacity>
+                  </View>
+                </ImageBackground>
+              </GlassCard>
+            </View>
           ))}
         </ScrollView>
 
@@ -144,67 +134,55 @@ const StorageOwnerHomeScreen: React.FC = () => {
         </View>
       </View>
 
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Recent Bookings</Text>
-          <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('BookingsTab')}>
-            <Text style={styles.seeAll}>See all</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.vList}>
-          {bookings.map((b) => (
-            <View key={b.id} style={styles.bookingCard}>
-              <View style={styles.bookingRow}>
-                <Text style={styles.bookingTitle}>{b.farmer}</Text>
-                <View style={[styles.statusPill, statusStyle(b.status).pill]}>
-                  <Text style={[styles.statusText, statusStyle(b.status).text]}>{b.status}</Text>
-                </View>
-              </View>
-              <Text style={styles.bookingMeta}>{b.tons} • {b.dates}</Text>
-            </View>
-          ))}
-        </View>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Recent Bookings</Text>
+        <TouchableOpacity activeOpacity={0.85} onPress={() => navigation.navigate('BookingsTab')}>
+          <Text style={styles.seeAll}>See all</Text>
+        </TouchableOpacity>
       </View>
-    </ScrollView>
+
+      <View style={styles.vList}>
+        {bookings.map((b) => (
+          <GlassCard key={b.id} style={styles.bookingCard}>
+            <View style={styles.bookingRow}>
+              <Text style={styles.bookingTitle}>{b.farmer}</Text>
+              <View style={[styles.statusPill, statusStyle(b.status)]}>
+                <Text style={styles.statusText}>{b.status}</Text>
+              </View>
+            </View>
+            <Text style={styles.bookingMeta}>
+              {b.tons} • {b.dates}
+            </Text>
+          </GlassCard>
+        ))}
+      </View>
+    </Screen>
   );
 };
 
 function statusStyle(status: BookingItem['status']) {
-  if (status === 'PENDING') {
-    return { pill: { backgroundColor: '#FF6F00' }, text: { color: '#fff' } };
-  }
-  if (status === 'CONFIRMED') {
-    return { pill: { backgroundColor: ACCENT }, text: { color: '#fff' } };
-  }
-  return { pill: { backgroundColor: '#9E9E9E' }, text: { color: '#fff' } };
+  if (status === 'PENDING') return { backgroundColor: 'rgba(255, 111, 0, 0.85)' };
+  if (status === 'CONFIRMED') return { backgroundColor: 'rgba(21, 101, 192, 0.85)' };
+  return { backgroundColor: 'rgba(158, 158, 158, 0.75)' };
 }
 
-function QuickAction(props: { label: string; imageUri: string; tint: string; onPress: () => void }) {
+function QuickAction(props: { label: string; onPress: () => void }) {
   return (
     <TouchableOpacity activeOpacity={0.9} style={styles.qa} onPress={props.onPress}>
-      <ImageBackground source={{ uri: props.imageUri }} style={styles.qaBg} imageStyle={styles.qaBgImg}>
-        <View style={[styles.qaTint, { backgroundColor: props.tint }]} />
+      <GlassCard strength="strong" style={styles.qaCard}>
         <Text style={styles.qaLabel}>{props.label}</Text>
-      </ImageBackground>
+        <Text style={styles.qaHint}>Tap to open</Text>
+      </GlassCard>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: CONTENT_BG },
-  content: { paddingBottom: 18 },
-
-  header: {
-    backgroundColor: HEADER_BG,
-    paddingTop: 18,
-    paddingHorizontal: 16,
-    paddingBottom: 14,
-  },
+  headerCard: { padding: 14 },
   headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  headerTitle: { color: '#fff', fontSize: 22, fontWeight: '900' },
+  headerTitle: { ...typography.h2, color: colors.text },
   bellWrap: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
-  bell: { color: '#fff', fontSize: 22 },
+  bell: { color: colors.text, fontSize: 22 },
   badgeDot: {
     position: 'absolute',
     top: 10,
@@ -212,37 +190,31 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 99,
-    backgroundColor: '#E53935',
+    backgroundColor: colors.danger,
     borderWidth: 2,
-    borderColor: HEADER_BG,
+    borderColor: 'rgba(0,0,0,0.25)',
   },
 
   statsRow: { flexDirection: 'row', gap: 10, marginTop: 14 },
-  statCard: {
-    flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-  },
-  statValue: { color: '#0B1B2B', fontSize: 18, fontWeight: '900' },
-  statLabel: { marginTop: 4, color: 'rgba(11,27,43,0.55)', fontWeight: '800', fontSize: 12 },
+  statCard: { flex: 1, padding: 14 },
+  statValue: { color: colors.text, fontSize: 18, fontWeight: '900' },
+  statLabel: { marginTop: 6, color: colors.muted, fontWeight: '800', fontSize: 12 },
 
-  section: { paddingHorizontal: 16, paddingTop: 14 },
-
+  section: { marginTop: spacing.md },
   quickRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 12 },
-  qa: { width: '48%', borderRadius: 12, overflow: 'hidden' },
-  qaBg: { height: 96, justifyContent: 'flex-end' },
-  qaBgImg: { borderRadius: 12 },
-  qaTint: { ...StyleSheet.absoluteFillObject, opacity: 0.45 },
-  qaLabel: { color: '#fff', fontWeight: '900', padding: 10, fontSize: 14 },
+  qa: { width: '48%' },
+  qaCard: { padding: 16, borderRadius: 20, borderColor: 'rgba(92,200,255,0.25)', backgroundColor: 'rgba(13,71,161,0.20)' },
+  qaLabel: { color: colors.text, fontWeight: '900' },
+  qaHint: { marginTop: 8, color: colors.muted, fontWeight: '700' },
 
-  hero: { width: '100%', height: 190, borderRadius: 12, overflow: 'hidden' },
-  heroImg: { borderRadius: 12 },
+  heroSlide: { width: '100%' },
+  heroCard: { padding: 0, overflow: 'hidden' },
+  hero: { height: 200, justifyContent: 'flex-end' },
+  heroImg: { borderRadius: 20 },
   heroOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.30)' },
-  heroContent: { flex: 1, padding: 14, justifyContent: 'flex-end' },
-  heroTitle: { color: '#fff', fontSize: 18, fontWeight: '900' },
-  heroSub: { color: 'rgba(255,255,255,0.92)', marginTop: 6, fontWeight: '600', lineHeight: 18 },
+  heroContent: { padding: 14 },
+  heroTitle: { ...typography.h3, color: colors.text },
+  heroSub: { color: colors.text, marginTop: 6, fontWeight: '700', opacity: 0.92, lineHeight: 18 },
   heroBtn: {
     position: 'absolute',
     right: 12,
@@ -257,19 +229,19 @@ const styles = StyleSheet.create({
   dots: { flexDirection: 'row', gap: 6, justifyContent: 'center', marginTop: 10 },
   dot: { width: 7, height: 7, borderRadius: 99 },
   dotActive: { backgroundColor: ACCENT },
-  dotInactive: { backgroundColor: 'rgba(21,101,192,0.25)' },
+  dotInactive: { backgroundColor: 'rgba(92,200,255,0.18)' },
 
-  sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
-  sectionTitle: { color: '#0B1B2B', fontSize: 16, fontWeight: '900' },
+  sectionHeader: { marginTop: spacing.lg, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  sectionTitle: { ...typography.h3, color: colors.text },
   seeAll: { color: ACCENT, fontWeight: '900' },
 
-  vList: { gap: 10 },
-  bookingCard: { backgroundColor: '#fff', borderRadius: 12, padding: 12 },
+  vList: { gap: 10, marginTop: 12 },
+  bookingCard: { padding: 14 },
   bookingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  bookingTitle: { color: '#0B1B2B', fontWeight: '900' },
-  bookingMeta: { marginTop: 8, color: 'rgba(11,27,43,0.60)', fontWeight: '700' },
+  bookingTitle: { color: colors.text, fontWeight: '900' },
+  bookingMeta: { marginTop: 8, color: colors.muted, fontWeight: '700' },
   statusPill: { borderRadius: 99, paddingHorizontal: 10, paddingVertical: 6 },
-  statusText: { fontWeight: '900', fontSize: 12 },
+  statusText: { color: '#fff', fontWeight: '900', fontSize: 12 },
 });
 
 export default StorageOwnerHomeScreen;

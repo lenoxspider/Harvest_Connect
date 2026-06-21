@@ -12,6 +12,12 @@ import {
   View,
 } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { colors } from '../../theme/colors';
+import { spacing } from '../../theme/spacing';
+import { typography } from '../../theme/typography';
+import { GlassCard } from '../../ui/GlassCard';
+import { GlassButton } from '../../ui/GlassButton';
+import { Screen } from '../../ui/Screen';
 
 const ACCENT = '#C0392B';
 
@@ -21,7 +27,7 @@ type Category = {
   imageUri: string;
 };
 
-const tabIcon = (codePoint: number) => String.fromCodePoint(codePoint);
+const icon = (codePoint: number) => String.fromCodePoint(codePoint);
 
 const ExploreHomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<any>>();
@@ -66,65 +72,58 @@ const ExploreHomeScreen: React.FC = () => {
   };
 
   const openCategory = (cat: Category['id']) => {
-    // If we're authenticated (BuyerNavigator), ProduceList exists in the Explore stack.
     if (cat === 'produce') {
       try {
         navigation.navigate('ProduceList');
         return;
       } catch {}
     }
-
-    // Public mode: send user to login.
+    // Public flow: require login for now.
     navigation.navigate('Login');
   };
 
   return (
-    <ScrollView style={styles.root} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-      <View style={styles.headerRow}>
-        <View style={styles.searchWrap}>
-          <Text style={styles.searchIcon}>{tabIcon(0x1f50d)}</Text>
+    <Screen scroll>
+      <GlassCard strength="strong" style={styles.headerCard}>
+        <View style={styles.searchRow}>
+          <Text style={styles.searchIcon}>{icon(0x1f50d)}</Text>
           <TextInput
             value={query}
             onChangeText={setQuery}
             placeholder="Search listings..."
-            placeholderTextColor="rgba(0,0,0,0.45)"
+            placeholderTextColor={colors.muted}
             style={styles.searchInput}
             returnKeyType="search"
           />
-        </View>
-
-        <View style={styles.headerIcons}>
-          <TouchableOpacity activeOpacity={0.8} style={styles.iconBtn} onPress={() => navigation.navigate('Login')}>
-            <Text style={styles.iconText}>{tabIcon(0x2661)}</Text>
+          <TouchableOpacity activeOpacity={0.85} style={styles.iconBtn} onPress={() => navigation.navigate('Login')}>
+            <Text style={styles.iconText}>{icon(0x2661)}</Text>
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.8} style={styles.iconBtn} onPress={() => navigation.navigate('Login')}>
-            <Text style={styles.iconText}>{tabIcon(0x1f514)}</Text>
+          <TouchableOpacity activeOpacity={0.85} style={styles.iconBtn} onPress={() => navigation.navigate('Login')}>
+            <Text style={styles.iconText}>{icon(0x1f514)}</Text>
             <View style={styles.badgeDot} />
           </TouchableOpacity>
         </View>
-      </View>
 
-      <View style={styles.authCtas}>
-        <TouchableOpacity activeOpacity={0.9} style={styles.ctaPrimary} onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.ctaPrimaryText}>Login</Text>
-        </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.9} style={styles.ctaSecondary} onPress={() => navigation.navigate('Register')}>
-          <Text style={styles.ctaSecondaryText}>Create account</Text>
-        </TouchableOpacity>
-      </View>
+        <View style={styles.ctaRow}>
+          <GlassButton title="Login" onPress={() => navigation.navigate('Login')} style={{ flex: 1 }} />
+          <GlassButton
+            title="Create account"
+            onPress={() => navigation.navigate('Register')}
+            variant="secondary"
+            style={{ flex: 1 }}
+          />
+        </View>
+      </GlassCard>
 
       <View style={styles.categoryRow}>
         {categories.map((c) => (
-          <TouchableOpacity
-            key={c.id}
-            activeOpacity={0.9}
-            style={styles.categoryCard}
-            onPress={() => openCategory(c.id)}
-          >
-            <ImageBackground source={{ uri: c.imageUri }} style={styles.categoryBg} imageStyle={styles.categoryBgImg}>
-              <View style={styles.categoryOverlay} />
-              <Text style={styles.categoryLabel}>{c.title}</Text>
-            </ImageBackground>
+          <TouchableOpacity key={c.id} activeOpacity={0.9} style={styles.categoryCard} onPress={() => openCategory(c.id)}>
+            <GlassCard style={styles.categoryGlass}>
+              <ImageBackground source={{ uri: c.imageUri }} style={styles.categoryBg} imageStyle={styles.categoryBgImg}>
+                <View style={styles.categoryOverlay} />
+                <Text style={styles.categoryLabel}>{c.title}</Text>
+              </ImageBackground>
+            </GlassCard>
           </TouchableOpacity>
         ))}
       </View>
@@ -139,19 +138,23 @@ const ExploreHomeScreen: React.FC = () => {
           scrollEventThrottle={16}
         >
           {heroImages.map((uri) => (
-            <ImageBackground key={uri} source={{ uri }} style={styles.hero} imageStyle={styles.heroImg}>
-              <View style={styles.heroOverlay} />
-              <View style={styles.heroContent}>
-                <Text style={styles.heroTitle}>HarvestConnect Storage</Text>
-                <Text style={styles.heroSub}>
-                  Secure cold storage for your harvest — book by the ton, pay per day.
-                </Text>
-                <Text style={styles.heroLoc}>{tabIcon(0x1f4cd)} Ghana, West Africa</Text>
-                <TouchableOpacity activeOpacity={0.9} style={styles.heroBtn} onPress={() => navigation.navigate('Login')}>
-                  <Text style={styles.heroBtnText}>Book Now →</Text>
-                </TouchableOpacity>
-              </View>
-            </ImageBackground>
+            <View key={uri} style={styles.heroSlide}>
+              <GlassCard strength="strong" style={styles.heroCard}>
+                <ImageBackground source={{ uri }} style={styles.hero} imageStyle={styles.heroImg}>
+                  <View style={styles.heroOverlay} />
+                  <View style={styles.heroContent}>
+                    <Text style={styles.heroTitle}>HarvestConnect Storage</Text>
+                    <Text style={styles.heroSub}>
+                      Secure cold storage for your harvest — book by the ton, pay per day.
+                    </Text>
+                    <Text style={styles.heroLoc}>{icon(0x1f4cd)} Ghana, West Africa</Text>
+                    <TouchableOpacity activeOpacity={0.9} style={styles.heroBtn} onPress={() => navigation.navigate('Login')}>
+                      <Text style={styles.heroBtnText}>Book Now →</Text>
+                    </TouchableOpacity>
+                  </View>
+                </ImageBackground>
+              </GlassCard>
+            </View>
           ))}
         </ScrollView>
 
@@ -164,52 +167,38 @@ const ExploreHomeScreen: React.FC = () => {
 
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Featured Listings</Text>
-        <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('Login')}>
+        <TouchableOpacity activeOpacity={0.85} onPress={() => navigation.navigate('Login')}>
           <Text style={styles.seeMore}>See more</Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.hList}>
         {featured.map((f) => (
-          <View key={f.id} style={styles.hCard}>
+          <GlassCard key={f.id} style={styles.hCard}>
             <Image source={{ uri: `https://picsum.photos/400/300?random=9${f.id}` }} style={styles.hCardImg} />
             <View style={styles.hCardBody}>
               <Text style={styles.hCardTitle} numberOfLines={1}>
                 {f.name}
               </Text>
               <Text style={styles.hCardMeta} numberOfLines={1}>
-                {tabIcon(0x1f4cd)} {f.location}
+                {icon(0x1f4cd)} {f.location}
               </Text>
               <Text style={styles.hCardPrice}>{f.price}</Text>
             </View>
-          </View>
+          </GlassCard>
         ))}
       </ScrollView>
-    </ScrollView>
+    </Screen>
   );
 };
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#FFFFFF' },
-  content: { padding: 16, paddingBottom: 18 },
-
-  headerRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  searchWrap: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 44,
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.08)',
-  },
-  searchIcon: { fontSize: 16, marginRight: 8 },
-  searchInput: { flex: 1, color: '#111', fontWeight: '600' },
-  headerIcons: { flexDirection: 'row', gap: 8 },
+  headerCard: { padding: 14 },
+  searchRow: { flexDirection: 'row', alignItems: 'center' },
+  searchIcon: { fontSize: 16, marginRight: 10, color: colors.text },
+  searchInput: { flex: 1, color: colors.text, fontWeight: '800' },
   iconBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
-  iconText: { fontSize: 18, color: '#111' },
+  iconText: { fontSize: 18, color: colors.text },
   badgeDot: {
     position: 'absolute',
     top: 10,
@@ -217,46 +206,30 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 99,
-    backgroundColor: '#E53935',
-    borderWidth: 2,
-    borderColor: '#fff',
-  },
-
-  authCtas: { flexDirection: 'row', gap: 10, marginTop: 12 },
-  ctaPrimary: {
-    flex: 1,
     backgroundColor: ACCENT,
-    borderRadius: 12,
-    paddingVertical: 12,
-    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(0,0,0,0.2)',
   },
-  ctaPrimaryText: { color: '#fff', fontWeight: '900' },
-  ctaSecondary: {
-    flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    paddingVertical: 12,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.10)',
-  },
-  ctaSecondaryText: { color: '#111', fontWeight: '900' },
+  ctaRow: { flexDirection: 'row', gap: 12, marginTop: 12 },
 
-  categoryRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 10, marginTop: 14 },
-  categoryCard: { flex: 1, borderRadius: 12, overflow: 'hidden' },
-  categoryBg: { height: 82, justifyContent: 'flex-end' },
-  categoryBgImg: { borderRadius: 12 },
+  categoryRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 10, marginTop: spacing.md },
+  categoryCard: { flex: 1 },
+  categoryGlass: { padding: 0, overflow: 'hidden' },
+  categoryBg: { height: 86, justifyContent: 'flex-end' },
+  categoryBgImg: { borderRadius: 20 },
   categoryOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.35)' },
-  categoryLabel: { color: '#fff', fontWeight: '900', padding: 10 },
+  categoryLabel: { color: colors.text, fontWeight: '900', padding: 12 },
 
-  heroSection: { marginTop: 14 },
-  hero: { width: '100%', height: 190, borderRadius: 12, overflow: 'hidden' },
-  heroImg: { borderRadius: 12 },
+  heroSection: { marginTop: spacing.md },
+  heroSlide: { width: '100%' },
+  heroCard: { padding: 0, overflow: 'hidden' },
+  hero: { height: 200, justifyContent: 'flex-end' },
+  heroImg: { borderRadius: 20 },
   heroOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.30)' },
-  heroContent: { flex: 1, padding: 14, justifyContent: 'flex-end' },
-  heroTitle: { color: '#fff', fontSize: 18, fontWeight: '900' },
-  heroSub: { color: 'rgba(255,255,255,0.92)', marginTop: 6, fontWeight: '600', lineHeight: 18 },
-  heroLoc: { color: 'rgba(255,255,255,0.92)', marginTop: 10, fontWeight: '800' },
+  heroContent: { padding: 14 },
+  heroTitle: { ...typography.h3, color: colors.text },
+  heroSub: { marginTop: 6, color: colors.text, fontWeight: '700', opacity: 0.92, lineHeight: 18 },
+  heroLoc: { marginTop: 10, color: colors.text, fontWeight: '800', opacity: 0.9 },
   heroBtn: {
     position: 'absolute',
     right: 12,
@@ -270,27 +243,19 @@ const styles = StyleSheet.create({
   dots: { flexDirection: 'row', gap: 6, justifyContent: 'center', marginTop: 10 },
   dot: { width: 7, height: 7, borderRadius: 99 },
   dotActive: { backgroundColor: ACCENT },
-  dotInactive: { backgroundColor: 'rgba(0,0,0,0.25)' },
+  dotInactive: { backgroundColor: 'rgba(234,240,255,0.25)' },
 
-  sectionHeader: { marginTop: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  sectionTitle: { fontSize: 16, fontWeight: '900', color: '#111' },
-  seeMore: { color: ACCENT, fontWeight: '900' },
+  sectionHeader: { marginTop: spacing.lg, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  sectionTitle: { ...typography.h3, color: colors.text },
+  seeMore: { color: colors.danger, fontWeight: '900' },
 
   hList: { paddingRight: 6, marginTop: 12 },
-  hCard: {
-    width: 210,
-    marginRight: 12,
-    borderRadius: 12,
-    backgroundColor: '#fff',
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.06)',
-  },
-  hCardImg: { width: '100%', height: 105 },
-  hCardBody: { padding: 12 },
-  hCardTitle: { fontWeight: '900', color: '#111' },
-  hCardMeta: { marginTop: 6, color: 'rgba(17,17,17,0.60)', fontWeight: '700' },
-  hCardPrice: { marginTop: 8, color: ACCENT, fontWeight: '900' },
+  hCard: { width: 220, marginRight: 12, padding: 0, overflow: 'hidden' },
+  hCardImg: { width: '100%', height: 110 },
+  hCardBody: { padding: 14 },
+  hCardTitle: { color: colors.text, fontWeight: '900' },
+  hCardMeta: { marginTop: 6, color: colors.muted, fontWeight: '700' },
+  hCardPrice: { marginTop: 8, color: colors.accent, fontWeight: '900' },
 });
 
 export default ExploreHomeScreen;
