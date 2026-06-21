@@ -99,3 +99,14 @@ In a new terminal:
   - Don’t use `localhost` on a physical phone.
   - Set `EXPO_PUBLIC_API_BASE_URL` correctly in `mobile-app\.env`.
 
+
+## 7) Admin page (homepage images)
+
+We use a local admin web page to manage the homepage image URLs (so they are not hardcoded in the app).
+
+- App folder: dmin-web/`r
+- Run instructions: dmin-web/README.md`r
+- API endpoints (via gateway):
+  - GET http://localhost:8080/api/notifications/settings/homepage`r
+  - PUT http://localhost:8080/api/notifications/settings/homepage`r
+
