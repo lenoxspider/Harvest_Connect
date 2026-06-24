@@ -3,8 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { storageApi } from '../../api/storageApi';
 import { StorageBooking } from '../../types';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 const StorageBookingsScreen: React.FC = () => {
+  const navigation = useNavigation<NavigationProp<any>>();
   const [bookings, setBookings] = useState<StorageBooking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -62,21 +64,23 @@ const StorageBookingsScreen: React.FC = () => {
   };
 
   const renderBooking = ({ item }: { item: StorageBooking }) => (
-    <View style={styles.bookingCard}>
-      <Text style={styles.bookingTitle}>Booking #{item.id}</Text>
-      <Text style={styles.detail}>Quantity: {item.quantity_tons} tons</Text>
-      <Text style={styles.detail}>From: {item.start_date}</Text>
-      <Text style={styles.detail}>To: {item.end_date}</Text>
-      <Text style={styles.price}>Total: GHS {item.total_price}</Text>
-      <View style={styles.actionsRow}>
-        <TouchableOpacity style={styles.confirmButton} onPress={() => handleConfirm(item)}>
-          <Text style={styles.confirmButtonText}>Confirm</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.cancelButton} onPress={() => handleCancel(item)}>
-          <Text style={styles.cancelButtonText}>Cancel</Text>
-        </TouchableOpacity>
+    <TouchableOpacity activeOpacity={0.9} onPress={() => navigation.navigate('Tracking', { bookingId: item.id, type: 'storage' })}>
+      <View style={styles.bookingCard}>
+        <Text style={styles.bookingTitle}>Booking #{item.id}</Text>
+        <Text style={styles.detail}>Quantity: {item.quantity_tons} tons</Text>
+        <Text style={styles.detail}>From: {item.start_date}</Text>
+        <Text style={styles.detail}>To: {item.end_date}</Text>
+        <Text style={styles.price}>Total: GHS {item.total_price}</Text>
+        <View style={styles.actionsRow}>
+          <TouchableOpacity style={styles.confirmButton} onPress={() => handleConfirm(item)}>
+            <Text style={styles.confirmButtonText}>Confirm</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.cancelButton} onPress={() => handleCancel(item)}>
+            <Text style={styles.cancelButtonText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   if (isLoading) {

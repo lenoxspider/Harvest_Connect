@@ -72,6 +72,11 @@ export const storageApi = {
     return normalizeBooking(response.data);
   },
 
+  getBookingById: async (bookingId: string): Promise<StorageBooking> => {
+    const response = await axiosInstance.get(`/api/storage/bookings/${bookingId}`);
+    return normalizeBooking(response.data);
+  },
+
   cancelBooking: async (bookingId: string): Promise<StorageBooking> => {
     const response = await axiosInstance.put(`/api/storage/bookings/${bookingId}/cancel`);
     return normalizeBooking(response.data);

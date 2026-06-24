@@ -56,6 +56,11 @@ export const transportApi = {
     return (Array.isArray(response.data) ? response.data : []).map(normalizeBooking);
   },
 
+  getBookingById: async (bookingId: string): Promise<TransportBooking> => {
+    const response = await axiosInstance.get(`/api/transport/bookings/${bookingId}`);
+    return normalizeBooking(response.data);
+  },
+
   bookTransport: async (data: {
     truck_id: string;
     pickup_location: string;
@@ -73,6 +78,11 @@ export const transportApi = {
 
   acceptBooking: async (bookingId: string): Promise<TransportBooking> => {
     const response = await axiosInstance.put(`/api/transport/bookings/${bookingId}/accept`);
+    return normalizeBooking(response.data);
+  },
+
+  updateStatus: async (bookingId: string, status: TransportBooking['status']): Promise<TransportBooking> => {
+    const response = await axiosInstance.put(`/api/transport/bookings/${bookingId}/status`, { status });
     return normalizeBooking(response.data);
   },
 };

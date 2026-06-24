@@ -130,6 +130,16 @@ public class StorageService {
         return bookingRepo.findByListingOwnerId(ownerId);
     }
 
+    public StorageBooking getBookingById(UUID bookingId, UUID userId) {
+        StorageBooking booking = getBookingOrThrow(bookingId);
+        boolean isOwner = booking.getListing().getOwnerId().equals(userId);
+        boolean isFarmer = booking.getFarmerId().equals(userId);
+        if (!isOwner && !isFarmer) {
+            throw new IllegalArgumentException("Not authorized to view this booking");
+        }
+        return booking;
+    }
+
     @Transactional
     public StorageBooking confirmBooking(UUID bookingId, UUID ownerId) {
         StorageBooking booking = getBookingOrThrow(bookingId);

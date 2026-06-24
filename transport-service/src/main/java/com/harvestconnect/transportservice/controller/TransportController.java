@@ -94,6 +94,19 @@ public class TransportController {
         return ResponseEntity.ok(bookings.stream().map(TransportController::toBookingResponse).toList());
     }
 
+    @GetMapping("/bookings/{id}")
+    public ResponseEntity<?> getBookingById(
+            @RequestHeader("X-User-Role") String role,
+            @RequestHeader("X-User-Id") UUID userId,
+            @PathVariable("id") Long id
+    ) {
+        if (!"FARMER".equals(role) && !"TRANSPORTER".equals(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "Not allowed"));
+        }
+        return ResponseEntity.ok(toBookingResponse(transportService.getBookingById(id, userId, role)));
+    }
+
     @PutMapping("/bookings/{id}/accept")
     public ResponseEntity<?> acceptBooking(
             @RequestHeader("X-User-Role") String role,
@@ -105,6 +118,21 @@ public class TransportController {
                     .body(Map.of("error", "Only TRANSPORTERs can accept bookings"));
         }
         return ResponseEntity.ok(toBookingResponse(transportService.acceptBooking(id, transporterId)));
+    }
+
+    @PutMapping("/bookings/{id}/status")
+    public ResponseEntity<?> updateStatus(
+            @RequestHeader("X-User-Role") String role,
+            @RequestHeader("X-User-Id") UUID transporterId,
+            @PathVariable("id") Long id,
+            @RequestBody Map<String, String> body
+    ) {
+        if (!"TRANSPORTER".equals(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "Only TRANSPORTERs can update booking status"));
+        }
+        String status = body == null ? null : body.get("status");
+        return ResponseEntity.ok(toBookingResponse(transportService.updateStatus(id, transporterId, status)));
     }
 
     private static TruckResponse toTruckResponse(TruckListing listing) {

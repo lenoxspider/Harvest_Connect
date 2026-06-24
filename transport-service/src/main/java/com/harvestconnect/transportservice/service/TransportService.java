@@ -71,6 +71,19 @@ public class TransportService {
         return bookingRepository.findByFarmerId(farmerId);
     }
 
+    public Booking getBookingById(Long bookingId, UUID userId, String role) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new IllegalArgumentException("Booking not found: " + bookingId));
+
+        boolean ok =
+                ("TRANSPORTER".equals(role) && booking.getListing().getTransporterId().equals(userId)) ||
+                ("FARMER".equals(role) && booking.getFarmerId().equals(userId));
+        if (!ok) {
+            throw new IllegalArgumentException("Not authorized to view this booking");
+        }
+        return booking;
+    }
+
     @Transactional
     public Booking acceptBooking(Long bookingId, UUID transporterId) {
         Booking booking = bookingRepository.findById(bookingId)
@@ -85,6 +98,27 @@ public class TransportService {
 
         booking.setStatus("CONFIRMED");
         booking.getListing().setStatus("BOOKED");
+        return bookingRepository.save(booking);
+    }
+
+    @Transactional
+    public Booking updateStatus(Long bookingId, UUID transporterId, String status) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new IllegalArgumentException("Booking not found: " + bookingId));
+
+        if (!booking.getListing().getTransporterId().equals(transporterId)) {
+            throw new IllegalArgumentException("Not authorized to update this booking");
+        }
+
+        String s = status == null ? "" : status.trim().toUpperCase();
+        if (!List.of("CONFIRMED", "ACTIVE", "COMPLETED", "CANCELLED").contains(s)) {
+            throw new IllegalArgumentException("Invalid status: " + status);
+        }
+
+        booking.setStatus(s);
+        if ("COMPLETED".equals(s) || "CANCELLED".equals(s)) {
+            booking.getListing().setStatus("AVAILABLE");
+        }
         return bookingRepository.save(booking);
     }
 }

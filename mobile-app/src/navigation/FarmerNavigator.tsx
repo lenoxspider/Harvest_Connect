@@ -15,6 +15,7 @@ import TransportRequestScreen from '../screens/farmer/TransportRequestScreen';
 import MyTransportBookingsScreen from '../screens/farmer/MyTransportBookingsScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
 import NotificationsScreen from '../screens/common/NotificationsScreen';
+import TrackingScreen from '../screens/common/TrackingScreen';
 import { navStyles } from './navStyles';
 
 const Stack = createStackNavigator();
@@ -34,6 +35,7 @@ const FarmerHomeStack: React.FC = () => {
       <Stack.Screen name="Home" component={FarmerHomeScreen} options={{ title: 'Home' }} />
       <Stack.Screen name="AddProduce" component={AddProduceScreen} options={{ title: 'Add Produce' }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
+      <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Tracking' }} />
       <Stack.Screen name="StorageBook" component={StorageBookScreen} options={{ title: 'Book Storage' }} />
       <Stack.Screen name="TransportRequest" component={TransportRequestScreen} options={{ title: 'Request Transport' }} />
     </Stack.Navigator>

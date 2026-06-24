@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { transportApi } from '../../api/transportApi';
 import { TransportBooking } from '../../types';
 import { colors } from '../../theme/colors';
@@ -9,6 +10,7 @@ import { GlassCard } from '../../ui/GlassCard';
 import { Screen } from '../../ui/Screen';
 
 const MyTransportBookingsScreen: React.FC = () => {
+  const navigation = useNavigation<NavigationProp<any>>();
   const [items, setItems] = useState<TransportBooking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -37,14 +39,16 @@ const MyTransportBookingsScreen: React.FC = () => {
   };
 
   const renderItem = ({ item }: { item: TransportBooking }) => (
-    <GlassCard style={styles.card}>
-      <Text style={styles.title}>Request #{item.id}</Text>
-      <Text style={styles.meta}>From: {item.pickup_location}</Text>
-      <Text style={styles.meta}>To: {item.delivery_location}</Text>
-      <Text style={styles.meta}>Date: {item.scheduled_date}</Text>
-      <Text style={styles.meta}>Status: {item.status}</Text>
-      <Text style={styles.price}>Est. cost: GHS {item.total_cost}</Text>
-    </GlassCard>
+    <TouchableOpacity activeOpacity={0.9} onPress={() => navigation.navigate('Tracking', { bookingId: item.id, type: 'transport' })}>
+      <GlassCard style={styles.card}>
+        <Text style={styles.title}>Request #{item.id}</Text>
+        <Text style={styles.meta}>From: {item.pickup_location}</Text>
+        <Text style={styles.meta}>To: {item.delivery_location}</Text>
+        <Text style={styles.meta}>Date: {item.scheduled_date}</Text>
+        <Text style={styles.meta}>Status: {item.status}</Text>
+        <Text style={styles.price}>Est. cost: GHS {item.total_cost}</Text>
+      </GlassCard>
+    </TouchableOpacity>
   );
 
   return (
@@ -84,4 +88,3 @@ const styles = StyleSheet.create({
 });
 
 export default MyTransportBookingsScreen;
-

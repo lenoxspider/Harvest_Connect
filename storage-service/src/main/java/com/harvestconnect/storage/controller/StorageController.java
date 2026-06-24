@@ -106,6 +106,14 @@ public class StorageController {
         return ResponseEntity.ok(storageService.getIncomingBookings(ownerId));
     }
 
+    @GetMapping("/bookings/{id}")
+    public ResponseEntity<?> getBookingById(
+            @RequestHeader("X-User-Id") UUID userId,
+            @PathVariable UUID id) {
+
+        return ResponseEntity.ok(storageService.getBookingById(id, userId));
+    }
+
     // ─── 7. Confirm booking (STORAGE_OWNER) ──────────────────────────────────
     @PutMapping("/bookings/{id}/confirm")
     public ResponseEntity<?> confirmBooking(

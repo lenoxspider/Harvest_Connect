@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { storageApi } from '../../api/storageApi';
 import { StorageBooking } from '../../types';
 import { colors } from '../../theme/colors';
@@ -9,6 +10,7 @@ import { GlassCard } from '../../ui/GlassCard';
 import { Screen } from '../../ui/Screen';
 
 const MyStorageBookingsScreen: React.FC = () => {
+  const navigation = useNavigation<NavigationProp<any>>();
   const [items, setItems] = useState<StorageBooking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -37,15 +39,17 @@ const MyStorageBookingsScreen: React.FC = () => {
   };
 
   const renderItem = ({ item }: { item: StorageBooking }) => (
-    <GlassCard style={styles.card}>
-      <Text style={styles.title}>Booking #{item.id}</Text>
-      <Text style={styles.meta}>Quantity: {item.quantity_tons} tons</Text>
-      <Text style={styles.meta}>
-        Dates: {item.start_date} → {item.end_date}
-      </Text>
-      <Text style={styles.meta}>Status: {item.status}</Text>
-      <Text style={styles.price}>Total: GHS {item.total_price}</Text>
-    </GlassCard>
+    <TouchableOpacity activeOpacity={0.9} onPress={() => navigation.navigate('Tracking', { bookingId: item.id, type: 'storage' })}>
+      <GlassCard style={styles.card}>
+        <Text style={styles.title}>Booking #{item.id}</Text>
+        <Text style={styles.meta}>Quantity: {item.quantity_tons} tons</Text>
+        <Text style={styles.meta}>
+          Dates: {item.start_date} → {item.end_date}
+        </Text>
+        <Text style={styles.meta}>Status: {item.status}</Text>
+        <Text style={styles.price}>Total: GHS {item.total_price}</Text>
+      </GlassCard>
+    </TouchableOpacity>
   );
 
   return (
@@ -85,4 +89,3 @@ const styles = StyleSheet.create({
 });
 
 export default MyStorageBookingsScreen;
-

@@ -3,8 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { transportApi } from '../../api/transportApi';
 import { TransportBooking } from '../../types';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 const TransporterBookingsScreen: React.FC = () => {
+  const navigation = useNavigation<NavigationProp<any>>();
   const [bookings, setBookings] = useState<TransportBooking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -43,16 +45,18 @@ const TransporterBookingsScreen: React.FC = () => {
   };
 
   const renderBooking = ({ item }: { item: TransportBooking }) => (
-    <View style={styles.bookingCard}>
-      <Text style={styles.bookingTitle}>Booking #{item.id}</Text>
-      <Text style={styles.detail}>From: {item.pickup_location}</Text>
-      <Text style={styles.detail}>To: {item.delivery_location}</Text>
-      <Text style={styles.detail}>Date: {item.scheduled_date}</Text>
-      <Text style={styles.price}>Total: ${item.total_cost}</Text>
-      <TouchableOpacity style={styles.acceptButton} onPress={() => handleAccept(item)}>
-        <Text style={styles.acceptButtonText}>Accept</Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity activeOpacity={0.9} onPress={() => navigation.navigate('Tracking', { bookingId: item.id, type: 'transport' })}>
+      <View style={styles.bookingCard}>
+        <Text style={styles.bookingTitle}>Booking #{item.id}</Text>
+        <Text style={styles.detail}>From: {item.pickup_location}</Text>
+        <Text style={styles.detail}>To: {item.delivery_location}</Text>
+        <Text style={styles.detail}>Date: {item.scheduled_date}</Text>
+        <Text style={styles.price}>Total: ${item.total_cost}</Text>
+        <TouchableOpacity style={styles.acceptButton} onPress={() => handleAccept(item)}>
+          <Text style={styles.acceptButtonText}>Accept</Text>
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
   );
 
   if (isLoading) {

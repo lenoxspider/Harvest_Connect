@@ -10,6 +10,7 @@ import IncomingBookingsScreen from '../screens/transporter/IncomingBookingsScree
 import SearchScreen from '../screens/buyer/SearchScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
 import NotificationsScreen from '../screens/common/NotificationsScreen';
+import TrackingScreen from '../screens/common/TrackingScreen';
 import { navStyles } from './navStyles';
 
 const Stack = createStackNavigator();
@@ -29,6 +30,7 @@ const TransporterHomeStack: React.FC = () => {
       <Stack.Screen name="Home" component={TransporterHomeScreen} options={{ title: 'Home' }} />
       <Stack.Screen name="AddTruck" component={AddTruckScreen} options={{ title: 'Add Truck' }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
+      <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Tracking' }} />
     </Stack.Navigator>
   );
 };
