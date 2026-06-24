@@ -31,7 +31,7 @@ const StorageBookingsScreen: React.FC = () => {
         text: 'Confirm',
         onPress: async () => {
           try {
-            // await storageApi.confirmBooking(booking.id);
+            await storageApi.confirmBooking(booking.id);
             Alert.alert('Success', 'Booking confirmed!');
             fetchBookings();
           } catch (error) {
@@ -42,16 +42,40 @@ const StorageBookingsScreen: React.FC = () => {
     ]);
   };
 
+  const handleCancel = async (booking: StorageBooking) => {
+    Alert.alert('Cancel Booking', `Cancel this storage booking?`, [
+      { text: 'Back', style: 'cancel' },
+      {
+        text: 'Cancel booking',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await storageApi.cancelBooking(booking.id);
+            Alert.alert('Cancelled', 'Booking cancelled.');
+            fetchBookings();
+          } catch (error) {
+            Alert.alert('Error', 'Could not cancel booking');
+          }
+        },
+      },
+    ]);
+  };
+
   const renderBooking = ({ item }: { item: StorageBooking }) => (
     <View style={styles.bookingCard}>
       <Text style={styles.bookingTitle}>Booking #{item.id}</Text>
-      <Text style={styles.detail}>Quantity: {item.quantity_kg}kg</Text>
+      <Text style={styles.detail}>Quantity: {item.quantity_tons} tons</Text>
       <Text style={styles.detail}>From: {item.start_date}</Text>
       <Text style={styles.detail}>To: {item.end_date}</Text>
-      <Text style={styles.price}>Total: ${item.total_cost}</Text>
-      <TouchableOpacity style={styles.confirmButton} onPress={() => handleConfirm(item)}>
-        <Text style={styles.confirmButtonText}>Confirm</Text>
-      </TouchableOpacity>
+      <Text style={styles.price}>Total: GHS {item.total_price}</Text>
+      <View style={styles.actionsRow}>
+        <TouchableOpacity style={styles.confirmButton} onPress={() => handleConfirm(item)}>
+          <Text style={styles.confirmButtonText}>Confirm</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.cancelButton} onPress={() => handleCancel(item)}>
+          <Text style={styles.cancelButtonText}>Cancel</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -135,6 +159,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   confirmButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  cancelButton: {
+    height: 40,
+    backgroundColor: '#D32F2F',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+  },
+  cancelButtonText: {
     color: '#FFFFFF',
     fontWeight: '600',
   },

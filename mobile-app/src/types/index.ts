@@ -69,11 +69,11 @@ export interface StorageBooking {
   id: string;
   storage_id: string;
   farmer_id: string;
-  quantity_kg: number;
+  quantity_tons: number;
   start_date: string;
   end_date: string;
-  total_cost: number;
-  status: 'PENDING' | 'CONFIRMED' | 'ACTIVE' | 'COMPLETED';
+  total_price: number;
+  status: 'PENDING' | 'CONFIRMED' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
 }
 
 export interface Transaction {

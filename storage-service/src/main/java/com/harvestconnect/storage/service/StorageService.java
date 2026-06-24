@@ -5,6 +5,7 @@ import com.harvestconnect.storage.domain.StorageBooking;
 import com.harvestconnect.storage.domain.StorageListing;
 import com.harvestconnect.storage.dto.BookingRequest;
 import com.harvestconnect.storage.dto.ListingRequest;
+import com.harvestconnect.storage.integration.NotificationClient;
 import com.harvestconnect.storage.repository.StorageBookingRepository;
 import com.harvestconnect.storage.repository.StorageListingRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class StorageService {
 
     private final StorageListingRepository listingRepo;
     private final StorageBookingRepository bookingRepo;
+    private final NotificationClient notificationClient;
 
     private static final BigDecimal PLATFORM_COMMISSION_RATE = new BigDecimal("0.05");
 
@@ -104,7 +106,20 @@ public class StorageService {
         booking.setTotalPrice(totalPrice);
         booking.setStatus(BookingStatus.PENDING);
 
-        return bookingRepo.save(booking);
+        StorageBooking saved = bookingRepo.save(booking);
+        safeNotify(
+                listing.getOwnerId(),
+                "New storage booking request",
+                "You have a new booking request for " + req.quantityTons() + " tons at " + listing.getFacilityName() + ".",
+                "BOOKING_REQUEST"
+        );
+        safeNotify(
+                farmerId,
+                "Storage booking requested",
+                "Your booking request was sent to " + listing.getFacilityName() + ".",
+                "BOOKING_REQUEST"
+        );
+        return saved;
     }
 
     public List<StorageBooking> getMyBookings(UUID farmerId) {
@@ -127,7 +142,14 @@ public class StorageService {
         }
 
         booking.setStatus(BookingStatus.CONFIRMED);
-        return bookingRepo.save(booking);
+        StorageBooking saved = bookingRepo.save(booking);
+        safeNotify(
+                booking.getFarmerId(),
+                "Storage booking confirmed",
+                "Your booking at " + booking.getListing().getFacilityName() + " was confirmed.",
+                "BOOKING_CONFIRMED"
+        );
+        return saved;
     }
 
     @Transactional
@@ -150,7 +172,20 @@ public class StorageService {
         listingRepo.save(listing);
 
         booking.setStatus(BookingStatus.COMPLETED);
-        return bookingRepo.save(booking);
+        StorageBooking saved = bookingRepo.save(booking);
+        safeNotify(
+                booking.getFarmerId(),
+                "Storage booking completed",
+                "Your booking at " + booking.getListing().getFacilityName() + " is completed.",
+                "BOOKING_COMPLETED"
+        );
+        safeNotify(
+                booking.getListing().getOwnerId(),
+                "Storage booking completed",
+                "A booking at " + booking.getListing().getFacilityName() + " is completed.",
+                "BOOKING_COMPLETED"
+        );
+        return saved;
     }
 
     @Transactional
@@ -173,7 +208,20 @@ public class StorageService {
         listingRepo.save(listing);
 
         booking.setStatus(BookingStatus.CANCELLED);
-        return bookingRepo.save(booking);
+        StorageBooking saved = bookingRepo.save(booking);
+        safeNotify(
+                booking.getFarmerId(),
+                "Storage booking cancelled",
+                "A storage booking at " + booking.getListing().getFacilityName() + " was cancelled.",
+                "BOOKING_CANCELLED"
+        );
+        safeNotify(
+                booking.getListing().getOwnerId(),
+                "Storage booking cancelled",
+                "A booking at " + booking.getListing().getFacilityName() + " was cancelled.",
+                "BOOKING_CANCELLED"
+        );
+        return saved;
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
@@ -181,5 +229,15 @@ public class StorageService {
     private StorageBooking getBookingOrThrow(UUID id) {
         return bookingRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking not found: " + id));
+    }
+
+    private void safeNotify(UUID userId, String title, String message, String type) {
+        try {
+            notificationClient.send(userId, title, message, type);
+        } catch (Exception e) {
+            // Notification failures must not break core flows.
+            // Rely on service logs for debugging in dev.
+            System.out.println("[notifications] failed to send: " + e.getMessage());
+        }
     }
 }

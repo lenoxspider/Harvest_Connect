@@ -77,7 +77,7 @@ const FarmerHomeScreen: React.FC = () => {
           <QuickAction
             label="Request Transport"
             imageUri="https://picsum.photos/400/300?random=22"
-            onPress={() => navigation.navigate('SearchTab')}
+            onPress={() => navigation.navigate('TransportTab')}
           />
           <QuickAction
             label="My Produce"

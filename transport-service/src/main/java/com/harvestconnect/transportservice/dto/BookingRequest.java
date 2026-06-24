@@ -3,10 +3,9 @@ package com.harvestconnect.transportservice.dto;
 import java.time.Instant;
 
 public record BookingRequest(
-        Long listingId,
-        String buyerId,
+        Long truckId,
         String pickupLocation,
-        String dropoffLocation,
-        Instant pickupTime
+        String deliveryLocation,
+        Instant scheduledDate
 ) {}
 

@@ -31,7 +31,7 @@ const TransporterBookingsScreen: React.FC = () => {
         text: 'Accept',
         onPress: async () => {
           try {
-            // await transportApi.acceptBooking(booking.id);
+            await transportApi.acceptBooking(booking.id);
             Alert.alert('Success', 'Booking accepted!');
             fetchBookings();
           } catch (error) {

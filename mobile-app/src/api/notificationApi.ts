@@ -11,8 +11,8 @@ export type AppNotification = {
 const normalizeNotification = (raw: any): AppNotification => ({
   id: String(raw?.id ?? ''),
   title: String(raw?.title ?? 'Notification'),
-  body: String(raw?.body ?? ''),
-  read: Boolean(raw?.read ?? raw?.isRead ?? false),
+  body: String(raw?.body ?? raw?.message ?? ''),
+  read: Boolean(raw?.read ?? raw?.isRead ?? raw?.is_read ?? false),
   createdAt: raw?.createdAt ? String(raw.createdAt) : raw?.created_at ? String(raw.created_at) : undefined,
 });
 
@@ -29,4 +29,3 @@ export const notificationApi = {
     return normalizeNotification(res.data);
   },
 };
-

@@ -34,8 +34,16 @@ axiosInstance.interceptors.request.use(
       return config;
     }
     const token = await AsyncStorage.getItem('jwt_token');
+    const rawUser = await AsyncStorage.getItem('user');
+    const storedUser = rawUser ? JSON.parse(rawUser) : null;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    if (storedUser?.id) {
+      config.headers['X-User-Id'] = String(storedUser.id);
+    }
+    if (storedUser?.role) {
+      config.headers['X-User-Role'] = String(storedUser.role);
     }
     // eslint-disable-next-line no-console
     console.log('[HTTP]', (config.method ?? 'GET').toUpperCase(), (config.baseURL ?? '') + url, token ? '(auth)' : '(no token)');

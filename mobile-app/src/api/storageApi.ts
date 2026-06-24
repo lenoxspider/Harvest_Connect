@@ -14,6 +14,17 @@ const normalizeListing = (raw: any): StorageListing => ({
   is_available: Boolean(raw?.is_available ?? raw?.isAvailable ?? true),
 });
 
+const normalizeBooking = (raw: any): StorageBooking => ({
+  id: String(raw?.id ?? ''),
+  storage_id: String(raw?.storage_id ?? raw?.storageListingId ?? raw?.listing?.id ?? raw?.listingId ?? ''),
+  farmer_id: String(raw?.farmer_id ?? raw?.farmerId ?? ''),
+  quantity_tons: Number(raw?.quantity_tons ?? raw?.quantityTons ?? 0),
+  start_date: String(raw?.start_date ?? raw?.startDate ?? ''),
+  end_date: String(raw?.end_date ?? raw?.endDate ?? ''),
+  total_price: Number(raw?.total_price ?? raw?.totalPrice ?? 0),
+  status: (raw?.status ?? 'PENDING') as StorageBooking['status'],
+});
+
 export const storageApi = {
   addStorage: async (data: Omit<StorageListing, 'id' | 'owner_id'>): Promise<StorageListing> => {
     const response = await axiosInstance.post('/api/storage/listings', {
@@ -33,16 +44,55 @@ export const storageApi = {
 
   getIncomingBookings: async (): Promise<StorageBooking[]> => {
     const response = await axiosInstance.get('/api/storage/bookings/incoming');
-    return response.data;
+    return (Array.isArray(response.data) ? response.data : []).map(normalizeBooking);
   },
 
   bookStorage: async (data: {
     storage_id: string;
-    quantity_kg: number;
+    quantity_tons: number;
     start_date: string;
     end_date: string;
   }): Promise<StorageBooking> => {
-    const response = await axiosInstance.post('/api/storage/bookings', data);
-    return response.data;
+    const response = await axiosInstance.post('/api/storage/bookings', {
+      storageListingId: data.storage_id,
+      quantityTons: data.quantity_tons,
+      startDate: data.start_date,
+      endDate: data.end_date,
+    });
+    return normalizeBooking(response.data);
+  },
+
+  getMyBookings: async (): Promise<StorageBooking[]> => {
+    const response = await axiosInstance.get('/api/storage/bookings/my');
+    return (Array.isArray(response.data) ? response.data : []).map(normalizeBooking);
+  },
+
+  confirmBooking: async (bookingId: string): Promise<StorageBooking> => {
+    const response = await axiosInstance.put(`/api/storage/bookings/${bookingId}/confirm`);
+    return normalizeBooking(response.data);
+  },
+
+  cancelBooking: async (bookingId: string): Promise<StorageBooking> => {
+    const response = await axiosInstance.put(`/api/storage/bookings/${bookingId}/cancel`);
+    return normalizeBooking(response.data);
+  },
+
+  getListings: async (filters?: {
+    location?: string;
+    available_tons?: number;
+    min_price?: number;
+    max_price?: number;
+  }): Promise<StorageListing[]> => {
+    const response = await axiosInstance.get('/api/storage/listings', {
+      params: filters
+        ? {
+            location: filters.location,
+            availableTons: filters.available_tons,
+            minPrice: filters.min_price,
+            maxPrice: filters.max_price,
+          }
+        : undefined,
+    });
+    return (Array.isArray(response.data) ? response.data : []).map(normalizeListing);
   },
 };
