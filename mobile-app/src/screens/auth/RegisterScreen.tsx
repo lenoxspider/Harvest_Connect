@@ -8,12 +8,18 @@ import {
   StyleSheet,
   Alert,
   ScrollView,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
-import { Picker } from '@react-native-picker/picker';
-import { GlassBackground } from '../../ui/GlassBackground';
-import { GlassCard } from '../../ui/GlassCard';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { colors } from '../../theme/colors';
+
+type RootStackParamList = {
+  Login: undefined;
+  Register: undefined;
+  Welcome: undefined;
+};
 
 const RegisterScreen: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -25,7 +31,9 @@ const RegisterScreen: React.FC = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const { register } = useAuth();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const handleRegister = async () => {
     const cleaned = {
@@ -53,189 +61,367 @@ const RegisterScreen: React.FC = () => {
     }
   };
 
+  const roles = [
+    { label: 'Farmer (FARMER)', value: 'FARMER', icon: '🌾' },
+    { label: 'Buyer (BUYER)', value: 'BUYER', icon: '🛒' },
+    { label: 'Transporter (TRANSPORTER)', value: 'TRANSPORTER', icon: '🚚' },
+    { label: 'Storage Owner (STORAGE_OWNER)', value: 'STORAGE_OWNER', icon: '🏭' },
+  ];
+
+  const getActiveRole = () => {
+    return roles.find(r => r.value === formData.role) || roles[0];
+  };
+
   return (
-    <GlassBackground>
-      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Create Account</Text>
-          <Text style={styles.subtitle}>Join HarvestConnect Today</Text>
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+      
+      {/* Back Button */}
+      <TouchableOpacity 
+        style={styles.backButton} 
+        onPress={() => navigation.goBack()}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      >
+        <Text style={styles.backText}>←</Text>
+      </TouchableOpacity>
+
+      <ScrollView 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.contentContainer}
+      >
+        {/* Wheat Logo */}
+        <View style={styles.logoCircle}>
+          <Text style={styles.logoEmoji}>🌾</Text>
         </View>
 
-        <GlassCard strength="strong">
-          <View style={styles.form}>
-            <Text style={styles.label}>Full Name</Text>
+        {/* Titles */}
+        <Text style={styles.title}>Create Account</Text>
+        <Text style={styles.subtitle}>Join the HarvestConnect community</Text>
+
+        {/* Form */}
+        <View style={styles.form}>
+          {/* Full Name */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputIcon}>👤</Text>
             <TextInput
               style={styles.input}
               value={formData.full_name}
               onChangeText={(text) => setFormData({ ...formData, full_name: text })}
-              placeholder="Enter your full name"
-              placeholderTextColor={colors.muted}
+              placeholder="Full Name"
+              placeholderTextColor="#95A5A6"
               editable={!isLoading}
               autoCapitalize="words"
             />
+          </View>
 
-            <Text style={styles.label}>Phone Number</Text>
+          {/* Phone Number */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputIcon}>📱</Text>
             <TextInput
               style={styles.input}
               value={formData.phone_number}
               onChangeText={(text) => setFormData({ ...formData, phone_number: text })}
-              placeholder="Enter your phone number"
-              placeholderTextColor={colors.muted}
+              placeholder="Phone Number"
+              placeholderTextColor="#95A5A6"
               keyboardType="phone-pad"
               editable={!isLoading}
               autoCapitalize="none"
             />
+          </View>
 
-            <Text style={styles.label}>Password</Text>
-            <View style={styles.inputWrap}>
-              <TextInput
-                style={styles.input}
-                value={formData.password}
-                onChangeText={(text) => setFormData({ ...formData, password: text })}
-                placeholder="Create a password"
-                placeholderTextColor={colors.muted}
-                secureTextEntry={!showPassword}
-                editable={!isLoading}
-                autoCapitalize="none"
-              />
-              <TouchableOpacity
-                onPress={() => setShowPassword((v) => !v)}
-                disabled={isLoading}
-                style={styles.eyeButton}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              >
-                <Text style={styles.eyeText}>{showPassword ? 'Hide' : 'Show'}</Text>
-              </TouchableOpacity>
-            </View>
+          {/* Password */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputIcon}>🔒</Text>
+            <TextInput
+              style={styles.input}
+              value={formData.password}
+              onChangeText={(text) => setFormData({ ...formData, password: text })}
+              placeholder="••••••"
+              placeholderTextColor="#95A5A6"
+              secureTextEntry={!showPassword}
+              editable={!isLoading}
+              autoCapitalize="none"
+            />
+            <TouchableOpacity
+              onPress={() => setShowPassword((v) => !v)}
+              disabled={isLoading}
+              style={styles.eyeButton}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Text style={styles.eyeEmoji}>{showPassword ? '👁️' : '🙈'}</Text>
+            </TouchableOpacity>
+          </View>
 
-            <Text style={styles.label}>I am a:</Text>
-            <View style={styles.pickerContainer}>
-              <Picker
-                selectedValue={formData.role}
-                onValueChange={(value) => setFormData({ ...formData, role: value })}
-                style={styles.picker}
-                dropdownIconColor={colors.text}
-              >
-                <Picker.Item label="Farmer" value="FARMER" />
-                <Picker.Item label="Buyer" value="BUYER" />
-                <Picker.Item label="Transporter" value="TRANSPORTER" />
-                <Picker.Item label="Storage Owner" value="STORAGE_OWNER" />
-              </Picker>
-            </View>
-
-            <Text style={styles.label}>Region</Text>
+          {/* Region */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputIcon}>📍</Text>
             <TextInput
               style={styles.input}
               value={formData.region}
               onChangeText={(text) => setFormData({ ...formData, region: text })}
-              placeholder="Enter your region"
-              placeholderTextColor={colors.muted}
+              placeholder="Region"
+              placeholderTextColor="#95A5A6"
               editable={!isLoading}
               autoCapitalize="words"
             />
-
-            <TouchableOpacity
-              style={[styles.button, isLoading && styles.buttonDisabled]}
-              onPress={handleRegister}
-              disabled={isLoading}
-            >
-              <Text style={styles.buttonText}>{isLoading ? 'Creating Account...' : 'Create Account'}</Text>
-            </TouchableOpacity>
           </View>
-        </GlassCard>
+
+          {/* Custom Role Dropdown */}
+          <View style={[styles.dropdownContainer, dropdownOpen && styles.dropdownContainerActive]}>
+            <Text style={[styles.dropdownLabel, dropdownOpen && styles.dropdownLabelActive]}>
+              Select Role
+            </Text>
+            
+            <TouchableOpacity 
+              style={styles.dropdownTrigger}
+              onPress={() => setDropdownOpen(!dropdownOpen)}
+              activeOpacity={0.8}
+            >
+              <View style={styles.dropdownTriggerLeft}>
+                <Text style={styles.dropdownRoleIcon}>{getActiveRole().icon}</Text>
+                <Text style={styles.dropdownRoleText}>{getActiveRole().label}</Text>
+              </View>
+              <Text style={[styles.dropdownArrow, dropdownOpen && { transform: [{ rotate: '180deg' }] }]}>
+                ▼
+              </Text>
+            </TouchableOpacity>
+
+            {dropdownOpen && (
+              <View style={styles.dropdownOptions}>
+                {roles.map((r) => (
+                  <TouchableOpacity
+                    key={r.value}
+                    style={styles.dropdownOption}
+                    onPress={() => {
+                      setFormData({ ...formData, role: r.value });
+                      setDropdownOpen(false);
+                    }}
+                  >
+                    <Text style={styles.optionIcon}>{r.icon}</Text>
+                    <Text style={styles.optionText}>{r.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+          </View>
+
+          {/* Submit Button */}
+          <TouchableOpacity
+            style={[styles.button, isLoading && styles.buttonDisabled]}
+            onPress={handleRegister}
+            disabled={isLoading}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.buttonText}>{isLoading ? 'Creating Account...' : 'Create Account'}</Text>
+          </TouchableOpacity>
+
+          {/* Login Redirect */}
+          <TouchableOpacity 
+            style={styles.linkButton} 
+            onPress={() => navigation.navigate('Login')}
+            disabled={isLoading}
+          >
+            <Text style={styles.linkText}>
+              Already have an account? <Text style={styles.signInHighlight}>Sign In</Text>
+            </Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
-    </GlassBackground>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 50,
+    left: 24,
+    zIndex: 10,
+    padding: 4,
+  },
+  backText: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#000000',
   },
   contentContainer: {
-    padding: 20,
-  },
-  header: {
+    paddingHorizontal: 24,
+    paddingTop: 100,
+    paddingBottom: 40,
     alignItems: 'center',
-    marginBottom: 30,
+  },
+  logoCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  logoEmoji: {
+    fontSize: 38,
   },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: 8,
+    color: '#000000',
+    textAlign: 'center',
+    marginBottom: 6,
   },
   subtitle: {
-    fontSize: 16,
-    color: colors.muted,
+    fontSize: 14,
+    color: '#7F8C8D',
+    textAlign: 'center',
+    marginBottom: 32,
   },
   form: {
     width: '100%',
   },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 8,
-    marginTop: 16,
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 52,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    marginBottom: 16,
+    backgroundColor: '#FFFFFF',
+  },
+  inputIcon: {
+    fontSize: 18,
+    marginRight: 10,
+    color: '#7F8C8D',
   },
   input: {
-    height: 50,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 14,
-    paddingHorizontal: 15,
+    flex: 1,
+    height: '100%',
     fontSize: 16,
-    backgroundColor: 'rgba(10, 14, 26, 0.55)',
-    color: colors.text,
-  },
-  inputWrap: {
-    position: 'relative',
-    justifyContent: 'center',
+    color: '#000000',
   },
   eyeButton: {
-    position: 'absolute',
-    right: 12,
-    height: 34,
-    paddingHorizontal: 10,
-    borderRadius: 10,
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.16)',
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    padding: 4,
   },
-  eyeText: {
-    color: colors.muted,
-    fontSize: 13,
+  eyeEmoji: {
+    fontSize: 18,
+    color: '#7F8C8D',
+  },
+  // Custom dropdown styles
+  dropdownContainer: {
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 10,
+    marginBottom: 24,
+    backgroundColor: '#FFFFFF',
+    position: 'relative',
+  },
+  dropdownContainerActive: {
+    borderWidth: 1.5,
+    borderColor: '#1E5631',
+  },
+  dropdownLabel: {
+    position: 'absolute',
+    top: -10,
+    left: 12,
+    fontSize: 11,
+    color: '#7F8C8D',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 6,
+    fontWeight: '700',
+  },
+  dropdownLabelActive: {
+    color: '#1E5631',
+  },
+  dropdownTrigger: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: 50,
+    paddingHorizontal: 14,
+  },
+  dropdownTriggerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  dropdownRoleIcon: {
+    fontSize: 18,
+    marginRight: 10,
+  },
+  dropdownRoleText: {
+    fontSize: 16,
+    color: '#000000',
     fontWeight: '600',
   },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 14,
-    backgroundColor: 'rgba(10, 14, 26, 0.55)',
+  dropdownArrow: {
+    fontSize: 12,
+    color: '#7F8C8D',
   },
-  picker: {
-    height: 50,
-    color: colors.text,
+  dropdownOptions: {
+    borderTopWidth: 1,
+    borderTopColor: '#E2E8F0',
+    backgroundColor: '#FFFFFF',
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    overflow: 'hidden',
+  },
+  dropdownOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 48,
+    paddingHorizontal: 14,
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#F1F5F9',
+  },
+  optionIcon: {
+    fontSize: 18,
+    marginRight: 10,
+  },
+  optionText: {
+    fontSize: 15,
+    color: '#000000',
+    fontWeight: '500',
   },
   button: {
     height: 50,
-    backgroundColor: 'rgba(124, 255, 178, 0.18)',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(124, 255, 178, 0.35)',
+    backgroundColor: '#1E5631',
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 24,
-    marginBottom: 30,
+    marginTop: 10,
+    shadowColor: '#1E5631',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
   },
   buttonDisabled: {
-    opacity: 0.55,
+    opacity: 0.6,
   },
   buttonText: {
-    color: colors.text,
+    color: '#FFFFFF',
     fontSize: 16,
+    fontWeight: 'bold',
+  },
+  linkButton: {
+    marginTop: 24,
+    alignItems: 'center',
+  },
+  linkText: {
+    color: '#7F8C8D',
+    fontSize: 14,
+  },
+  signInHighlight: {
+    color: '#1E5631',
     fontWeight: 'bold',
   },
 });

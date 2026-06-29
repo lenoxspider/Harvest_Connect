@@ -1,4 +1,4 @@
-﻿// src/navigation/FarmerNavigator.tsx
+// src/navigation/FarmerNavigator.tsx
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -46,9 +46,17 @@ const FarmerNavigator: React.FC = () => {
   return (
     <Tab.Navigator
       screenOptions={{
-        ...navStyles.tabBar,
         headerShown: false,
-        tabBarLabelStyle: { fontWeight: '700' },
+        tabBarLabelStyle: { fontWeight: '700', fontSize: 10 },
+        tabBarActiveTintColor: '#1E5631',
+        tabBarInactiveTintColor: '#7F8C8D',
+        tabBarStyle: {
+          backgroundColor: '#FFFFFF',
+          borderTopColor: '#E2E8F0',
+          borderTopWidth: 1,
+          height: 60,
+          paddingBottom: 8,
+        },
       }}
     >
       <Tab.Screen
@@ -66,7 +74,7 @@ const FarmerNavigator: React.FC = () => {
           title: 'Storage',
           ...navStyles.header,
           headerShown: true,
-          tabBarIcon: tabIcon(0x1f50d),
+          tabBarIcon: tabIcon(0x1f3ed),
         }}
       />
       <Tab.Screen
@@ -107,6 +115,7 @@ const FarmerNavigator: React.FC = () => {
           ...navStyles.header,
           headerShown: true,
           tabBarIcon: tabIcon(0x1f33e),
+          tabBarButton: () => null, // hide from tab bar, keep route register
         }}
       />
       <Tab.Screen
@@ -116,7 +125,7 @@ const FarmerNavigator: React.FC = () => {
           title: 'Orders',
           ...navStyles.header,
           headerShown: true,
-          tabBarIcon: tabIcon(0x1f4e6),
+          tabBarIcon: tabIcon(0x1f6d2),
         }}
       />
       <Tab.Screen

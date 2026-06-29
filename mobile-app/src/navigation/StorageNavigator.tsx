@@ -1,4 +1,4 @@
-﻿// src/navigation/StorageNavigator.tsx
+// src/navigation/StorageNavigator.tsx
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -39,9 +39,17 @@ const StorageNavigator: React.FC = () => {
   return (
     <Tab.Navigator
       screenOptions={{
-        ...navStyles.tabBar,
         headerShown: false,
-        tabBarLabelStyle: { fontWeight: '700' },
+        tabBarLabelStyle: { fontWeight: '700', fontSize: 10 },
+        tabBarActiveTintColor: '#1565C0',
+        tabBarInactiveTintColor: '#7F8C8D',
+        tabBarStyle: {
+          backgroundColor: '#FFFFFF',
+          borderTopColor: '#E2E8F0',
+          borderTopWidth: 1,
+          height: 60,
+          paddingBottom: 8,
+        },
       }}
     >
       <Tab.Screen
@@ -69,7 +77,7 @@ const StorageNavigator: React.FC = () => {
           title: 'Facilities',
           ...navStyles.header,
           headerShown: true,
-          tabBarIcon: tabIcon(0x1f3ec),
+          tabBarIcon: tabIcon(0x1f3ed),
         }}
       />
       <Tab.Screen
@@ -79,7 +87,7 @@ const StorageNavigator: React.FC = () => {
           title: 'Bookings',
           ...navStyles.header,
           headerShown: true,
-          tabBarIcon: tabIcon(0x1f4e6),
+          tabBarIcon: tabIcon(0x1f4cb),
         }}
       />
       <Tab.Screen
