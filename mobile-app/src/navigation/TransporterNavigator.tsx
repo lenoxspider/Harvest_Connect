@@ -12,6 +12,7 @@ import ProfileScreen from '../screens/common/ProfileScreen';
 import NotificationsScreen from '../screens/common/NotificationsScreen';
 import TrackingScreen from '../screens/common/TrackingScreen';
 import { navStyles } from './navStyles';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -24,9 +25,16 @@ const tabIcon =
     </Text>
   );
 
+const transporterHeader = {
+  headerStyle: { backgroundColor: '#E65100' },
+  headerTintColor: '#FFFFFF',
+  headerTitleStyle: { fontWeight: '800' as const },
+  headerShadowVisible: false,
+};
+
 const TransporterHomeStack: React.FC = () => {
   return (
-    <Stack.Navigator screenOptions={navStyles.header}>
+    <Stack.Navigator screenOptions={transporterHeader}>
       <Stack.Screen name="Home" component={TransporterHomeScreen} options={{ title: 'Home' }} />
       <Stack.Screen name="AddTruck" component={AddTruckScreen} options={{ title: 'Add Truck' }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
@@ -36,6 +44,8 @@ const TransporterHomeStack: React.FC = () => {
 };
 
 const TransporterNavigator: React.FC = () => {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -47,8 +57,8 @@ const TransporterNavigator: React.FC = () => {
           backgroundColor: '#FFFFFF',
           borderTopColor: '#E2E8F0',
           borderTopWidth: 1,
-          height: 60,
-          paddingBottom: 8,
+          height: 60 + insets.bottom,
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
         },
       }}
     >
@@ -65,7 +75,7 @@ const TransporterNavigator: React.FC = () => {
         component={SearchScreen}
         options={{
           title: 'Search',
-          ...navStyles.header,
+          ...transporterHeader,
           headerShown: true,
           tabBarIcon: tabIcon(0x1f50d),
         }}
@@ -75,7 +85,7 @@ const TransporterNavigator: React.FC = () => {
         component={MyListingsScreen}
         options={{
           title: 'Trucks',
-          ...navStyles.header,
+          ...transporterHeader,
           headerShown: true,
           tabBarIcon: tabIcon(0x1f69a),
         }}
@@ -85,7 +95,7 @@ const TransporterNavigator: React.FC = () => {
         component={IncomingBookingsScreen}
         options={{
           title: 'Bookings',
-          ...navStyles.header,
+          ...transporterHeader,
           headerShown: true,
           tabBarIcon: tabIcon(0x1f4cb),
         }}
@@ -95,7 +105,7 @@ const TransporterNavigator: React.FC = () => {
         component={ProfileScreen}
         options={{
           title: 'Account',
-          ...navStyles.header,
+          ...transporterHeader,
           headerShown: true,
           tabBarIcon: tabIcon(0x1f464),
         }}

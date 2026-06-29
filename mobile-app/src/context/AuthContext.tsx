@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import { User } from '../types';
 import { authApi } from '../api/authApi';
+import { colors } from '../theme/colors';
 
 interface AuthContextType {
   user: User | null;
@@ -42,6 +43,57 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     checkAuthState();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'FARMER') {
+        colors.bg = '#EDF4ED';
+        colors.bg2 = '#1E5631';
+        colors.text = '#000000';
+        colors.muted = '#7F8C8D';
+        colors.glass = '#FFFFFF';
+        colors.glassStrong = '#F9F9F9';
+        colors.border = '#E2E8F0';
+        colors.borderStrong = '#CBD5E1';
+      } else if (user.role === 'STORAGE_OWNER') {
+        colors.bg = '#EDF4F9';
+        colors.bg2 = '#1565C0';
+        colors.text = '#000000';
+        colors.muted = '#7F8C8D';
+        colors.glass = '#FFFFFF';
+        colors.glassStrong = '#F9F9F9';
+        colors.border = '#E2E8F0';
+        colors.borderStrong = '#CBD5E1';
+      } else if (user.role === 'TRANSPORTER') {
+        colors.bg = '#FAF0E6';
+        colors.bg2 = '#E65100';
+        colors.text = '#000000';
+        colors.muted = '#7F8C8D';
+        colors.glass = '#FFFFFF';
+        colors.glassStrong = '#F9F9F9';
+        colors.border = '#E2E8F0';
+        colors.borderStrong = '#CBD5E1';
+      } else {
+        colors.bg = '#070A12';
+        colors.bg2 = '#0B1020';
+        colors.text = '#EAF0FF';
+        colors.muted = 'rgba(234, 240, 255, 0.72)';
+        colors.glass = 'rgba(255, 255, 255, 0.10)';
+        colors.glassStrong = 'rgba(255, 255, 255, 0.16)';
+        colors.border = 'rgba(255, 255, 255, 0.18)';
+        colors.borderStrong = 'rgba(255, 255, 255, 0.26)';
+      }
+    } else {
+      colors.bg = '#070A12';
+      colors.bg2 = '#0B1020';
+      colors.text = '#EAF0FF';
+      colors.muted = 'rgba(234, 240, 255, 0.72)';
+      colors.glass = 'rgba(255, 255, 255, 0.10)';
+      colors.glassStrong = 'rgba(255, 255, 255, 0.16)';
+      colors.border = 'rgba(255, 255, 255, 0.18)';
+      colors.borderStrong = 'rgba(255, 255, 255, 0.26)';
+    }
+  }, [user]);
 
   const checkAuthState = async () => {
     try {

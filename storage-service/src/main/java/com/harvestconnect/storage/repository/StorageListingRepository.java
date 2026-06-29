@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface StorageListingRepository extends JpaRepository<StorageListing, UUID> {
 
     @Query("SELECT l FROM StorageListing l WHERE " +
-           "(:location IS NULL OR LOWER(l.location) LIKE LOWER(CONCAT('%', :location, '%'))) AND " +
+           "(CAST(:location AS string) IS NULL OR LOWER(l.location) LIKE LOWER(CONCAT('%', CAST(:location AS string), '%'))) AND " +
            "(:availableTons IS NULL OR l.availableTons >= :availableTons) AND " +
            "(:minPrice IS NULL OR l.pricePerTonPerDay >= :minPrice) AND " +
            "(:maxPrice IS NULL OR l.pricePerTonPerDay <= :maxPrice) AND " +

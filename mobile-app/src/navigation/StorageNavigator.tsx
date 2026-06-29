@@ -13,6 +13,8 @@ import NotificationsScreen from '../screens/common/NotificationsScreen';
 import TrackingScreen from '../screens/common/TrackingScreen';
 import { navStyles } from './navStyles';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -24,9 +26,16 @@ const tabIcon =
     </Text>
   );
 
+const storageHeader = {
+  headerStyle: { backgroundColor: '#1565C0' },
+  headerTintColor: '#FFFFFF',
+  headerTitleStyle: { fontWeight: '800' as const },
+  headerShadowVisible: false,
+};
+
 const StorageHomeStack: React.FC = () => {
   return (
-    <Stack.Navigator screenOptions={navStyles.header}>
+    <Stack.Navigator screenOptions={storageHeader}>
       <Stack.Screen name="Home" component={StorageOwnerHomeScreen} options={{ title: 'Home' }} />
       <Stack.Screen name="AddStorage" component={AddStorageScreen} options={{ title: 'Add Storage Facility' }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
@@ -36,6 +45,8 @@ const StorageHomeStack: React.FC = () => {
 };
 
 const StorageNavigator: React.FC = () => {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -47,8 +58,8 @@ const StorageNavigator: React.FC = () => {
           backgroundColor: '#FFFFFF',
           borderTopColor: '#E2E8F0',
           borderTopWidth: 1,
-          height: 60,
-          paddingBottom: 8,
+          height: 60 + insets.bottom,
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
         },
       }}
     >
@@ -65,7 +76,7 @@ const StorageNavigator: React.FC = () => {
         component={SearchScreen}
         options={{
           title: 'Search',
-          ...navStyles.header,
+          ...storageHeader,
           headerShown: true,
           tabBarIcon: tabIcon(0x1f50d),
         }}
@@ -75,7 +86,7 @@ const StorageNavigator: React.FC = () => {
         component={MyFacilitiesScreen}
         options={{
           title: 'Facilities',
-          ...navStyles.header,
+          ...storageHeader,
           headerShown: true,
           tabBarIcon: tabIcon(0x1f3ed),
         }}
@@ -85,7 +96,7 @@ const StorageNavigator: React.FC = () => {
         component={StorageBookingsScreen}
         options={{
           title: 'Bookings',
-          ...navStyles.header,
+          ...storageHeader,
           headerShown: true,
           tabBarIcon: tabIcon(0x1f4cb),
         }}
@@ -95,7 +106,7 @@ const StorageNavigator: React.FC = () => {
         component={ProfileScreen}
         options={{
           title: 'Account',
-          ...navStyles.header,
+          ...storageHeader,
           headerShown: true,
           tabBarIcon: tabIcon(0x1f464),
         }}

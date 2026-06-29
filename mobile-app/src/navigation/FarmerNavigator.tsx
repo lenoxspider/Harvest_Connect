@@ -18,6 +18,8 @@ import NotificationsScreen from '../screens/common/NotificationsScreen';
 import TrackingScreen from '../screens/common/TrackingScreen';
 import { navStyles } from './navStyles';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -29,20 +31,26 @@ const tabIcon =
     </Text>
   );
 
+const farmerHeader = {
+  headerStyle: { backgroundColor: '#1E5631' },
+  headerTintColor: '#FFFFFF',
+  headerTitleStyle: { fontWeight: '800' as const },
+  headerShadowVisible: false,
+};
+
 const FarmerHomeStack: React.FC = () => {
   return (
-    <Stack.Navigator screenOptions={navStyles.header}>
-      <Stack.Screen name="Home" component={FarmerHomeScreen} options={{ title: 'Home' }} />
-      <Stack.Screen name="AddProduce" component={AddProduceScreen} options={{ title: 'Add Produce' }} />
+    <Stack.Navigator screenOptions={farmerHeader}>
+      <Stack.Screen name="Home" component={FarmerHomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
-      <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Tracking' }} />
-      <Stack.Screen name="StorageBook" component={StorageBookScreen} options={{ title: 'Book Storage' }} />
-      <Stack.Screen name="TransportRequest" component={TransportRequestScreen} options={{ title: 'Request Transport' }} />
+      <Stack.Screen name="AddProduce" component={AddProduceScreen} options={{ title: 'Add Produce' }} />
     </Stack.Navigator>
   );
 };
 
 const FarmerNavigator: React.FC = () => {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -54,8 +62,8 @@ const FarmerNavigator: React.FC = () => {
           backgroundColor: '#FFFFFF',
           borderTopColor: '#E2E8F0',
           borderTopWidth: 1,
-          height: 60,
-          paddingBottom: 8,
+          height: 60 + insets.bottom,
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
         },
       }}
     >
@@ -72,7 +80,7 @@ const FarmerNavigator: React.FC = () => {
         component={StorageBrowseScreen}
         options={{
           title: 'Storage',
-          ...navStyles.header,
+          ...farmerHeader,
           headerShown: true,
           tabBarIcon: tabIcon(0x1f3ed),
         }}
@@ -82,7 +90,7 @@ const FarmerNavigator: React.FC = () => {
         component={MyStorageBookingsScreen}
         options={{
           title: 'My Storage',
-          ...navStyles.header,
+          ...farmerHeader,
           headerShown: true,
           tabBarIcon: tabIcon(0x1f4e6),
         }}
@@ -92,7 +100,7 @@ const FarmerNavigator: React.FC = () => {
         component={TransportBrowseScreen}
         options={{
           title: 'Transport',
-          ...navStyles.header,
+          ...farmerHeader,
           headerShown: true,
           tabBarIcon: tabIcon(0x1f69a),
         }}
@@ -102,7 +110,7 @@ const FarmerNavigator: React.FC = () => {
         component={MyTransportBookingsScreen}
         options={{
           title: 'My Trips',
-          ...navStyles.header,
+          ...farmerHeader,
           headerShown: true,
           tabBarIcon: tabIcon(0x1f5fa),
         }}
@@ -112,7 +120,7 @@ const FarmerNavigator: React.FC = () => {
         component={MyListingsScreen}
         options={{
           title: 'Listings',
-          ...navStyles.header,
+          ...farmerHeader,
           headerShown: true,
           tabBarIcon: tabIcon(0x1f33e),
           tabBarButton: () => null, // hide from tab bar, keep route register
@@ -123,7 +131,7 @@ const FarmerNavigator: React.FC = () => {
         component={IncomingOrdersScreen}
         options={{
           title: 'Orders',
-          ...navStyles.header,
+          ...farmerHeader,
           headerShown: true,
           tabBarIcon: tabIcon(0x1f6d2),
         }}
@@ -133,7 +141,7 @@ const FarmerNavigator: React.FC = () => {
         component={ProfileScreen}
         options={{
           title: 'Account',
-          ...navStyles.header,
+          ...farmerHeader,
           headerShown: true,
           tabBarIcon: tabIcon(0x1f464),
         }}

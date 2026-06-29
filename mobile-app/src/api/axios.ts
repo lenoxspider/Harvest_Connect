@@ -2,7 +2,28 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
+import Constants from 'expo-constants';
+
+const getBaseUrl = () => {
+  // 1. Check if env variable is explicitly defined
+  if (process.env.EXPO_PUBLIC_API_BASE_URL) {
+    return process.env.EXPO_PUBLIC_API_BASE_URL;
+  }
+  
+  // 2. Extract from Metro's hostUri (looks like "192.168.1.100:8081" or similar)
+  const hostUri = Constants.expoConfig?.hostUri;
+  if (hostUri) {
+    const ip = hostUri.split(':')[0];
+    if (ip) {
+      return `http://${ip}:8080`;
+    }
+  }
+  
+  // 3. Fallback to localhost
+  return 'http://localhost:8080';
+};
+
+export const API_BASE_URL = getBaseUrl();
 
 // Helps debug device networking issues (LAN vs tunnel).
 // Check Metro logs for this line when the app boots.

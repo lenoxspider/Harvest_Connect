@@ -7,11 +7,13 @@ type Props = {
 };
 
 export function GlassBackground({ children }: Props) {
+  const isLight = colors.bg !== '#070A12';
+
   return (
-    <View style={styles.root}>
-      <View pointerEvents="none" style={styles.orbA} />
-      <View pointerEvents="none" style={styles.orbB} />
-      <View pointerEvents="none" style={styles.orbC} />
+    <View style={[styles.root, { backgroundColor: colors.bg }]}>
+      {!isLight && <View pointerEvents="none" style={styles.orbA} />}
+      {!isLight && <View pointerEvents="none" style={styles.orbB} />}
+      {!isLight && <View pointerEvents="none" style={styles.orbC} />}
       {children}
     </View>
   );
