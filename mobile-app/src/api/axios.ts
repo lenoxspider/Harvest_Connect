@@ -60,8 +60,15 @@ axiosInstance.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    if (storedUser?.id) {
-      config.headers['X-User-Id'] = String(storedUser.id);
+    const xUserId = config.headers['X-User-Id'] ?? (storedUser?.id ? String(storedUser.id) : undefined);
+    if (xUserId) {
+      const idStr = String(xUserId);
+      if (idStr.includes('-')) {
+        config.headers['X-User-Id'] = idStr;
+      } else {
+        const paddedId = idStr.padStart(12, '0');
+        config.headers['X-User-Id'] = `00000000-0000-0000-0000-${paddedId}`;
+      }
     }
     if (storedUser?.role) {
       config.headers['X-User-Role'] = String(storedUser.role);

@@ -42,6 +42,7 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<UserProfileDto> getCurrentUser(@AuthenticationPrincipal User user) {
         UserProfileDto profile = UserProfileDto.builder()
+                .id(user.getId())
                 .fullName(user.getFullName())
                 .phoneNumber(user.getPhoneNumber())
                 .role(user.getRole())
