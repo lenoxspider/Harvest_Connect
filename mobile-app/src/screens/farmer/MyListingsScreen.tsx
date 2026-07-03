@@ -58,7 +58,7 @@ const FarmerListingsScreen: React.FC = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              // await produceApi.deleteListing(listing.id);
+              await produceApi.deleteListing(listing.id);
               Alert.alert('Success', 'Listing deleted');
               fetchMyListings();
             } catch (error) {

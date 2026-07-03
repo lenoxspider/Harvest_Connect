@@ -68,4 +68,8 @@ export const produceApi = {
     const response = await axiosInstance.put(`/api/produce/orders/${orderId}/decline`);
     return normalizeOrder(response.data);
   },
+
+  deleteListing: async (id: string): Promise<void> => {
+    await axiosInstance.delete(`/api/produce/listings/${id}`);
+  },
 };
