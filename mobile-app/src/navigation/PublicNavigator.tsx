@@ -21,7 +21,7 @@ const PublicNavigator: React.FC = () => {
       <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ProduceListPublic" component={PublicProduceListScreen} options={{ title: 'Produce' }} />
       <Stack.Screen name="PublicProduceDetail" component={PublicProduceDetailScreen} options={{ title: 'Details' }} />
-      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Register" component={RegisterScreen} options={{ title: 'Create Account' }} />
     </Stack.Navigator>

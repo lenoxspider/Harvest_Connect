@@ -36,7 +36,7 @@ const HomeStack: React.FC = () => {
   return (
     <Stack.Navigator screenOptions={buyerHeader}>
       <Stack.Screen name="Home" component={BuyerHomeScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Track Order' }} />
     </Stack.Navigator>
   );
