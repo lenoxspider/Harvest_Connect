@@ -13,6 +13,7 @@ import {
 import { useFocusEffect, useNavigation, NavigationProp } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { buyerApi, BuyerListing } from '../../api/buyerApi';
+import { produceApi } from '../../api/produceApi';
 
 export default function CartScreen() {
   const navigation = useNavigation<NavigationProp<any>>();
@@ -52,11 +53,24 @@ export default function CartScreen() {
   };
 
   const handleCheckout = async () => {
-    // checkout simulation
-    await AsyncStorage.removeItem('cart_items');
-    setCartItems([]);
-    alert('Order placed successfully!');
-    navigation.navigate('OrdersTab');
+    try {
+      setIsLoading(true);
+      for (const item of cartItems) {
+        await produceApi.placeOrder({
+          listing_id: item.id,
+          quantity_kg: 50, // default quantity per checkout item
+        });
+      }
+      await AsyncStorage.removeItem('cart_items');
+      setCartItems([]);
+      alert('Order placed successfully!');
+      navigation.navigate('OrdersTab');
+    } catch (e) {
+      console.error('Error checkout:', e);
+      alert('Could not place order on backend');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const total = cartItems.reduce((sum, item) => sum + item.pricePerBag, 0);
