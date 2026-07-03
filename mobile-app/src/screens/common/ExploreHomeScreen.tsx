@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import {
   Image,
   ImageBackground,
@@ -21,6 +21,7 @@ import { GlassButton } from '../../ui/GlassButton';
 import { Screen } from '../../ui/Screen';
 import { useHomepageSettings } from '../../hooks/useHomepageSettings';
 import { useAuth } from '../../context/AuthContext';
+import { storageApi } from '../../api/storageApi';
 
 const ACCENT = '#C0392B';
 
@@ -39,6 +40,7 @@ const ExploreHomeScreen: React.FC = () => {
   const [query, setQuery] = useState('');
   const { settings } = useHomepageSettings();
   const { user } = useAuth();
+  const [featuredListings, setFeaturedListings] = useState<any[]>([]);
 
   const canNavigateTo = (routeName: string) => {
     const state = navigation.getState?.();
@@ -70,14 +72,32 @@ const ExploreHomeScreen: React.FC = () => {
     [settings.heroImage1, settings.heroImage2, settings.heroImage3, settings.heroImage4]
   );
 
-  const featured = useMemo(
-    () => [
-      { id: '1', name: 'Tema Cold Storage', location: 'Greater Accra', price: 'GHS 70/ton', imageUri: settings.featuredImage1 },
-      { id: '2', name: 'Koforidua Warehouse', location: 'Eastern', price: 'GHS 58/ton', imageUri: settings.featuredImage2 },
-      { id: '3', name: 'Takoradi Hub', location: 'Western', price: 'GHS 62/ton', imageUri: settings.featuredImage3 },
-    ],
-    [settings.featuredImage1, settings.featuredImage2, settings.featuredImage3]
-  );
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const data = await storageApi.getListings();
+        if (data.length > 0) {
+          setFeaturedListings(
+            data.slice(0, 3).map((item, idx) => {
+              const fallbackImages = [settings.featuredImage1, settings.featuredImage2, settings.featuredImage3];
+              return {
+                id: item.id,
+                name: item.facility_name,
+                location: item.location,
+                price: `GHS ${item.price_per_ton_per_day}/ton`,
+                imageUri: fallbackImages[idx % 3] || settings.featuredImage1,
+              };
+            })
+          );
+        } else {
+          setFeaturedListings([]);
+        }
+      } catch (e) {
+        setFeaturedListings([]);
+      }
+    };
+    fetchFeatured();
+  }, [settings]);
 
   const onHeroScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const w = e.nativeEvent.layoutMeasurement.width;
@@ -208,20 +228,26 @@ const ExploreHomeScreen: React.FC = () => {
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.hList}>
-        {featured.map((f) => (
-          <GlassCard key={f.id} style={styles.hCard}>
-            <Image source={{ uri: f.imageUri }} style={styles.hCardImg} />
-            <View style={styles.hCardBody}>
-              <Text style={styles.hCardTitle} numberOfLines={1}>
-                {f.name}
-              </Text>
-              <Text style={styles.hCardMeta} numberOfLines={1}>
-                {icon(0x1f4cd)} {f.location}
-              </Text>
-              <Text style={styles.hCardPrice}>{f.price}</Text>
-            </View>
-          </GlassCard>
-        ))}
+        {featuredListings.length === 0 ? (
+          <Text style={{ color: colors.muted, fontWeight: '700', marginHorizontal: 20, marginVertical: 10 }}>
+            No listings available
+          </Text>
+        ) : (
+          featuredListings.map((f) => (
+            <GlassCard key={f.id} style={styles.hCard}>
+              <Image source={{ uri: f.imageUri }} style={styles.hCardImg} />
+              <View style={styles.hCardBody}>
+                <Text style={styles.hCardTitle} numberOfLines={1}>
+                  {f.name}
+                </Text>
+                <Text style={styles.hCardMeta} numberOfLines={1}>
+                  {icon(0x1f4cd)} {f.location}
+                </Text>
+                <Text style={styles.hCardPrice}>{f.price}</Text>
+              </View>
+            </GlassCard>
+          ))
+        )}
       </ScrollView>
     </Screen>
   );
