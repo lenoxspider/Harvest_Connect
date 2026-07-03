@@ -45,7 +45,7 @@ const HomeStack: React.FC = () => {
 const BrowseStack: React.FC = () => {
   return (
     <Stack.Navigator screenOptions={buyerHeader}>
-      <Stack.Screen name="ProduceList" component={ProduceListScreen} options={{ title: 'Browse Produce' }} />
+      <Stack.Screen name="ProduceList" component={ProduceListScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ProduceDetail" component={ProduceDetailScreen} options={{ title: 'Produce Details' }} />
     </Stack.Navigator>
   );
@@ -122,8 +122,7 @@ const BuyerNavigator: React.FC = () => {
         component={ProfileScreen}
         options={{
           title: 'Account',
-          ...buyerHeader,
-          headerShown: true,
+          headerShown: false,
           tabBarIcon: tabIcon(0x1f464),
         }}
       />
