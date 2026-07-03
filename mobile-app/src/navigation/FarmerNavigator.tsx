@@ -56,6 +56,15 @@ const FarmerHomeStack: React.FC = () => {
   );
 };
 
+const ListingsStack: React.FC = () => {
+  return (
+    <Stack.Navigator screenOptions={farmerHeader}>
+      <Stack.Screen name="MyListings" component={MyListingsScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="AddProduce" component={AddProduceScreen} options={{ title: 'Add Produce' }} />
+    </Stack.Navigator>
+  );
+};
+
 const FarmerNavigator: React.FC = () => {
   const insets = useSafeAreaInsets();
 
@@ -85,11 +94,9 @@ const FarmerNavigator: React.FC = () => {
       />
       <Tab.Screen
         name="ListingsTab"
-        component={MyListingsScreen}
+        component={ListingsStack}
         options={{
           title: 'Listings',
-          ...farmerHeader,
-          headerShown: true,
           tabBarIcon: tabIcon(0x1f33e),
         }}
       />
