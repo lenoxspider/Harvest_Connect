@@ -10,6 +10,7 @@ import {
   StatusBar,
   Dimensions,
   Platform,
+  ScrollView,
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -246,9 +247,7 @@ export default function NotificationsScreen() {
     if (groupedNotifications.Yesterday.length > 0) {
       list.push({ title: 'Yesterday', data: groupedNotifications.Yesterday });
     }
-    if (groupedNotifications.ItemsWeek && groupedNotifications.ItemsWeek.length > 0) {
-      list.push({ title: 'This Week', data: groupedNotifications.ItemsWeek });
-    } else if (groupedNotifications['This Week'] && groupedNotifications['This Week'].length > 0) {
+    if (groupedNotifications['This Week'] && groupedNotifications['This Week'].length > 0) {
       list.push({ title: 'This Week', data: groupedNotifications['This Week'] });
     }
     if (groupedNotifications.Older.length > 0) {

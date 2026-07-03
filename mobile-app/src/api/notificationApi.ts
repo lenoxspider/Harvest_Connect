@@ -49,6 +49,7 @@ export const notificationApi = {
         title: 'Notification',
         body: '',
         read: true,
+        type: 'general',
       };
     }
   },
