@@ -31,39 +31,6 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 // Mock Data
 const QUICK_FILTERS = ['All', 'Available Now', 'Refrigerated', 'Bulk', 'Long Distance'];
 
-const POPULAR_ROUTES = [
-  {
-    id: 'route-1',
-    from: 'Kumasi',
-    to: 'Accra',
-    avgPrice: 'GHS 100/ton',
-    time: '4 hours',
-    drivers: 3,
-    latitude: 6.2,
-    longitude: -0.9,
-  },
-  {
-    id: 'route-2',
-    from: 'Tamale',
-    to: 'Kumasi',
-    avgPrice: 'GHS 180/ton',
-    time: '8 hours',
-    drivers: 5,
-    latitude: 8.2,
-    longitude: -1.3,
-  },
-  {
-    id: 'route-3',
-    from: 'Takoradi',
-    to: 'Accra',
-    avgPrice: 'GHS 90/ton',
-    time: '3.5 hours',
-    drivers: 2,
-    latitude: 5.3,
-    longitude: -1.1,
-  },
-];
-
 export default function TransportBrowseScreen() {
   const navigation = useNavigation<NavigationProp<any>>();
   const insets = useSafeAreaInsets();
@@ -269,55 +236,7 @@ export default function TransportBrowseScreen() {
           )}
         </View>
 
-        {/* POPULAR ROUTES */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Popular Routes</Text>
-          <TouchableOpacity>
-            <Text style={styles.seeAllText}>See all</Text>
-          </TouchableOpacity>
-        </View>
 
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.routesContainer}
-          contentContainerStyle={styles.routesContent}
-        >
-          {POPULAR_ROUTES.map((route) => (
-            <View key={route.id} style={styles.routeCard}>
-              <View style={styles.mapThumbnailContainer}>
-                {MapView ? (
-                  <MapView
-                    style={styles.mapThumbnail}
-                    scrollEnabled={false}
-                    zoomEnabled={false}
-                    rotateEnabled={false}
-                    pitchEnabled={false}
-                    initialRegion={{
-                      latitude: route.latitude,
-                      longitude: route.longitude,
-                      latitudeDelta: 0.1,
-                      longitudeDelta: 0.1,
-                    }}
-                  />
-                ) : (
-                  <Image
-                    source={{ uri: 'https://picsum.photos/300/150' }}
-                    style={styles.mapThumbnail}
-                  />
-                )}
-              </View>
-              <View style={styles.routeCardBody}>
-                <Text style={styles.routeTitle}>{route.from} → {route.to}</Text>
-                <Text style={styles.routeInfo}>Avg Price: {route.avgPrice}</Text>
-                <Text style={styles.routeInfo}>Est. Time: {route.time}</Text>
-                <View style={styles.routePill}>
-                  <Text style={styles.routePillText}>{route.drivers} Drivers Available</Text>
-                </View>
-              </View>
-            </View>
-          ))}
-        </ScrollView>
 
         {/* HOW IT WORKS */}
         <View style={styles.howItWorksCard}>
