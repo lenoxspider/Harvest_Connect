@@ -42,7 +42,7 @@ const FarmerHomeStack: React.FC = () => {
   return (
     <Stack.Navigator screenOptions={farmerHeader}>
       <Stack.Screen name="Home" component={FarmerHomeScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AddProduce" component={AddProduceScreen} options={{ title: 'Add Produce' }} />
       <Stack.Screen name="StorageBrowse" component={StorageBrowseScreen} options={{ title: 'Find Storage', headerShown: false }} />
       <Stack.Screen name="StorageBook" component={StorageBookScreen} options={{ title: 'Book Storage' }} />

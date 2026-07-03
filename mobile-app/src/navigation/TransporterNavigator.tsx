@@ -37,7 +37,7 @@ const TransporterHomeStack: React.FC = () => {
     <Stack.Navigator screenOptions={transporterHeader}>
       <Stack.Screen name="Home" component={TransporterHomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AddTruck" component={AddTruckScreen} options={{ title: 'Add Truck' }} />
-      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Tracking' }} />
     </Stack.Navigator>
   );
