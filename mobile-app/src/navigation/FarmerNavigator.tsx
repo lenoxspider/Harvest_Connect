@@ -44,6 +44,44 @@ const FarmerHomeStack: React.FC = () => {
       <Stack.Screen name="Home" component={FarmerHomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
       <Stack.Screen name="AddProduce" component={AddProduceScreen} options={{ title: 'Add Produce' }} />
+      <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Track Order' }} />
+    </Stack.Navigator>
+  );
+};
+
+const StorageStack: React.FC = () => {
+  return (
+    <Stack.Navigator screenOptions={farmerHeader}>
+      <Stack.Screen name="StorageBrowse" component={StorageBrowseScreen} options={{ title: 'Storage' }} />
+      <Stack.Screen name="StorageBook" component={StorageBookScreen} options={{ title: 'Book Storage' }} />
+      <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Track Order' }} />
+    </Stack.Navigator>
+  );
+};
+
+const MyStorageStack: React.FC = () => {
+  return (
+    <Stack.Navigator screenOptions={farmerHeader}>
+      <Stack.Screen name="MyStorageBookings" component={MyStorageBookingsScreen} options={{ title: 'My Storage Bookings' }} />
+      <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Track Order' }} />
+    </Stack.Navigator>
+  );
+};
+
+const TransportStack: React.FC = () => {
+  return (
+    <Stack.Navigator screenOptions={farmerHeader}>
+      <Stack.Screen name="TransportBrowse" component={TransportBrowseScreen} options={{ title: 'Transport' }} />
+      <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Track Order' }} />
+    </Stack.Navigator>
+  );
+};
+
+const MyTransportStack: React.FC = () => {
+  return (
+    <Stack.Navigator screenOptions={farmerHeader}>
+      <Stack.Screen name="MyTransportBookings" component={MyTransportBookingsScreen} options={{ title: 'My Trips' }} />
+      <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Track Order' }} />
     </Stack.Navigator>
   );
 };
@@ -77,41 +115,33 @@ const FarmerNavigator: React.FC = () => {
       />
       <Tab.Screen
         name="SearchTab"
-        component={StorageBrowseScreen}
+        component={StorageStack}
         options={{
           title: 'Storage',
-          ...farmerHeader,
-          headerShown: true,
           tabBarIcon: tabIcon(0x1f3ed),
         }}
       />
       <Tab.Screen
         name="StorageBookingsTab"
-        component={MyStorageBookingsScreen}
+        component={MyStorageStack}
         options={{
           title: 'My Storage',
-          ...farmerHeader,
-          headerShown: true,
           tabBarIcon: tabIcon(0x1f4e6),
         }}
       />
       <Tab.Screen
         name="TransportTab"
-        component={TransportBrowseScreen}
+        component={TransportStack}
         options={{
           title: 'Transport',
-          ...farmerHeader,
-          headerShown: true,
           tabBarIcon: tabIcon(0x1f69a),
         }}
       />
       <Tab.Screen
         name="MyTransportTab"
-        component={MyTransportBookingsScreen}
+        component={MyTransportStack}
         options={{
           title: 'My Trips',
-          ...farmerHeader,
-          headerShown: true,
           tabBarIcon: tabIcon(0x1f5fa),
         }}
       />
