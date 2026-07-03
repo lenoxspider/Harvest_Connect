@@ -12,6 +12,7 @@ import {
   Platform,
   Image,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -62,43 +63,69 @@ export default function TransportBrowseScreen() {
     fetchTrucks();
   }, []);
 
-  const handleBookNow = (truck: TruckListing) => {
-    const driverName = `Transporter #${truck.transporter_id.substring(0, 4)}`;
-    navigation.navigate('Tracking', {
-      bookingId: 'BK-' + Math.floor(1000 + Math.random() * 9000),
-      type: 'transport',
-      transporterId: truck.transporter_id,
-      driverName: driverName,
-      vehicle: truck.truck_type,
-      price: `GHS ${truck.price_per_km} / km`,
-      jobDetails: JSON.stringify({
-        pickup: truck.location,
-        destination: 'Accra',
-        maxLoad: `${truck.capacity_kg / 1000} tons`,
-        produceType: 'Mixed Produce',
-        weight: '10 tons',
-      }),
-    });
+  const handleBookNow = async (truck: TruckListing) => {
+    try {
+      const booking = await transportApi.bookTransport({
+        truck_id: truck.id,
+        pickup_location: truck.location || 'Kumasi',
+        delivery_location: 'Accra',
+        scheduled_date: new Date().toISOString(),
+      });
+      const driverName = `Transporter #${truck.transporter_id.substring(0, 4)}`;
+      navigation.navigate('Tracking', {
+        bookingId: booking.id,
+        type: 'transport',
+        transporterId: truck.transporter_id,
+        driverName: driverName,
+        vehicle: truck.truck_type,
+        price: `GHS ${truck.price_per_km} / km`,
+        jobDetails: JSON.stringify({
+          pickup: truck.location || 'Kumasi',
+          destination: 'Accra',
+          maxLoad: `${truck.capacity_kg / 1000} tons`,
+          produceType: 'Mixed Produce',
+          weight: '10 tons',
+        }),
+      });
+    } catch (error) {
+      console.error('Error booking transport:', error);
+      Alert.alert('Booking Failed', 'Could not create booking on backend.');
+    }
   };
 
-  const handleModalSubmit = () => {
+  const handleModalSubmit = async () => {
     setIsModalVisible(false);
-    // Navigate to common Tracking screen
-    navigation.navigate('Tracking', {
-      bookingId: 'BK-' + Math.floor(1000 + Math.random() * 9000),
-      type: 'transport',
-      transporterId: 'express-transporter',
-      driverName: 'Auto-Matched Transporter',
-      vehicle: 'Awaiting Assignment',
-      price: 'GHS 115',
-      jobDetails: JSON.stringify({
-        pickup: pickup || 'Kumasi',
-        destination: destination || 'Accra',
-        produceType: produceType || 'Maize',
-        weight: weight || '10 tons',
-        preferredDate: date || 'ASAP',
-      }),
-    });
+    if (trucks.length === 0) {
+      Alert.alert('No Trucks', 'There are no active transporters available to book.');
+      return;
+    }
+    const truck = trucks[0];
+    try {
+      const booking = await transportApi.bookTransport({
+        truck_id: truck.id,
+        pickup_location: pickup || truck.location || 'Kumasi',
+        delivery_location: destination || 'Accra',
+        scheduled_date: new Date().toISOString(),
+      });
+      const driverName = `Transporter #${truck.transporter_id.substring(0, 4)}`;
+      navigation.navigate('Tracking', {
+        bookingId: booking.id,
+        type: 'transport',
+        transporterId: truck.transporter_id,
+        driverName: driverName,
+        vehicle: truck.truck_type,
+        price: `GHS ${truck.price_per_km} / km`,
+        jobDetails: JSON.stringify({
+          pickup: pickup || truck.location || 'Kumasi',
+          destination: destination || 'Accra',
+          produceType: produceType || 'Maize',
+          weight: weight || `${truck.capacity_kg / 1000} tons`,
+        }),
+      });
+    } catch (error) {
+      console.error('Error matching transport:', error);
+      Alert.alert('Booking Failed', 'Could not auto-match or book transporter.');
+    }
   };
 
   return (
