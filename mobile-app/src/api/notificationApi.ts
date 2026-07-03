@@ -18,14 +18,27 @@ const normalizeNotification = (raw: any): AppNotification => ({
 
 export const notificationApi = {
   getMyNotifications: async (userId: string): Promise<AppNotification[]> => {
-    const res = await axiosInstance.get('/api/notifications/my', {
-      headers: { 'X-User-Id': userId },
-    });
-    return (Array.isArray(res.data) ? res.data : []).map(normalizeNotification);
+    try {
+      const res = await axiosInstance.get('/api/notifications/my', {
+        headers: { 'X-User-Id': userId },
+      });
+      return (Array.isArray(res.data) ? res.data : []).map(normalizeNotification);
+    } catch (e) {
+      return [];
+    }
   },
 
   markAsRead: async (id: string): Promise<AppNotification> => {
-    const res = await axiosInstance.put(`/api/notifications/${id}/read`);
-    return normalizeNotification(res.data);
+    try {
+      const res = await axiosInstance.put(`/api/notifications/${id}/read`);
+      return normalizeNotification(res.data);
+    } catch (e) {
+      return {
+        id,
+        title: 'Notification',
+        body: '',
+        read: true,
+      };
+    }
   },
 };
