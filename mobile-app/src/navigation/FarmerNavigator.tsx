@@ -52,7 +52,7 @@ const FarmerHomeStack: React.FC = () => {
 const StorageStack: React.FC = () => {
   return (
     <Stack.Navigator screenOptions={farmerHeader}>
-      <Stack.Screen name="StorageBrowse" component={StorageBrowseScreen} options={{ title: 'Storage' }} />
+      <Stack.Screen name="StorageBrowse" component={StorageBrowseScreen} options={{ headerShown: false }} />
       <Stack.Screen name="StorageBook" component={StorageBookScreen} options={{ title: 'Book Storage' }} />
       <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Track Order' }} />
     </Stack.Navigator>
@@ -62,7 +62,7 @@ const StorageStack: React.FC = () => {
 const MyStorageStack: React.FC = () => {
   return (
     <Stack.Navigator screenOptions={farmerHeader}>
-      <Stack.Screen name="MyStorageBookings" component={MyStorageBookingsScreen} options={{ title: 'My Storage Bookings' }} />
+      <Stack.Screen name="MyStorageBookings" component={MyStorageBookingsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Track Order' }} />
     </Stack.Navigator>
   );
@@ -71,7 +71,7 @@ const MyStorageStack: React.FC = () => {
 const TransportStack: React.FC = () => {
   return (
     <Stack.Navigator screenOptions={farmerHeader}>
-      <Stack.Screen name="TransportBrowse" component={TransportBrowseScreen} options={{ title: 'Transport' }} />
+      <Stack.Screen name="TransportBrowse" component={TransportBrowseScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Track Order' }} />
     </Stack.Navigator>
   );
@@ -80,7 +80,7 @@ const TransportStack: React.FC = () => {
 const MyTransportStack: React.FC = () => {
   return (
     <Stack.Navigator screenOptions={farmerHeader}>
-      <Stack.Screen name="MyTransportBookings" component={MyTransportBookingsScreen} options={{ title: 'My Trips' }} />
+      <Stack.Screen name="MyTransportBookings" component={MyTransportBookingsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Track Order' }} />
     </Stack.Navigator>
   );
