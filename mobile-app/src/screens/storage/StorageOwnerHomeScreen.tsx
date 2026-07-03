@@ -1,5 +1,5 @@
 // src/screens/storage/StorageOwnerHomeScreen.tsx
-import React, { useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -8,22 +8,63 @@ import {
   SafeAreaView,
   StatusBar,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { colors } from '../../theme/colors';
 import { spacing } from '../../theme/spacing';
+import { storageApi } from '../../api/storageApi';
+import { StorageListing, StorageBooking } from '../../types';
 
 const StorageOwnerHomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<any>>();
+  const [facilities, setFacilities] = useState<StorageListing[]>([]);
+  const [bookings, setBookings] = useState<StorageBooking[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const stats = useMemo(
-    () => [
-      { label: 'Total Facilities', value: '10' },
-      { label: 'Active Bookings', value: '25' },
-      { label: 'Revenue (GHS)', value: '5,400' },
-    ],
-    []
+  useFocusEffect(
+    React.useCallback(() => {
+      let isMounted = true;
+      const fetchData = async () => {
+        try {
+          const [facData, bookData] = await Promise.all([
+            storageApi.getMyFacilities(),
+            storageApi.getIncomingBookings(),
+          ]);
+          if (isMounted) {
+            setFacilities(facData);
+            setBookings(bookData);
+          }
+        } catch (error) {
+          console.error('Error fetching storage owner data:', error);
+        } finally {
+          if (isMounted) {
+            setIsLoading(false);
+          }
+        }
+      };
+      fetchData();
+      return () => {
+        isMounted = false;
+      };
+    }, [])
   );
+
+  const stats = useMemo(() => {
+    const totalFacilities = facilities.length;
+    const activeBookings = bookings.filter(
+      (b) => b.status === 'CONFIRMED' || b.status === 'ACTIVE'
+    ).length;
+    const revenue = bookings
+      .filter((b) => b.status !== 'CANCELLED')
+      .reduce((sum, b) => sum + (b.total_price || 0), 0);
+
+    return [
+      { label: 'Total Facilities', value: String(totalFacilities) },
+      { label: 'Active Bookings', value: String(activeBookings) },
+      { label: 'Revenue (GHS)', value: revenue.toLocaleString() },
+    ];
+  }, [facilities, bookings]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -47,56 +88,62 @@ const StorageOwnerHomeScreen: React.FC = () => {
       </View>
 
       {/* Content Section */}
-      <ScrollView 
-        contentContainerStyle={styles.contentScroll}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Quick Actions Row */}
-        <View style={styles.actionsRow}>
-          {/* Add Facility */}
-          <TouchableOpacity 
-            activeOpacity={0.85} 
-            style={styles.actionCard} 
-            onPress={() => navigation.navigate('AddStorage')}
-          >
-            <View style={styles.plusCircle}>
-              <Text style={styles.plusText}>+</Text>
-            </View>
-            <Text style={styles.actionLabel}>Add Facility</Text>
-          </TouchableOpacity>
-
-          {/* Notifications */}
-          <TouchableOpacity 
-            activeOpacity={0.85} 
-            style={styles.actionCard} 
-            onPress={() => navigation.navigate('Notifications')}
-          >
-            <Text style={styles.actionEmoji}>🔔</Text>
-            <Text style={styles.actionLabel}>Notifications</Text>
-            <View style={styles.cardBadgeDot} />
-          </TouchableOpacity>
-
-          {/* Tracking */}
-          <TouchableOpacity 
-            activeOpacity={0.85} 
-            style={styles.actionCard} 
-            onPress={() => navigation.navigate('BookingsTab')}
-          >
-            <Text style={styles.actionEmoji}>📍</Text>
-            <Text style={styles.actionLabel}>Tracking</Text>
-          </TouchableOpacity>
+      {isLoading ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#1565C0" />
         </View>
+      ) : (
+        <ScrollView 
+          contentContainerStyle={styles.contentScroll}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Quick Actions Row */}
+          <View style={styles.actionsRow}>
+            {/* Add Facility */}
+            <TouchableOpacity 
+              activeOpacity={0.85} 
+              style={styles.actionCard} 
+              onPress={() => navigation.navigate('AddStorage')}
+            >
+              <View style={styles.plusCircle}>
+                <Text style={styles.plusText}>+</Text>
+              </View>
+              <Text style={styles.actionLabel}>Add Facility</Text>
+            </TouchableOpacity>
 
-        {/* Stats Row */}
-        <View style={styles.statsRow}>
-          {stats.map((item) => (
-            <View key={item.label} style={styles.statCard}>
-              <Text style={styles.statValue}>{item.value}</Text>
-              <Text style={styles.statLabel}>{item.label}</Text>
-            </View>
-          ))}
-        </View>
-      </ScrollView>
+            {/* Notifications */}
+            <TouchableOpacity 
+              activeOpacity={0.85} 
+              style={styles.actionCard} 
+              onPress={() => navigation.navigate('Notifications')}
+            >
+              <Text style={styles.actionEmoji}>🔔</Text>
+              <Text style={styles.actionLabel}>Notifications</Text>
+              <View style={styles.cardBadgeDot} />
+            </TouchableOpacity>
+
+            {/* Tracking */}
+            <TouchableOpacity 
+              activeOpacity={0.85} 
+              style={styles.actionCard} 
+              onPress={() => navigation.navigate('BookingsTab')}
+            >
+              <Text style={styles.actionEmoji}>📍</Text>
+              <Text style={styles.actionLabel}>Tracking</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Stats Row */}
+          <View style={styles.statsRow}>
+            {stats.map((item) => (
+              <View key={item.label} style={styles.statCard}>
+                <Text style={styles.statValue}>{item.value}</Text>
+                <Text style={styles.statLabel}>{item.label}</Text>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 };
