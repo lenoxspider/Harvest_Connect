@@ -4,15 +4,12 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react
 import { transportApi } from '../../api/transportApi';
 import { TransportBooking } from '../../types';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 
 const TransporterBookingsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<any>>();
   const [bookings, setBookings] = useState<TransportBooking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    fetchBookings();
-  }, []);
 
   const fetchBookings = async () => {
     try {
@@ -25,6 +22,12 @@ const TransporterBookingsScreen: React.FC = () => {
       setIsLoading(false);
     }
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchBookings();
+    }, [])
+  );
 
   const handleAccept = async (booking: TransportBooking) => {
     Alert.alert('Accept Booking', `Accept this transport for $${booking.total_cost}?`, [
