@@ -36,7 +36,7 @@ const storageHeader = {
 const StorageHomeStack: React.FC = () => {
   return (
     <Stack.Navigator screenOptions={storageHeader}>
-      <Stack.Screen name="Home" component={StorageOwnerHomeScreen} options={{ title: 'Home' }} />
+      <Stack.Screen name="Home" component={StorageOwnerHomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AddStorage" component={AddStorageScreen} options={{ title: 'Add Storage Facility' }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
       <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Tracking' }} />
@@ -86,8 +86,7 @@ const StorageNavigator: React.FC = () => {
         component={MyFacilitiesScreen}
         options={{
           title: 'Facilities',
-          ...storageHeader,
-          headerShown: true,
+          headerShown: false,
           tabBarIcon: tabIcon(0x1f3ed),
         }}
       />
@@ -106,8 +105,7 @@ const StorageNavigator: React.FC = () => {
         component={ProfileScreen}
         options={{
           title: 'Account',
-          ...storageHeader,
-          headerShown: true,
+          headerShown: false,
           tabBarIcon: tabIcon(0x1f464),
         }}
       />

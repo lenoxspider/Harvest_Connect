@@ -35,7 +35,7 @@ const transporterHeader = {
 const TransporterHomeStack: React.FC = () => {
   return (
     <Stack.Navigator screenOptions={transporterHeader}>
-      <Stack.Screen name="Home" component={TransporterHomeScreen} options={{ title: 'Home' }} />
+      <Stack.Screen name="Home" component={TransporterHomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AddTruck" component={AddTruckScreen} options={{ title: 'Add Truck' }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
       <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Tracking' }} />
@@ -105,8 +105,7 @@ const TransporterNavigator: React.FC = () => {
         component={ProfileScreen}
         options={{
           title: 'Account',
-          ...transporterHeader,
-          headerShown: true,
+          headerShown: false,
           tabBarIcon: tabIcon(0x1f464),
         }}
       />
