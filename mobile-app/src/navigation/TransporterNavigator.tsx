@@ -71,16 +71,6 @@ const TransporterNavigator: React.FC = () => {
         }}
       />
       <Tab.Screen
-        name="SearchTab"
-        component={SearchScreen}
-        options={{
-          title: 'Search',
-          ...transporterHeader,
-          headerShown: true,
-          tabBarIcon: tabIcon(0x1f50d),
-        }}
-      />
-      <Tab.Screen
         name="TrucksTab"
         component={MyListingsScreen}
         options={{
