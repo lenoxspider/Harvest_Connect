@@ -72,16 +72,6 @@ const StorageNavigator: React.FC = () => {
         }}
       />
       <Tab.Screen
-        name="SearchTab"
-        component={SearchScreen}
-        options={{
-          title: 'Search',
-          ...storageHeader,
-          headerShown: true,
-          tabBarIcon: tabIcon(0x1f50d),
-        }}
-      />
-      <Tab.Screen
         name="FacilitiesTab"
         component={MyFacilitiesScreen}
         options={{

@@ -44,43 +44,11 @@ const FarmerHomeStack: React.FC = () => {
       <Stack.Screen name="Home" component={FarmerHomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
       <Stack.Screen name="AddProduce" component={AddProduceScreen} options={{ title: 'Add Produce' }} />
-      <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Track Order' }} />
-    </Stack.Navigator>
-  );
-};
-
-const StorageStack: React.FC = () => {
-  return (
-    <Stack.Navigator screenOptions={farmerHeader}>
-      <Stack.Screen name="StorageBrowse" component={StorageBrowseScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="StorageBrowse" component={StorageBrowseScreen} options={{ title: 'Find Storage', headerShown: false }} />
       <Stack.Screen name="StorageBook" component={StorageBookScreen} options={{ title: 'Book Storage' }} />
-      <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Track Order' }} />
-    </Stack.Navigator>
-  );
-};
-
-const MyStorageStack: React.FC = () => {
-  return (
-    <Stack.Navigator screenOptions={farmerHeader}>
-      <Stack.Screen name="MyStorageBookings" component={MyStorageBookingsScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Track Order' }} />
-    </Stack.Navigator>
-  );
-};
-
-const TransportStack: React.FC = () => {
-  return (
-    <Stack.Navigator screenOptions={farmerHeader}>
-      <Stack.Screen name="TransportBrowse" component={TransportBrowseScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Track Order' }} />
-    </Stack.Navigator>
-  );
-};
-
-const MyTransportStack: React.FC = () => {
-  return (
-    <Stack.Navigator screenOptions={farmerHeader}>
-      <Stack.Screen name="MyTransportBookings" component={MyTransportBookingsScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="MyStorageBookings" component={MyStorageBookingsScreen} options={{ title: 'My Storage', headerShown: false }} />
+      <Stack.Screen name="TransportBrowse" component={TransportBrowseScreen} options={{ title: 'Find Transport', headerShown: false }} />
+      <Stack.Screen name="MyTransportBookings" component={MyTransportBookingsScreen} options={{ title: 'My Trips', headerShown: false }} />
       <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Track Order' }} />
     </Stack.Navigator>
   );
@@ -114,38 +82,6 @@ const FarmerNavigator: React.FC = () => {
         }}
       />
       <Tab.Screen
-        name="SearchTab"
-        component={StorageStack}
-        options={{
-          title: 'Storage',
-          tabBarIcon: tabIcon(0x1f3ed),
-        }}
-      />
-      <Tab.Screen
-        name="StorageBookingsTab"
-        component={MyStorageStack}
-        options={{
-          title: 'My Storage',
-          tabBarIcon: tabIcon(0x1f4e6),
-        }}
-      />
-      <Tab.Screen
-        name="TransportTab"
-        component={TransportStack}
-        options={{
-          title: 'Transport',
-          tabBarIcon: tabIcon(0x1f69a),
-        }}
-      />
-      <Tab.Screen
-        name="MyTransportTab"
-        component={MyTransportStack}
-        options={{
-          title: 'My Trips',
-          tabBarIcon: tabIcon(0x1f5fa),
-        }}
-      />
-      <Tab.Screen
         name="ListingsTab"
         component={MyListingsScreen}
         options={{
@@ -153,7 +89,6 @@ const FarmerNavigator: React.FC = () => {
           ...farmerHeader,
           headerShown: true,
           tabBarIcon: tabIcon(0x1f33e),
-          tabBarButton: () => null, // hide from tab bar, keep route register
         }}
       />
       <Tab.Screen
@@ -171,8 +106,7 @@ const FarmerNavigator: React.FC = () => {
         component={ProfileScreen}
         options={{
           title: 'Account',
-          ...farmerHeader,
-          headerShown: true,
+          headerShown: false,
           tabBarIcon: tabIcon(0x1f464),
         }}
       />
