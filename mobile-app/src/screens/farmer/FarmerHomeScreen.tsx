@@ -20,7 +20,7 @@ const FarmerHomeScreen: React.FC = () => {
   const menuItems = [
     { label: 'Add Produce', emoji: '🌽', screen: 'AddProduce' },
     { label: 'Notifications', emoji: '🔔', screen: 'Notifications', badge: true },
-    { label: 'Tracking', emoji: '📍', screen: 'MyTransportBookings' },
+    { label: 'Tracking', emoji: '📍', screen: 'MyTracking' },
     { label: 'Book Storage', emoji: '🏭', screen: 'StorageBrowse' },
     { label: 'Request Transport', emoji: '🚚', screen: 'TransportBrowse' },
   ];

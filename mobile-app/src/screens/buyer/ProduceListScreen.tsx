@@ -130,27 +130,23 @@ export default function ProduceListScreen() {
 
   const renderCard = ({ item }: { item: ProduceListing }) => {
     const isFav = favorites.includes(item.id);
-    const fallbackImages: Record<string, string> = {
-      maize: 'https://images.unsplash.com/photo-1551754625-e0329ec97b12?q=80&w=300&auto=format&fit=crop',
-      groundnuts: 'https://images.unsplash.com/photo-1567894236067-17e923e20e8b?q=80&w=300&auto=format&fit=crop',
-      plantain: 'https://images.unsplash.com/photo-1566393028639-d108a42c46a7?q=80&w=300&auto=format&fit=crop',
-      yams: 'https://images.unsplash.com/photo-1590779033100-9f60a05a013d?q=80&w=300&auto=format&fit=crop',
-    };
     const lowercaseTitle = item.title.toLowerCase();
-    let imgUri = 'https://picsum.photos/300/300';
+    let emoji = '🌾';
     if (lowercaseTitle.includes('maize') || lowercaseTitle.includes('corn')) {
-      imgUri = fallbackImages.maize;
+      emoji = '🌽';
     } else if (lowercaseTitle.includes('groundnut') || lowercaseTitle.includes('peanut')) {
-      imgUri = fallbackImages.groundnuts;
+      emoji = '🥜';
     } else if (lowercaseTitle.includes('plantain') || lowercaseTitle.includes('banana')) {
-      imgUri = fallbackImages.plantain;
-    } else if (lowercaseTitle.includes('yam') || lowercaseTitle.includes('cassava')) {
-      imgUri = fallbackImages.yams;
+      emoji = '🍌';
+    } else if (lowercaseTitle.includes('yam') || lowercaseTitle.includes('cassava') || lowercaseTitle.includes('potato')) {
+      emoji = '🍠';
     }
 
     return (
       <View style={styles.card}>
-        <Image source={{ uri: imgUri }} style={styles.cardImage} />
+        <View style={styles.imagePlaceholder}>
+          <Text style={styles.placeholderEmoji}>{emoji}</Text>
+        </View>
 
         <View style={styles.cardDetails}>
           <View style={styles.titleRow}>
@@ -377,10 +373,15 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  cardImage: {
+  imagePlaceholder: {
     width: '100%',
     height: 110,
     backgroundColor: '#F3E5F5',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeholderEmoji: {
+    fontSize: 44,
   },
   cardDetails: {
     padding: 10,
