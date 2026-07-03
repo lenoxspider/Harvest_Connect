@@ -5,16 +5,27 @@ export type AppNotification = {
   title: string;
   body: string;
   read: boolean;
+  type: 'booking' | 'payment' | 'update' | 'alert' | 'general';
   createdAt?: string;
 };
 
-const normalizeNotification = (raw: any): AppNotification => ({
-  id: String(raw?.id ?? ''),
-  title: String(raw?.title ?? 'Notification'),
-  body: String(raw?.body ?? raw?.message ?? ''),
-  read: Boolean(raw?.read ?? raw?.isRead ?? raw?.is_read ?? false),
-  createdAt: raw?.createdAt ? String(raw.createdAt) : raw?.created_at ? String(raw.created_at) : undefined,
-});
+const normalizeNotification = (raw: any): AppNotification => {
+  const rawType = String(raw?.type ?? '').toLowerCase();
+  let type: AppNotification['type'] = 'general';
+  if (rawType.includes('booking')) type = 'booking';
+  else if (rawType.includes('payment')) type = 'payment';
+  else if (rawType.includes('update')) type = 'update';
+  else if (rawType.includes('alert')) type = 'alert';
+
+  return {
+    id: String(raw?.id ?? ''),
+    title: String(raw?.title ?? 'Notification'),
+    body: String(raw?.body ?? raw?.message ?? ''),
+    read: Boolean(raw?.read ?? raw?.isRead ?? raw?.is_read ?? false),
+    type,
+    createdAt: raw?.createdAt ? String(raw.createdAt) : raw?.created_at ? String(raw.created_at) : undefined,
+  };
+};
 
 export const notificationApi = {
   getMyNotifications: async (userId: string): Promise<AppNotification[]> => {
