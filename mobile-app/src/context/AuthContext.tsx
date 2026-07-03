@@ -43,36 +43,41 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     checkAuthState();
   }, []);
-
   useEffect(() => {
     if (user) {
       if (user.role === 'FARMER') {
         colors.bg = '#EDF4ED';
         colors.bg2 = '#1E5631';
-        colors.text = '#000000';
-        colors.muted = '#7F8C8D';
+        colors.text = '#2C3E50';
+        colors.muted = '#5D6D7E';
         colors.glass = '#FFFFFF';
-        colors.glassStrong = '#F9F9F9';
-        colors.border = '#E2E8F0';
-        colors.borderStrong = '#CBD5E1';
+        colors.glassStrong = '#F4F6F6';
+        colors.border = '#D5D8DC';
+        colors.borderStrong = '#BDC3C7';
+        colors.accent = '#1E5631';
+        colors.accent2 = '#2E7D32';
       } else if (user.role === 'STORAGE_OWNER') {
         colors.bg = '#EDF4F9';
         colors.bg2 = '#1565C0';
-        colors.text = '#000000';
-        colors.muted = '#7F8C8D';
+        colors.text = '#2C3E50';
+        colors.muted = '#5D6D7E';
         colors.glass = '#FFFFFF';
-        colors.glassStrong = '#F9F9F9';
-        colors.border = '#E2E8F0';
-        colors.borderStrong = '#CBD5E1';
+        colors.glassStrong = '#F4F6F6';
+        colors.border = '#D5D8DC';
+        colors.borderStrong = '#BDC3C7';
+        colors.accent = '#1565C0';
+        colors.accent2 = '#1976D2';
       } else if (user.role === 'TRANSPORTER') {
         colors.bg = '#FAF0E6';
         colors.bg2 = '#E65100';
-        colors.text = '#000000';
-        colors.muted = '#7F8C8D';
+        colors.text = '#2C3E50';
+        colors.muted = '#5D6D7E';
         colors.glass = '#FFFFFF';
-        colors.glassStrong = '#F9F9F9';
-        colors.border = '#E2E8F0';
-        colors.borderStrong = '#CBD5E1';
+        colors.glassStrong = '#F4F6F6';
+        colors.border = '#D5D8DC';
+        colors.borderStrong = '#BDC3C7';
+        colors.accent = '#E65100';
+        colors.accent2 = '#F57C00';
       } else {
         colors.bg = '#070A12';
         colors.bg2 = '#0B1020';
@@ -82,6 +87,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         colors.glassStrong = 'rgba(255, 255, 255, 0.16)';
         colors.border = 'rgba(255, 255, 255, 0.18)';
         colors.borderStrong = 'rgba(255, 255, 255, 0.26)';
+        colors.accent = '#7CFFB2';
+        colors.accent2 = '#5CC8FF';
       }
     } else {
       colors.bg = '#070A12';
@@ -92,6 +99,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       colors.glassStrong = 'rgba(255, 255, 255, 0.16)';
       colors.border = 'rgba(255, 255, 255, 0.18)';
       colors.borderStrong = 'rgba(255, 255, 255, 0.26)';
+      colors.accent = '#7CFFB2';
+      colors.accent2 = '#5CC8FF';
     }
   }, [user]);
 
