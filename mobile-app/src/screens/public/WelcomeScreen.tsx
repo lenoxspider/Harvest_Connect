@@ -6,7 +6,6 @@ import { colors } from '../../theme/colors';
 type WelcomeStackParamList = {
   Login: undefined;
   Register: undefined;
-  Explore: undefined;
 };
 
 const WelcomeScreen: React.FC = () => {

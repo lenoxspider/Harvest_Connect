@@ -1,7 +1,6 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import WelcomeScreen from '../screens/public/WelcomeScreen';
-import ExploreHomeScreen from '../screens/common/ExploreHomeScreen';
 import LoginScreen from '../screens/auth/LoginScreen';
 import RegisterScreen from '../screens/auth/RegisterScreen';
 import PublicProduceListScreen from '../screens/public/PublicProduceListScreen';
@@ -20,7 +19,6 @@ const PublicNavigator: React.FC = () => {
       initialRouteName="Welcome"
     >
       <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="Explore" component={ExploreHomeScreen} options={{ title: 'HarvestConnect' }} />
       <Stack.Screen name="ProduceListPublic" component={PublicProduceListScreen} options={{ title: 'Produce' }} />
       <Stack.Screen name="PublicProduceDetail" component={PublicProduceDetailScreen} options={{ title: 'Details' }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
