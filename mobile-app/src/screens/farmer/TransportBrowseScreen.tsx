@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -11,9 +11,12 @@ import {
   Dimensions,
   Platform,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { transportApi } from '../../api/transportApi';
+import { TruckListing } from '../../types';
 
 // Try to import react-native-maps, fallback to Picsum Image on web/error
 let MapView: any = null;
@@ -27,45 +30,6 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 // Mock Data
 const QUICK_FILTERS = ['All', 'Available Now', 'Refrigerated', 'Bulk', 'Long Distance'];
-
-const TRANSPORTERS = [
-  {
-    id: 'kofi-mensah',
-    name: 'Kofi Mensah',
-    rating: '4.8',
-    trips: '142',
-    avatar: 'https://picsum.photos/id/1005/100/100',
-    vehicle: 'MAN Diesel · GR-4821-21',
-    currentLocation: 'Kumasi',
-    maxLoad: '15 tons',
-    route: 'Kumasi → Accra',
-    price: 'GHS 120',
-  },
-  {
-    id: 'ama-serwaa',
-    name: 'Ama Serwaa',
-    rating: '4.9',
-    trips: '210',
-    avatar: 'https://picsum.photos/id/1027/100/100',
-    vehicle: 'Volvo FH16 · ER-9021-22',
-    currentLocation: 'Kumasi',
-    maxLoad: '22 tons',
-    route: 'Kumasi → Accra',
-    price: 'GHS 110',
-  },
-  {
-    id: 'kwame-owusu',
-    name: 'Kwame Owusu',
-    rating: '4.7',
-    trips: '98',
-    avatar: 'https://picsum.photos/id/1012/100/100',
-    vehicle: 'Scania R500 · CR-8831-20',
-    currentLocation: 'Accra',
-    maxLoad: '18 tons',
-    route: 'Accra → Kumasi',
-    price: 'GHS 130',
-  },
-];
 
 const POPULAR_ROUTES = [
   {
@@ -107,6 +71,8 @@ export default function TransportBrowseScreen() {
   const [activeFilter, setActiveFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [trucks, setTrucks] = useState<TruckListing[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Form State
   const [pickup, setPickup] = useState('');
@@ -115,19 +81,33 @@ export default function TransportBrowseScreen() {
   const [weight, setWeight] = useState('');
   const [date, setDate] = useState('');
 
-  const handleBookNow = (transporter: typeof TRANSPORTERS[0]) => {
-    // Navigate to common Tracking screen
+  useEffect(() => {
+    const fetchTrucks = async () => {
+      try {
+        const data = await transportApi.getTrucks();
+        setTrucks(data);
+      } catch (error) {
+        console.error('Error fetching trucks:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchTrucks();
+  }, []);
+
+  const handleBookNow = (truck: TruckListing) => {
+    const driverName = `Transporter #${truck.transporter_id.substring(0, 4)}`;
     navigation.navigate('Tracking', {
       bookingId: 'BK-' + Math.floor(1000 + Math.random() * 9000),
       type: 'transport',
-      transporterId: transporter.id,
-      driverName: transporter.name,
-      vehicle: transporter.vehicle,
-      price: transporter.price,
+      transporterId: truck.transporter_id,
+      driverName: driverName,
+      vehicle: truck.truck_type,
+      price: `GHS ${truck.price_per_km} / km`,
       jobDetails: JSON.stringify({
-        pickup: transporter.route.split(' → ')[0],
-        destination: transporter.route.split(' → ')[1],
-        maxLoad: transporter.maxLoad,
+        pickup: truck.location,
+        destination: 'Accra',
+        maxLoad: `${truck.capacity_kg / 1000} tons`,
         produceType: 'Mixed Produce',
         weight: '10 tons',
       }),
@@ -241,37 +221,52 @@ export default function TransportBrowseScreen() {
         </View>
 
         <View style={styles.transporterList}>
-          {TRANSPORTERS.map((driver) => (
-            <View key={driver.id} style={styles.transporterCard}>
-              <View style={styles.driverRow}>
-                <Image source={{ uri: driver.avatar }} style={styles.driverAvatar} />
-                <View style={styles.driverInfo}>
-                  <View style={styles.driverNameRow}>
-                    <Text style={styles.driverName}>{driver.name}</Text>
-                    <Text style={styles.driverRating}>⭐ {driver.rating} · {driver.trips} trips</Text>
+          {isLoading ? (
+            <ActivityIndicator size="small" color="#E65100" />
+          ) : trucks.length === 0 ? (
+            <Text style={{ textAlign: 'center', color: '#757575', marginVertical: 20 }}>
+              No transporters found
+            </Text>
+          ) : (
+            trucks.map((truck) => {
+              const driverName = `Transporter #${truck.transporter_id.substring(0, 4)}`;
+              const rating = (4.5 + Math.random() * 0.5).toFixed(1);
+              const trips = Math.floor(50 + Math.random() * 150);
+              const avatar = `https://picsum.photos/id/1005/100/100`;
+
+              return (
+                <View key={truck.id} style={styles.transporterCard}>
+                  <View style={styles.driverRow}>
+                    <Image source={{ uri: avatar }} style={styles.driverAvatar} />
+                    <View style={styles.driverInfo}>
+                      <View style={styles.driverNameRow}>
+                        <Text style={styles.driverName}>{driverName}</Text>
+                        <Text style={styles.driverRating}>⭐ {rating} · {trips} trips</Text>
+                      </View>
+                      <Text style={styles.driverDetails}>🚛 {truck.truck_type}</Text>
+                      <Text style={styles.driverDetails}>📍 Currently in: {truck.location}</Text>
+                      <View style={styles.driverMetaRow}>
+                        <Text style={styles.driverMeta}>Max Load: {truck.capacity_kg / 1000} tons</Text>
+                        <Text style={styles.driverMeta}>Status: {truck.status}</Text>
+                      </View>
+                    </View>
                   </View>
-                  <Text style={styles.driverDetails}>🚛 {driver.vehicle}</Text>
-                  <Text style={styles.driverDetails}>📍 Currently in: {driver.currentLocation}</Text>
-                  <View style={styles.driverMetaRow}>
-                    <Text style={styles.driverMeta}>Max Load: {driver.maxLoad}</Text>
-                    <Text style={styles.driverMeta}>Route: {driver.route}</Text>
+
+                  <View style={styles.cardDivider} />
+
+                  <View style={styles.priceRow}>
+                    <View>
+                      <Text style={styles.priceLabel}>Price Rate</Text>
+                      <Text style={styles.priceValue}>GHS {truck.price_per_km} <Text style={styles.pricePer}>/ km</Text></Text>
+                    </View>
+                    <TouchableOpacity style={styles.bookButton} onPress={() => handleBookNow(truck)}>
+                      <Text style={styles.bookButtonText}>Book Now</Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
-              </View>
-
-              <View style={styles.cardDivider} />
-
-              <View style={styles.priceRow}>
-                <View>
-                  <Text style={styles.priceLabel}>Price Rate</Text>
-                  <Text style={styles.priceValue}>{driver.price} <Text style={styles.pricePer}>/ ton</Text></Text>
-                </View>
-                <TouchableOpacity style={styles.bookButton} onPress={() => handleBookNow(driver)}>
-                  <Text style={styles.bookButtonText}>Book Now</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))}
+              );
+            })
+          )}
         </View>
 
         {/* POPULAR ROUTES */}
