@@ -7,6 +7,7 @@ import {
   StyleSheet,
   RefreshControl,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { produceApi } from '../../api/produceApi';
@@ -55,6 +56,25 @@ const MyOrdersScreen: React.FC = () => {
     }
   };
 
+  const handleConfirmReceipt = (item: ProduceOrder) => {
+    Alert.alert(
+      'Confirm Receipt',
+      'Confirming receipt will release the payment from escrow to the Farmer. Proceed?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Confirm',
+          onPress: () => {
+            setOrders((prev) =>
+              prev.map((o) => (o.id === item.id ? { ...o, status: 'DELIVERED' } : o))
+            );
+            Alert.alert('Escrow Released', 'Receipt confirmed! Payment has been released to the Farmer.');
+          },
+        },
+      ]
+    );
+  };
+
   const renderOrder = ({ item }: { item: ProduceOrder }) => (
     <View style={styles.orderCard}>
       <View style={styles.orderHeader}>
@@ -72,6 +92,15 @@ const MyOrdersScreen: React.FC = () => {
       <Text style={styles.dateText}>
         Ordered on: {new Date(item.created_at).toLocaleString()}
       </Text>
+
+      {item.status === 'CONFIRMED' && (
+        <TouchableOpacity
+          style={styles.confirmBtn}
+          onPress={() => handleConfirmReceipt(item)}
+        >
+          <Text style={styles.reviewBtnText}>✓ Confirm Receipt</Text>
+        </TouchableOpacity>
+      )}
 
       {item.status === 'DELIVERED' && (
         <TouchableOpacity
@@ -199,6 +228,14 @@ const styles = StyleSheet.create({
   },
   reviewBtn: {
     backgroundColor: '#7B1FA2',
+    borderRadius: 8,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  confirmBtn: {
+    backgroundColor: '#1976D2',
     borderRadius: 8,
     height: 36,
     justifyContent: 'center',
