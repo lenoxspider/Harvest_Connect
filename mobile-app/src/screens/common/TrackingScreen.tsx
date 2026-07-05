@@ -353,7 +353,7 @@ const TrackingScreen: React.FC = () => {
         </View>
 
         {/* Vertical Stepper Status Card */}
-        <GlassCard strength="strong" style={[styles.statusCard, { borderColor: accent }]}>
+        <View style={[styles.statusCard, { borderColor: accent }]}>
           <View style={styles.cardHeader}>
             <Text style={styles.statusLabel}>Current Status</Text>
             <View style={[styles.statusBadge, { backgroundColor: accent + '20', borderColor: accent }]}>
@@ -361,11 +361,11 @@ const TrackingScreen: React.FC = () => {
             </View>
           </View>
           <Stepper steps={steps} activeIndex={activeIndex} accent={accent} />
-        </GlassCard>
+        </View>
 
         {/* Live Map View (Transport only) */}
         {type === 'transport' && (
-          <GlassCard style={styles.mapCard} strength="strong">
+          <View style={styles.mapCard}>
             <View style={styles.mapWrapper}>
               <MapView style={styles.map} initialRegion={mapRegion}>
                 <Marker coordinate={truckPos} title="Truck" description="Current truck location" />
@@ -376,11 +376,11 @@ const TrackingScreen: React.FC = () => {
                 <Text style={styles.etaText}>Estimated Arrival: 35 mins</Text>
               </View>
             </View>
-          </GlassCard>
+          </View>
         )}
 
         {/* Booking Details Card */}
-        <GlassCard style={styles.detailsCard} strength="normal">
+        <View style={styles.detailsCard}>
           <Text style={styles.detailsTitle}>Booking Details</Text>
           
           <View style={styles.detailRow}>
@@ -425,7 +425,7 @@ const TrackingScreen: React.FC = () => {
                 : `${meta?.total_cost || 0} GHS`}
             </Text>
           </View>
-        </GlassCard>
+        </View>
 
         {/* Action Buttons */}
         <View style={styles.actionContainer}>
@@ -521,8 +521,15 @@ const styles = StyleSheet.create({
   statusCard: {
     marginTop: spacing.sm,
     borderWidth: 1,
+    borderColor: '#e2e8f0',
     padding: spacing.md,
     borderRadius: 12,
+    backgroundColor: '#ffffff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 12,
+    elevation: 3,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -610,6 +617,14 @@ const styles = StyleSheet.create({
     padding: 0,
     borderRadius: 12,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    backgroundColor: '#ffffff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 12,
+    elevation: 3,
   },
   mapWrapper: {
     height: 240,
@@ -623,15 +638,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: spacing.sm,
     left: spacing.sm,
-    backgroundColor: 'rgba(10, 14, 26, 0.85)',
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
     borderRadius: 6,
-    borderWidth: 0.5,
-    borderColor: 'rgba(255,255,255,0.15)',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
   },
   etaText: {
-    color: '#ffffff',
+    color: colors.text,
     fontWeight: '700',
     fontSize: 12,
   },
@@ -640,6 +655,14 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     padding: spacing.md,
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    backgroundColor: '#ffffff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 12,
+    elevation: 3,
   },
   detailsTitle: {
     ...typography.h3,
