@@ -153,13 +153,12 @@ export default function ProduceListScreen() {
             <Text style={styles.cardTitle} numberOfLines={1}>
               {item.title}
             </Text>
-            <Text style={styles.ratingText}>⭐ 4.5</Text>
+            <Text style={styles.ratingText}>⭐ 0.0</Text>
           </View>
 
           <Text style={styles.locationText} numberOfLines={1}>
             📍 {item.location || 'Ashanti Region'}
           </Text>
-          <Text style={styles.metaText}>Total orders: 2</Text>
           <Text style={styles.metaText}>Quantity available: {item.quantity_kg}</Text>
           <Text style={styles.priceText} numberOfLines={1}>
             GHS {item.price_per_kg} per bag

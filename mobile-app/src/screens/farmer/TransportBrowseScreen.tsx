@@ -225,7 +225,7 @@ export default function TransportBrowseScreen() {
                       🗺️ Route: {truck.location ? `${truck.location} → Accra` : 'Ghana'}
                     </Text>
                     <Text style={styles.ratingText}>
-                      ⭐ 4.8 · 120 trips
+                      ⭐ 0.0 · 0 trips
                     </Text>
 
                     <View style={styles.divider} />
