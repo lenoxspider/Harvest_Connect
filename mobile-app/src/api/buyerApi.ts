@@ -99,7 +99,7 @@ export const buyerApi = {
       id: String(item.id ?? ''),
       name: String(item.name ?? item.title ?? 'Produce'),
       region: String(item.region ?? item.location ?? 'Ghana'),
-      rating: Number(item.rating ?? 4.8),
+      rating: Number(item.rating ?? 0.0),
       pricePerBag: Number(item.pricePerBag ?? item.price_per_kg ?? 0),
       imageUrl: item.imageUrl ?? item.image_url ?? undefined,
       category: String(item.category ?? ''),
@@ -120,7 +120,7 @@ export const buyerApi = {
             id: fid,
             fullName: `Farmer #${fid.substring(0, 4)}`,
             region: String(item.location ?? item.region ?? 'Ghana'),
-            rating: 4.8,
+            rating: 0.0,
             avatarUrl: undefined,
           });
         }
