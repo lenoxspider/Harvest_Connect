@@ -43,8 +43,9 @@ export const buyerApi = {
 
   getUnreadNotificationsCount: async (): Promise<number> => {
     try {
-      const res = await axiosInstance.get('/api/notifications/unread/count');
-      return typeof res.data === 'number' ? res.data : (res.data?.count ?? 0);
+      const response = await axiosInstance.get('/api/notifications/my');
+      const list = Array.isArray(response.data) ? response.data : [];
+      return list.filter((n: any) => !(n.read || n.isRead || n.is_read)).length;
     } catch {
       return 0;
     }

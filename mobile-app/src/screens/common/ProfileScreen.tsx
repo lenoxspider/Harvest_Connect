@@ -95,7 +95,7 @@ export default function ProfileScreen() {
 
   const ratingStats = useMemo(() => {
     if (myReviews.length === 0) {
-      return { score: '4.8', count: '12' };
+      return { score: '0.0', count: '0' };
     }
     const totalScore = myReviews.reduce((sum, r) => sum + r.rating, 0);
     const scoreVal = (totalScore / myReviews.length).toFixed(1);
