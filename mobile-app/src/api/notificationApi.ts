@@ -35,6 +35,7 @@ export const notificationApi = {
       });
       return (Array.isArray(res.data) ? res.data : []).map(normalizeNotification);
     } catch (e) {
+      console.error('[NotificationAPI] Error fetching notifications:', e);
       return [];
     }
   },
