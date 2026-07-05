@@ -8,6 +8,7 @@ import BuyerHomeScreen from '../screens/buyer/BuyerHomeScreen';
 import ProduceListScreen from '../screens/buyer/ProduceListScreen';
 import ProduceDetailScreen from '../screens/buyer/ProduceDetailScreen';
 import MyOrdersScreen from '../screens/buyer/MyOrdersScreen';
+import ReviewSubmitScreen from '../screens/common/ReviewSubmitScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
 import NotificationsScreen from '../screens/common/NotificationsScreen';
 import TrackingScreen from '../screens/common/TrackingScreen';
@@ -47,6 +48,15 @@ const BrowseStack: React.FC = () => {
     <Stack.Navigator screenOptions={buyerHeader}>
       <Stack.Screen name="ProduceList" component={ProduceListScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ProduceDetail" component={ProduceDetailScreen} options={{ title: 'Produce Details' }} />
+    </Stack.Navigator>
+  );
+};
+
+const OrdersStack: React.FC = () => {
+  return (
+    <Stack.Navigator screenOptions={buyerHeader}>
+      <Stack.Screen name="MyOrders" component={MyOrdersScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="SubmitReview" component={ReviewSubmitScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 };
@@ -109,11 +119,9 @@ const BuyerNavigator: React.FC = () => {
       />
       <Tab.Screen
         name="OrdersTab"
-        component={MyOrdersScreen}
+        component={OrdersStack}
         options={{
           title: 'Orders',
-          ...buyerHeader,
-          headerShown: true,
           tabBarIcon: tabIcon(0x1f4e6),
         }}
       />

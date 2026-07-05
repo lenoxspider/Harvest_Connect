@@ -157,6 +157,22 @@ export default function MyTrackingScreen() {
         <TouchableOpacity style={styles.contactBtn} onPress={() => handleContact(item.listing?.ownerPhone)}>
           <Text style={styles.contactBtnText}>📞 Contact Owner</Text>
         </TouchableOpacity>
+
+        {status === 'COMPLETED' && (
+          <TouchableOpacity
+            style={styles.reviewBtn}
+            onPress={() =>
+              navigation.navigate('SubmitReview', {
+                targetId: item.storage_id || 'storage-placeholder',
+                targetType: 'STORAGE',
+                targetName: item.listing?.facility_name ?? item.facility_name ?? 'Cold Storage Facility',
+                referenceId: item.id,
+              })
+            }
+          >
+            <Text style={styles.reviewBtnText}>★ Leave Review</Text>
+          </TouchableOpacity>
+        )}
       </View>
     );
   };
@@ -189,6 +205,22 @@ export default function MyTrackingScreen() {
         <TouchableOpacity style={styles.contactBtn} onPress={() => handleContact(item.truck?.transporterPhone)}>
           <Text style={styles.contactBtnText}>📞 Contact Driver</Text>
         </TouchableOpacity>
+
+        {status === 'COMPLETED' && (
+          <TouchableOpacity
+            style={styles.reviewBtn}
+            onPress={() =>
+              navigation.navigate('SubmitReview', {
+                targetId: item.truck_id || 'transport-placeholder',
+                targetType: 'TRANSPORTER',
+                targetName: item.truck?.truck_type ?? 'Transporter Vehicle',
+                referenceId: item.id,
+              })
+            }
+          >
+            <Text style={styles.reviewBtnText}>★ Leave Review</Text>
+          </TouchableOpacity>
+        )}
       </View>
     );
   };
@@ -506,5 +538,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#757575',
     fontWeight: '600',
+  },
+  reviewBtn: {
+    backgroundColor: '#1E5631',
+    borderRadius: 10,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  reviewBtnText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 13,
   },
 });

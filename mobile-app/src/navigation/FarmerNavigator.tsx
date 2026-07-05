@@ -14,6 +14,7 @@ import TransportBrowseScreen from '../screens/farmer/TransportBrowseScreen';
 import TransportRequestScreen from '../screens/farmer/TransportRequestScreen';
 import MyTransportBookingsScreen from '../screens/farmer/MyTransportBookingsScreen';
 import MyTrackingScreen from '../screens/farmer/MyTrackingScreen';
+import ReviewSubmitScreen from '../screens/common/ReviewSubmitScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
 import NotificationsScreen from '../screens/common/NotificationsScreen';
 import TrackingScreen from '../screens/common/TrackingScreen';
@@ -51,6 +52,7 @@ const FarmerHomeStack: React.FC = () => {
       <Stack.Screen name="TransportBrowse" component={TransportBrowseScreen} options={{ title: 'Find Transport', headerShown: false }} />
       <Stack.Screen name="MyTransportBookings" component={MyTransportBookingsScreen} options={{ title: 'My Trips', headerShown: false }} />
       <Stack.Screen name="MyTracking" component={MyTrackingScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="SubmitReview" component={ReviewSubmitScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Track Order' }} />
     </Stack.Navigator>
   );

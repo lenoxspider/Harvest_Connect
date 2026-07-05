@@ -6,11 +6,14 @@ import {
   FlatList,
   StyleSheet,
   RefreshControl,
+  TouchableOpacity,
 } from 'react-native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { produceApi } from '../../api/produceApi';
 import { ProduceOrder } from '../../types';
 
 const MyOrdersScreen: React.FC = () => {
+  const navigation = useNavigation<NavigationProp<any>>();
   const [orders, setOrders] = useState<ProduceOrder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -69,6 +72,22 @@ const MyOrdersScreen: React.FC = () => {
       <Text style={styles.dateText}>
         Ordered on: {new Date(item.created_at).toLocaleString()}
       </Text>
+
+      {item.status === 'DELIVERED' && (
+        <TouchableOpacity
+          style={styles.reviewBtn}
+          onPress={() =>
+            navigation.navigate('SubmitReview', {
+              targetId: item.listing_id || 'farmer-placeholder',
+              targetType: 'FARMER',
+              targetName: 'Farmer Partner',
+              referenceId: item.id,
+            })
+          }
+        >
+          <Text style={styles.reviewBtnText}>★ Leave Review</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 
@@ -177,6 +196,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666666',
     textAlign: 'center',
+  },
+  reviewBtn: {
+    backgroundColor: '#7B1FA2',
+    borderRadius: 8,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  reviewBtnText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 13,
   },
 });
 
