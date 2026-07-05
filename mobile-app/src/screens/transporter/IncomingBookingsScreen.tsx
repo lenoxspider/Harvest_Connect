@@ -1,6 +1,6 @@
 // src/screens/transporter/IncomingBookingsScreen.tsx
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, RefreshControl } from 'react-native';
 import { transportApi } from '../../api/transportApi';
 import { TransportBooking } from '../../types';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
@@ -10,16 +10,18 @@ const TransporterBookingsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<any>>();
   const [bookings, setBookings] = useState<TransportBooking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchBookings = async () => {
     try {
-      setIsLoading(true);
+      if (!refreshing) setIsLoading(true);
       const data = await transportApi.getIncomingBookings();
-      setBookings(data.filter(b => b.status === 'PENDING'));
+      setBookings(data);
     } catch (error) {
       console.error('Error fetching bookings:', error);
     } finally {
       setIsLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -29,8 +31,13 @@ const TransporterBookingsScreen: React.FC = () => {
     }, [])
   );
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchBookings();
+  };
+
   const handleAccept = async (booking: TransportBooking) => {
-    Alert.alert('Accept Booking', `Accept this transport for $${booking.total_cost}?`, [
+    Alert.alert('Accept Booking', `Accept this transport request for $${booking.total_cost}?`, [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Accept',
@@ -47,22 +54,73 @@ const TransporterBookingsScreen: React.FC = () => {
     ]);
   };
 
-  const renderBooking = ({ item }: { item: TransportBooking }) => (
-    <TouchableOpacity activeOpacity={0.9} onPress={() => navigation.navigate('Tracking', { bookingId: item.id, type: 'transport' })}>
+  const handleUpdateStatus = async (booking: TransportBooking, newStatus: TransportBooking['status'], title: string, msg: string) => {
+    Alert.alert(title, msg, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Proceed',
+        onPress: async () => {
+          try {
+            await transportApi.updateStatus(booking.id, newStatus);
+            Alert.alert('Success', `Booking status updated to ${newStatus}!`);
+            fetchBookings();
+          } catch (error) {
+            Alert.alert('Error', 'Could not update booking status');
+          }
+        },
+      },
+    ]);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'PENDING':
+        return { bg: '#FFE0B2', text: '#E65100' };
+      case 'CONFIRMED':
+        return { bg: '#E3F2FD', text: '#1565C0' };
+      case 'COMPLETED':
+        return { bg: '#EEEEEE', text: '#757575' };
+      default:
+        return { bg: '#EEEEEE', text: '#757575' };
+    }
+  };
+
+  const renderBooking = ({ item }: { item: TransportBooking }) => {
+    const statusConfig = getStatusColor(item.status);
+
+    return (
       <View style={styles.bookingCard}>
-        <Text style={styles.bookingTitle}>Booking #{item.id}</Text>
+        <View style={styles.cardHeader}>
+          <Text style={styles.bookingTitle}>Booking #{item.id.substring(0, 8).toUpperCase()}</Text>
+          <View style={[styles.statusBadge, { backgroundColor: statusConfig.bg }]}>
+            <Text style={[styles.statusText, { color: statusConfig.text }]}>{item.status}</Text>
+          </View>
+        </View>
+
         <Text style={styles.detail}>From: {item.pickup_location}</Text>
         <Text style={styles.detail}>To: {item.delivery_location}</Text>
-        <Text style={styles.detail}>Date: {item.scheduled_date}</Text>
-        <Text style={styles.price}>Total: ${item.total_cost}</Text>
-        <TouchableOpacity style={styles.acceptButton} onPress={() => handleAccept(item)}>
-          <Text style={styles.acceptButtonText}>Accept</Text>
-        </TouchableOpacity>
-      </View>
-    </TouchableOpacity>
-  );
+        <Text style={styles.detail}>Date: {item.scheduled_date ? new Date(item.scheduled_date).toLocaleDateString() : 'Jul 5, 2026'}</Text>
+        <Text style={styles.price}>Total: GHS {item.total_cost.toLocaleString()}</Text>
 
-  if (isLoading) {
+        {item.status === 'PENDING' && (
+          <TouchableOpacity style={[styles.actionBtn, { backgroundColor: '#E65100' }]} onPress={() => handleAccept(item)}>
+            <Text style={styles.actionBtnText}>Accept Request</Text>
+          </TouchableOpacity>
+        )}
+
+        {item.status === 'CONFIRMED' && (
+          <TouchableOpacity
+            style={[styles.actionBtn, { backgroundColor: '#2E7D32' }]}
+            onPress={() => handleUpdateStatus(item, 'COMPLETED', 'Complete Delivery', 'Confirm that the produce has been delivered successfully to release escrow payment?')}
+          >
+            <Text style={styles.actionBtnText}>Complete Delivery</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    );
+  };
+
+  if (isLoading && !refreshing) {
     return (
       <View style={styles.loadingContainer}>
         <Text style={styles.loadingText}>Loading bookings...</Text>
@@ -77,9 +135,12 @@ const TransporterBookingsScreen: React.FC = () => {
         renderItem={renderBooking}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#E65100']} />
+        }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No incoming bookings</Text>
+            <Text style={styles.emptyText}>No incoming transport bookings found.</Text>
           </View>
         }
       />
@@ -90,7 +151,7 @@ const TransporterBookingsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#FAF0E6',
   },
   loadingContainer: {
     flex: 1,
@@ -116,11 +177,25 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   bookingTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#333333',
-    marginBottom: 8,
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  statusText: {
+    fontSize: 10,
+    fontWeight: 'bold',
   },
   detail: {
     fontSize: 14,
@@ -128,31 +203,33 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   price: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: 'bold',
     color: '#2E7D32',
     marginTop: 8,
     marginBottom: 12,
   },
-  acceptButton: {
+  actionBtn: {
     height: 40,
-    backgroundColor: '#2E7D32',
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 4,
   },
-  acceptButtonText: {
+  actionBtnText: {
     color: '#FFFFFF',
     fontWeight: '600',
+    fontSize: 14,
   },
   emptyContainer: {
     padding: 40,
     alignItems: 'center',
   },
   emptyText: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#666666',
     textAlign: 'center',
+    fontWeight: '600',
   },
 });
 

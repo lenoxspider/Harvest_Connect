@@ -1,6 +1,6 @@
 // src/screens/storage/StorageBookingsScreen.tsx
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, RefreshControl } from 'react-native';
 import { storageApi } from '../../api/storageApi';
 import { StorageBooking } from '../../types';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
@@ -9,21 +9,28 @@ const StorageBookingsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<any>>();
   const [bookings, setBookings] = useState<StorageBooking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchBookings = async () => {
+    try {
+      if (!refreshing) setIsLoading(true);
+      const data = await storageApi.getIncomingBookings();
+      setBookings(data);
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+    } finally {
+      setIsLoading(false);
+      setRefreshing(false);
+    }
+  };
 
   useEffect(() => {
     fetchBookings();
   }, []);
 
-  const fetchBookings = async () => {
-    try {
-      setIsLoading(true);
-      const data = await storageApi.getIncomingBookings();
-      setBookings(data.filter(b => b.status === 'PENDING'));
-    } catch (error) {
-      console.error('Error fetching bookings:', error);
-    } finally {
-      setIsLoading(false);
-    }
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchBookings();
   };
 
   const handleConfirm = async (booking: StorageBooking) => {
@@ -63,27 +70,53 @@ const StorageBookingsScreen: React.FC = () => {
     ]);
   };
 
-  const renderBooking = ({ item }: { item: StorageBooking }) => (
-    <TouchableOpacity activeOpacity={0.9} onPress={() => navigation.navigate('Tracking', { bookingId: item.id, type: 'storage' })}>
-      <View style={styles.bookingCard}>
-        <Text style={styles.bookingTitle}>Booking #{item.id}</Text>
-        <Text style={styles.detail}>Quantity: {item.quantity_tons} tons</Text>
-        <Text style={styles.detail}>From: {item.start_date}</Text>
-        <Text style={styles.detail}>To: {item.end_date}</Text>
-        <Text style={styles.price}>Total: GHS {item.total_price}</Text>
-        <View style={styles.actionsRow}>
-          <TouchableOpacity style={styles.confirmButton} onPress={() => handleConfirm(item)}>
-            <Text style={styles.confirmButtonText}>Confirm</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.cancelButton} onPress={() => handleCancel(item)}>
-            <Text style={styles.cancelButtonText}>Cancel</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'PENDING':
+        return { bg: '#FFE0B2', text: '#E65100' };
+      case 'CONFIRMED':
+        return { bg: '#E3F2FD', text: '#1565C0' };
+      case 'ACTIVE':
+        return { bg: '#E8F5E9', text: '#2E7D32' };
+      case 'CANCELLED':
+        return { bg: '#FFCDD2', text: '#C62828' };
+      default:
+        return { bg: '#EEEEEE', text: '#757575' };
+    }
+  };
 
-  if (isLoading) {
+  const renderBooking = ({ item }: { item: StorageBooking }) => {
+    const statusConfig = getStatusColor(item.status);
+
+    return (
+      <View style={styles.bookingCard}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.bookingTitle}>Booking #{item.id.substring(0, 8).toUpperCase()}</Text>
+          <View style={[styles.statusBadge, { backgroundColor: statusConfig.bg }]}>
+            <Text style={[styles.statusText, { color: statusConfig.text }]}>{item.status}</Text>
+          </View>
+        </View>
+
+        <Text style={styles.detail}>Quantity: {item.quantity_tons} tons</Text>
+        <Text style={styles.detail}>From: {item.start_date ? new Date(item.start_date).toLocaleDateString() : 'Jul 5, 2026'}</Text>
+        <Text style={styles.detail}>To: {item.end_date ? new Date(item.end_date).toLocaleDateString() : 'Jul 15, 2026'}</Text>
+        <Text style={styles.price}>Total: GHS {item.total_price.toLocaleString()}</Text>
+        
+        {item.status === 'PENDING' && (
+          <View style={styles.actionsRow}>
+            <TouchableOpacity style={styles.confirmButton} onPress={() => handleConfirm(item)}>
+              <Text style={styles.confirmButtonText}>Confirm</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.cancelButton} onPress={() => handleCancel(item)}>
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+    );
+  };
+
+  if (isLoading && !refreshing) {
     return (
       <View style={styles.loadingContainer}>
         <Text style={styles.loadingText}>Loading bookings...</Text>
@@ -98,9 +131,12 @@ const StorageBookingsScreen: React.FC = () => {
         renderItem={renderBooking}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#1565C0']} />
+        }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No incoming bookings</Text>
+            <Text style={styles.emptyText}>No incoming storage bookings found.</Text>
           </View>
         }
       />
@@ -111,7 +147,7 @@ const StorageBookingsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#E3F2FD',
   },
   loadingContainer: {
     flex: 1,
@@ -137,11 +173,25 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   bookingTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#333333',
-    marginBottom: 8,
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  statusText: {
+    fontSize: 10,
+    fontWeight: 'bold',
   },
   detail: {
     fontSize: 14,
@@ -149,15 +199,16 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   price: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: 'bold',
     color: '#2E7D32',
     marginTop: 8,
     marginBottom: 12,
   },
   confirmButton: {
+    flex: 1,
     height: 40,
-    backgroundColor: '#2E7D32',
+    backgroundColor: '#1565C0',
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
@@ -169,14 +220,15 @@ const styles = StyleSheet.create({
   actionsRow: {
     flexDirection: 'row',
     gap: 10,
+    marginTop: 4,
   },
   cancelButton: {
+    flex: 1,
     height: 40,
     backgroundColor: '#D32F2F',
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 16,
   },
   cancelButtonText: {
     color: '#FFFFFF',
@@ -187,9 +239,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyText: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#666666',
     textAlign: 'center',
+    fontWeight: '600',
   },
 });
 
