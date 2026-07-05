@@ -100,7 +100,7 @@ export const buyerApi = {
       name: String(item.name ?? item.title ?? 'Produce'),
       region: String(item.region ?? item.location ?? 'Ghana'),
       rating: Number(item.rating ?? 0.0),
-      pricePerBag: Number(item.pricePerBag ?? item.price_per_kg ?? 0),
+      pricePerBag: Number(item.pricePerBag ?? item.pricePerKg ?? item.price_per_kg ?? 0),
       imageUrl: item.imageUrl ?? item.image_url ?? undefined,
       category: String(item.category ?? ''),
     }));
