@@ -27,7 +27,15 @@ const normalizeOrder = (raw: any): ProduceOrder => ({
 
 export const produceApi = {
   createListing: async (data: Omit<ProduceListing, 'id' | 'farmer_id' | 'status' | 'created_at'>) => {
-    const response = await axiosInstance.post('/api/produce/listings', data);
+    const payload = {
+      title: data.title,
+      category: data.category,
+      description: data.description,
+      location: data.location,
+      quantityKg: data.quantity_kg,
+      pricePerKg: data.price_per_kg,
+    };
+    const response = await axiosInstance.post('/api/produce/listings', payload);
     return normalizeListing(response.data);
   },
 
