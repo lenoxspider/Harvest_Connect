@@ -369,10 +369,16 @@ const BuyerHomeScreen: React.FC = () => {
           <View style={styles.gridContainer}>
             {featuredProduce.map((item) => (
               <View key={item.id} style={styles.produceCard}>
-                <Image
-                  source={{ uri: item.imageUrl ?? 'https://picsum.photos/400/300' }}
-                  style={styles.produceImage}
-                />
+                {item.imageUrl ? (
+                  <Image
+                    source={{ uri: item.imageUrl }}
+                    style={styles.produceImage}
+                  />
+                ) : (
+                  <View style={[styles.produceImage, { backgroundColor: '#E8F5E9', justifyContent: 'center', alignItems: 'center' }]}>
+                    <Text style={{ fontSize: 40 }}>🌾</Text>
+                  </View>
+                )}
                 <View style={styles.produceDetails}>
                   <Text style={styles.produceName} numberOfLines={1}>
                     {item.name}
@@ -415,10 +421,18 @@ const BuyerHomeScreen: React.FC = () => {
           >
             {farmers.map((farmer) => (
               <View key={farmer.id} style={styles.farmerCard}>
-                <Image
-                  source={{ uri: farmer.avatarUrl ?? 'https://picsum.photos/100/100' }}
-                  style={styles.farmerAvatar}
-                />
+                {farmer.avatarUrl ? (
+                  <Image
+                    source={{ uri: farmer.avatarUrl }}
+                    style={styles.farmerAvatar}
+                  />
+                ) : (
+                  <View style={[styles.farmerAvatar, { backgroundColor: '#FFF3E0', justifyContent: 'center', alignItems: 'center' }]}>
+                    <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#E65100' }}>
+                      {farmer.fullName.charAt(0)}
+                    </Text>
+                  </View>
+                )}
                 <Text style={styles.farmerName} numberOfLines={1}>
                   {farmer.fullName}
                 </Text>
@@ -459,10 +473,16 @@ const BuyerHomeScreen: React.FC = () => {
               const statusStyle = getStatusBadgeColor(order.status);
               return (
                 <View key={order.id} style={styles.orderCard}>
-                  <Image
-                    source={{ uri: order.produceImage ?? 'https://picsum.photos/100/100' }}
-                    style={styles.orderImage}
-                  />
+                  {order.produceImage ? (
+                    <Image
+                      source={{ uri: order.produceImage }}
+                      style={styles.orderImage}
+                    />
+                  ) : (
+                    <View style={[styles.orderImage, { backgroundColor: '#E1F5FE', justifyContent: 'center', alignItems: 'center' }]}>
+                      <Text style={{ fontSize: 20 }}>📦</Text>
+                    </View>
+                  )}
                   <View style={styles.orderInfo}>
                     <Text style={styles.orderName}>{order.produceName}</Text>
                     <Text style={styles.orderQty}>Quantity: {order.quantity}</Text>

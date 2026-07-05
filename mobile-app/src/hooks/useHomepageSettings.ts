@@ -5,19 +5,19 @@ import { HomepageSettings, settingsApi } from '../api/settingsApi';
 const CACHE_KEY = 'homepage_settings_v1';
 
 const defaults: HomepageSettings = {
-  categoryStorageImage: 'https://picsum.photos/400/300?random=71',
-  categoryProduceImage: 'https://picsum.photos/400/300?random=72',
-  categoryTransportImage: 'https://picsum.photos/400/300?random=73',
-  categoryLogisticsImage: 'https://picsum.photos/400/300?random=74',
+  categoryStorageImage: '',
+  categoryProduceImage: '',
+  categoryTransportImage: '',
+  categoryLogisticsImage: '',
 
-  heroImage1: 'https://picsum.photos/800/450?random=81',
-  heroImage2: 'https://picsum.photos/800/450?random=82',
-  heroImage3: 'https://picsum.photos/800/450?random=83',
-  heroImage4: 'https://picsum.photos/800/450?random=84',
+  heroImage1: '',
+  heroImage2: '',
+  heroImage3: '',
+  heroImage4: '',
 
-  featuredImage1: 'https://picsum.photos/400/300?random=91',
-  featuredImage2: 'https://picsum.photos/400/300?random=92',
-  featuredImage3: 'https://picsum.photos/400/300?random=93',
+  featuredImage1: '',
+  featuredImage2: '',
+  featuredImage3: '',
 };
 
 export function useHomepageSettings() {

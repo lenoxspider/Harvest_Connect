@@ -105,10 +105,16 @@ export default function CartScreen() {
           <ScrollView contentContainerStyle={styles.scrollList}>
             {cartItems.map((item, index) => (
               <View key={`${item.id}-${index}`} style={styles.card}>
-                <Image
-                  source={{ uri: item.imageUrl ?? 'https://picsum.photos/100/100' }}
-                  style={styles.image}
-                />
+                {item.imageUrl ? (
+                  <Image
+                    source={{ uri: item.imageUrl }}
+                    style={styles.image}
+                  />
+                ) : (
+                  <View style={[styles.image, { backgroundColor: '#E8F5E9', justifyContent: 'center', alignItems: 'center' }]}>
+                    <Text style={{ fontSize: 20 }}>🌾</Text>
+                  </View>
+                )}
                 <View style={styles.info}>
                   <Text style={styles.name}>{item.name}</Text>
                   <Text style={styles.region}>📍 {item.region}</Text>
