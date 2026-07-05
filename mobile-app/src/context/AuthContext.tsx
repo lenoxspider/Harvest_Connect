@@ -18,6 +18,7 @@ interface AuthContextType {
     role: string;
     region: string;
   }) => Promise<void>;
+  updateProfile: (fullName: string, region: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -174,6 +175,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const updateProfile = async (fullName: string, region: string) => {
+    if (!user) return;
+    const updatedUser = { ...user, fullName, region };
+    setUser(updatedUser);
+    await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
+  };
+
   const logout = async () => {
     await AsyncStorage.multiRemove(['jwt_token', 'user']);
     setToken(null);
@@ -186,6 +194,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isLoading,
     login,
     register,
+    updateProfile,
     logout,
   };
 

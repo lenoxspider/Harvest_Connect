@@ -8,7 +8,8 @@ import {
   SafeAreaView,
   StatusBar,
   ScrollView,
-  FlatList,
+  TextInput,
+  Alert,
   RefreshControl,
 } from 'react-native';
 import { useNavigation, useFocusEffect, NavigationProp } from '@react-navigation/native';
@@ -16,11 +17,16 @@ import { useAuth } from '../../context/AuthContext';
 import { reviewApi, Review } from '../../api/reviewApi';
 
 export default function ProfileScreen() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateProfile } = useAuth();
   const navigation = useNavigation<NavigationProp<any>>();
 
   const [myReviews, setMyReviews] = useState<Review[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+
+  // Edit States
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedName, setEditedName] = useState(user?.fullName ?? '');
+  const [editedRegion, setEditedRegion] = useState(user?.region ?? '');
 
   const getRoleTheme = useCallback(() => {
     if (!user) return { primary: '#2C3E50', bg: '#F8F9FA', accent: '#7F8C8D' };
@@ -43,7 +49,6 @@ export default function ProfileScreen() {
   const loadReviews = async () => {
     try {
       const data = await reviewApi.getReviews();
-      // Filter reviews received/written by the user
       setMyReviews(data);
     } catch (e) {
       console.error(e);
@@ -56,16 +61,41 @@ export default function ProfileScreen() {
     }, [])
   );
 
+  useEffect(() => {
+    if (user) {
+      setEditedName(user.fullName);
+      setEditedRegion(user.region);
+    }
+  }, [user]);
+
   const onRefresh = async () => {
     setRefreshing(true);
     await loadReviews();
     setRefreshing(false);
   };
 
-  // Compute mock rating aggregate
+  const handleSave = async () => {
+    if (editedName.trim().length === 0) {
+      Alert.alert('Validation Error', 'Full Name is required.');
+      return;
+    }
+    if (editedRegion.trim().length === 0) {
+      Alert.alert('Validation Error', 'Region is required.');
+      return;
+    }
+
+    try {
+      await updateProfile(editedName.trim(), editedRegion.trim());
+      setIsEditing(false);
+      Alert.alert('Success', 'Profile updated successfully!');
+    } catch (e) {
+      Alert.alert('Error', 'Could not update profile.');
+    }
+  };
+
   const ratingStats = useMemo(() => {
     if (myReviews.length === 0) {
-      return { score: '4.8', count: '12' }; // Realistic starting stats for trust
+      return { score: '4.8', count: '12' };
     }
     const totalScore = myReviews.reduce((sum, r) => sum + r.rating, 0);
     const scoreVal = (totalScore / myReviews.length).toFixed(1);
@@ -90,10 +120,21 @@ export default function ProfileScreen() {
               {user?.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}
             </Text>
           </View>
-          <Text style={styles.title}>{user?.fullName ?? 'User Profile'}</Text>
+          
+          {isEditing ? (
+            <TextInput
+              style={styles.editNameInput}
+              value={editedName}
+              onChangeText={setEditedName}
+              placeholder="Full Name"
+              placeholderTextColor="#9E9E9E"
+            />
+          ) : (
+            <Text style={styles.title}>{user?.fullName ?? 'User Profile'}</Text>
+          )}
+          
           <Text style={styles.subtitle}>{user?.role ?? 'Role'}</Text>
 
-          {/* Trust Rating Block */}
           <View style={[styles.ratingBadge, { backgroundColor: theme.accent }]}>
             <Text style={[styles.ratingText, { color: theme.primary }]}>
               ⭐ {ratingStats.score} ({ratingStats.count} reviews)
@@ -109,7 +150,17 @@ export default function ProfileScreen() {
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Region</Text>
-            <Text style={styles.value}>{user?.region ?? '—'}</Text>
+            {isEditing ? (
+              <TextInput
+                style={styles.editRegionInput}
+                value={editedRegion}
+                onChangeText={setEditedRegion}
+                placeholder="Region"
+                placeholderTextColor="#9E9E9E"
+              />
+            ) : (
+              <Text style={styles.value}>{user?.region ?? '—'}</Text>
+            )}
           </View>
           <View style={[styles.row, { borderBottomWidth: 0 }]}>
             <Text style={styles.label}>Account ID</Text>
@@ -117,17 +168,50 @@ export default function ProfileScreen() {
           </View>
         </View>
 
+        {/* EDIT / SAVE ACTIONS */}
+        {isEditing ? (
+          <View style={styles.editActionsRow}>
+            <TouchableOpacity
+              style={[styles.actionBtn, styles.cancelBtn]}
+              onPress={() => {
+                setIsEditing(false);
+                setEditedName(user?.fullName ?? '');
+                setEditedRegion(user?.region ?? '');
+              }}
+            >
+              <Text style={styles.cancelBtnText}>Cancel</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.actionBtn, { backgroundColor: theme.primary }]}
+              onPress={handleSave}
+            >
+              <Text style={styles.saveBtnText}>Save</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity
+            style={[styles.txBtn, { borderColor: theme.primary }]}
+            onPress={() => setIsEditing(true)}
+            activeOpacity={0.8}
+          >
+            <Text style={[styles.txBtnText, { color: theme.primary }]}>✏️ Edit Profile</Text>
+          </TouchableOpacity>
+        )}
+
         {/* Transactions Button */}
-        <TouchableOpacity
-          style={[styles.txBtn, { borderColor: theme.primary }]}
-          onPress={() => navigation.navigate('MyTransactions')}
-          activeOpacity={0.8}
-        >
-          <Text style={[styles.txBtnText, { color: theme.primary }]}>🧾 My Transactions</Text>
-        </TouchableOpacity>
+        {!isEditing && (
+          <TouchableOpacity
+            style={[styles.txBtn, { borderColor: theme.primary, marginTop: 0 }]}
+            onPress={() => navigation.navigate('MyTransactions')}
+            activeOpacity={0.8}
+          >
+            <Text style={[styles.txBtnText, { color: theme.primary }]}>🧾 My Transactions</Text>
+          </TouchableOpacity>
+        )}
 
         {/* Reviews Section */}
-        {myReviews.length > 0 && (
+        {myReviews.length > 0 && !isEditing && (
           <View style={styles.reviewsSection}>
             <Text style={styles.sectionTitle}>Recent Reviews</Text>
             {myReviews.map((item) => (
@@ -145,17 +229,19 @@ export default function ProfileScreen() {
         )}
 
         {/* Logout Button */}
-        <TouchableOpacity
-          style={[styles.logoutBtn, { backgroundColor: theme.primary }]}
-          onPress={logout}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.logoutBtnText}>Logout</Text>
-        </TouchableOpacity>
+        {!isEditing && (
+          <TouchableOpacity
+            style={[styles.logoutBtn, { backgroundColor: theme.primary }]}
+            onPress={logout}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.logoutBtnText}>Logout</Text>
+          </TouchableOpacity>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -170,6 +256,7 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     marginBottom: 24,
+    width: '100%',
   },
   avatar: {
     width: 90,
@@ -194,11 +281,31 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#212121',
   },
+  editNameInput: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#212121',
+    borderBottomWidth: 2,
+    borderBottomColor: '#757575',
+    textAlign: 'center',
+    width: '80%',
+    paddingVertical: 2,
+  },
+  editRegionInput: {
+    fontSize: 14,
+    color: '#2C3E50',
+    fontWeight: 'bold',
+    borderBottomWidth: 1,
+    borderBottomColor: '#757575',
+    width: 120,
+    textAlign: 'right',
+    paddingVertical: 2,
+  },
   subtitle: {
     fontSize: 13,
     color: '#757575',
     fontWeight: '600',
-    marginTop: 2,
+    marginTop: 6,
   },
   ratingBadge: {
     marginTop: 10,
@@ -267,11 +374,39 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 16,
+    marginTop: 8,
   },
   txBtnText: {
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  editActionsRow: {
+    flexDirection: 'row',
+    width: '100%',
+    gap: 12,
+    marginBottom: 16,
+  },
+  actionBtn: {
+    flex: 1,
+    height: 48,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cancelBtn: {
+    borderWidth: 2,
+    borderColor: '#757575',
+  },
+  cancelBtnText: {
+    color: '#757575',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  saveBtnText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
   reviewsSection: {
     width: '100%',
