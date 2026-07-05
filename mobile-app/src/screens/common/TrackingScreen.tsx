@@ -271,7 +271,7 @@ const TrackingScreen: React.FC = () => {
             <View style={{ width: 44 }} />
           </View>
 
-          <GlassCard strength="strong" style={styles.searchCard}>
+          <View style={styles.searchCard}>
             {user?.role !== 'BUYER' && (
               <>
                 <Text style={styles.searchLabel}>Select Booking Type</Text>
@@ -323,7 +323,7 @@ const TrackingScreen: React.FC = () => {
             >
               <Text style={styles.searchSubmitBtnText}>Start Tracking</Text>
             </TouchableOpacity>
-          </GlassCard>
+          </View>
         </View>
       </Screen>
     );
@@ -700,7 +700,13 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: '#e2e8f0',
+    backgroundColor: '#ffffff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 12,
+    elevation: 3,
   },
   searchLabel: {
     ...typography.body,
