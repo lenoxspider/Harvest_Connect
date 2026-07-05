@@ -272,37 +272,41 @@ const TrackingScreen: React.FC = () => {
           </View>
 
           <GlassCard strength="strong" style={{ margin: spacing.md, padding: spacing.lg }}>
-            <Text style={{ fontSize: 16, fontWeight: '600', color: '#333', marginBottom: spacing.sm }}>Select Booking Type</Text>
-            <View style={{ flexDirection: 'row', gap: spacing.md, marginBottom: spacing.lg }}>
-              <TouchableOpacity 
-                style={{
-                  flex: 1,
-                  padding: spacing.md,
-                  borderRadius: 12,
-                  borderWidth: 1,
-                  borderColor: accent,
-                  alignItems: 'center',
-                  backgroundColor: type === 'transport' ? accent : 'transparent'
-                }}
-                onPress={() => setType('transport')}
-              >
-                <Text style={{ color: type === 'transport' ? '#FFF' : '#333', fontWeight: 'bold' }}>Transport 🚚</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={{
-                  flex: 1,
-                  padding: spacing.md,
-                  borderRadius: 12,
-                  borderWidth: 1,
-                  borderColor: accent,
-                  alignItems: 'center',
-                  backgroundColor: type === 'storage' ? accent : 'transparent'
-                }}
-                onPress={() => setType('storage')}
-              >
-                <Text style={{ color: type === 'storage' ? '#FFF' : '#333', fontWeight: 'bold' }}>Storage 🏭</Text>
-              </TouchableOpacity>
-            </View>
+            {user?.role !== 'BUYER' && (
+              <>
+                <Text style={{ fontSize: 16, fontWeight: '600', color: '#333', marginBottom: spacing.sm }}>Select Booking Type</Text>
+                <View style={{ flexDirection: 'row', gap: spacing.md, marginBottom: spacing.lg }}>
+                  <TouchableOpacity 
+                    style={{
+                      flex: 1,
+                      padding: spacing.md,
+                      borderRadius: 12,
+                      borderWidth: 1,
+                      borderColor: accent,
+                      alignItems: 'center',
+                      backgroundColor: type === 'transport' ? accent : 'transparent'
+                    }}
+                    onPress={() => setType('transport')}
+                  >
+                    <Text style={{ color: type === 'transport' ? '#FFF' : '#333', fontWeight: 'bold' }}>Transport 🚚</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={{
+                      flex: 1,
+                      padding: spacing.md,
+                      borderRadius: 12,
+                      borderWidth: 1,
+                      borderColor: accent,
+                      alignItems: 'center',
+                      backgroundColor: type === 'storage' ? accent : 'transparent'
+                    }}
+                    onPress={() => setType('storage')}
+                  >
+                    <Text style={{ color: type === 'storage' ? '#FFF' : '#333', fontWeight: 'bold' }}>Storage 🏭</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
 
             <Text style={{ fontSize: 16, fontWeight: '600', color: '#333', marginBottom: spacing.sm }}>Enter Booking ID</Text>
             <TextInput 
