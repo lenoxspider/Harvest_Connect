@@ -12,7 +12,7 @@ export const paymentApi = {
   },
 
   getMyTransactions: async (): Promise<Transaction[]> => {
-    const response = await axiosInstance.get('/api/payments/transactions/my');
+    const response = await axiosInstance.get('/api/payments/history/my');
     return response.data;
   },
 };
