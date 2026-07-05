@@ -58,7 +58,11 @@ export const produceApi = {
     listing_id: string;
     quantity_kg: number;
   }): Promise<ProduceOrder> => {
-    const response = await axiosInstance.post('/api/produce/orders', data);
+    const payload = {
+      listingId: data.listing_id,
+      quantityKg: data.quantity_kg,
+    };
+    const response = await axiosInstance.post('/api/produce/orders', payload);
     return normalizeOrder(response.data);
   },
 

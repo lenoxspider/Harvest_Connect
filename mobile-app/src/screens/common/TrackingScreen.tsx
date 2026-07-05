@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Animated, Linking, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Animated, Linking, Modal, Pressable, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -117,7 +117,10 @@ const TrackingScreen: React.FC = () => {
   const { user } = useAuth();
   const navigation = useNavigation<NavigationProp<any>>();
   const route = useRoute<RouteProp<TrackingParams, 'Tracking'>>();
-  const { bookingId, type } = route.params;
+  const { bookingId: routeBookingId = '', type: routeType = 'transport' } = route.params ?? {};
+  const [bookingId, setBookingId] = useState<string>(routeBookingId);
+  const [type, setType] = useState<'storage' | 'transport'>(routeType);
+  const [searchIdInput, setSearchIdInput] = useState<string>('');
   const accent = roleAccent(user?.role);
 
   const [status, setStatus] = useState<string>('PENDING');
@@ -160,6 +163,7 @@ const TrackingScreen: React.FC = () => {
   }, [status, type]);
 
   const load = async () => {
+    if (!bookingId) return;
     try {
       if (type === 'storage') {
         const b = await storageApi.getBookingById(bookingId);
@@ -251,6 +255,95 @@ const TrackingScreen: React.FC = () => {
     if (type === 'storage') return 'Contact Storage Owner';
     return 'Contact Driver';
   }, [type]);
+
+  if (!bookingId) {
+    return (
+      <Screen scroll>
+        <View style={styles.container}>
+          <View style={styles.headerContainer}>
+            <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
+              <Text style={[styles.backArrowText, { color: accent }]}>←</Text>
+            </Pressable>
+            <View style={styles.headerTitleContainer}>
+              <Text style={styles.headerTitle}>Track My Order</Text>
+              <Text style={styles.headerSubtitle}>Select booking type and enter ID</Text>
+            </View>
+            <View style={{ width: 44 }} />
+          </View>
+
+          <GlassCard strength="strong" style={{ margin: spacing.md, padding: spacing.lg }}>
+            <Text style={{ fontSize: 16, fontWeight: '600', color: '#333', marginBottom: spacing.sm }}>Select Booking Type</Text>
+            <View style={{ flexDirection: 'row', gap: spacing.md, marginBottom: spacing.lg }}>
+              <TouchableOpacity 
+                style={{
+                  flex: 1,
+                  padding: spacing.md,
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: accent,
+                  alignItems: 'center',
+                  backgroundColor: type === 'transport' ? accent : 'transparent'
+                }}
+                onPress={() => setType('transport')}
+              >
+                <Text style={{ color: type === 'transport' ? '#FFF' : '#333', fontWeight: 'bold' }}>Transport 🚚</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={{
+                  flex: 1,
+                  padding: spacing.md,
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: accent,
+                  alignItems: 'center',
+                  backgroundColor: type === 'storage' ? accent : 'transparent'
+                }}
+                onPress={() => setType('storage')}
+              >
+                <Text style={{ color: type === 'storage' ? '#FFF' : '#333', fontWeight: 'bold' }}>Storage 🏭</Text>
+              </TouchableOpacity>
+            </View>
+
+            <Text style={{ fontSize: 16, fontWeight: '600', color: '#333', marginBottom: spacing.sm }}>Enter Booking ID</Text>
+            <TextInput 
+              style={{
+                height: 48,
+                borderWidth: 1,
+                borderColor: '#DDD',
+                borderRadius: 12,
+                paddingHorizontal: spacing.md,
+                color: '#333',
+                marginBottom: spacing.lg,
+                backgroundColor: '#FFF'
+              }}
+              value={searchIdInput}
+              onChangeText={setSearchIdInput}
+              placeholder="e.g. 568628e0-..."
+              placeholderTextColor="#999"
+            />
+
+            <TouchableOpacity 
+              style={{
+                backgroundColor: accent,
+                padding: spacing.md,
+                borderRadius: 12,
+                alignItems: 'center'
+              }}
+              onPress={() => {
+                if (!searchIdInput.trim()) {
+                  Alert.alert('Error', 'Please enter a valid Booking ID');
+                  return;
+                }
+                setBookingId(searchIdInput.trim());
+              }}
+            >
+              <Text style={{ color: '#FFF', fontWeight: 'bold', fontSize: 16 }}>Start Tracking</Text>
+            </TouchableOpacity>
+          </GlassCard>
+        </View>
+      </Screen>
+    );
+  }
 
   return (
     <Screen scroll>
