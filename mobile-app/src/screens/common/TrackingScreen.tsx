@@ -271,68 +271,48 @@ const TrackingScreen: React.FC = () => {
             <View style={{ width: 44 }} />
           </View>
 
-          <GlassCard strength="strong" style={{ margin: spacing.md, padding: spacing.lg }}>
+          <GlassCard strength="strong" style={styles.searchCard}>
             {user?.role !== 'BUYER' && (
               <>
-                <Text style={{ fontSize: 16, fontWeight: '600', color: '#333', marginBottom: spacing.sm }}>Select Booking Type</Text>
-                <View style={{ flexDirection: 'row', gap: spacing.md, marginBottom: spacing.lg }}>
+                <Text style={styles.searchLabel}>Select Booking Type</Text>
+                <View style={styles.typeSelectorRow}>
                   <TouchableOpacity 
-                    style={{
-                      flex: 1,
-                      padding: spacing.md,
-                      borderRadius: 12,
-                      borderWidth: 1,
-                      borderColor: accent,
-                      alignItems: 'center',
-                      backgroundColor: type === 'transport' ? accent : 'transparent'
-                    }}
+                    style={[
+                      styles.typeBtn, 
+                      { borderColor: accent },
+                      type === 'transport' && { backgroundColor: accent }
+                    ]}
                     onPress={() => setType('transport')}
                   >
-                    <Text style={{ color: type === 'transport' ? '#FFF' : '#333', fontWeight: 'bold' }}>Transport 🚚</Text>
+                    <Text style={[styles.typeBtnText, type === 'transport' && { color: '#FFF' }]}>Transport 🚚</Text>
                   </TouchableOpacity>
                   <TouchableOpacity 
-                    style={{
-                      flex: 1,
-                      padding: spacing.md,
-                      borderRadius: 12,
-                      borderWidth: 1,
-                      borderColor: accent,
-                      alignItems: 'center',
-                      backgroundColor: type === 'storage' ? accent : 'transparent'
-                    }}
+                    style={[
+                      styles.typeBtn, 
+                      { borderColor: accent },
+                      type === 'storage' && { backgroundColor: accent }
+                    ]}
                     onPress={() => setType('storage')}
                   >
-                    <Text style={{ color: type === 'storage' ? '#FFF' : '#333', fontWeight: 'bold' }}>Storage 🏭</Text>
+                    <Text style={[styles.typeBtnText, type === 'storage' && { color: '#FFF' }]}>Storage 🏭</Text>
                   </TouchableOpacity>
                 </View>
               </>
             )}
 
-            <Text style={{ fontSize: 16, fontWeight: '600', color: '#333', marginBottom: spacing.sm }}>Enter Booking ID</Text>
+            <Text style={styles.searchLabel}>Enter Booking ID</Text>
             <TextInput 
-              style={{
-                height: 48,
-                borderWidth: 1,
-                borderColor: '#DDD',
-                borderRadius: 12,
-                paddingHorizontal: spacing.md,
-                color: '#333',
-                marginBottom: spacing.lg,
-                backgroundColor: '#FFF'
-              }}
+              style={styles.searchInput}
               value={searchIdInput}
               onChangeText={setSearchIdInput}
               placeholder="e.g. 568628e0-..."
               placeholderTextColor="#999"
+              autoCapitalize="none"
+              autoCorrect={false}
             />
 
             <TouchableOpacity 
-              style={{
-                backgroundColor: accent,
-                padding: spacing.md,
-                borderRadius: 12,
-                alignItems: 'center'
-              }}
+              style={[styles.searchSubmitBtn, { backgroundColor: accent }]}
               onPress={() => {
                 if (!searchIdInput.trim()) {
                   Alert.alert('Error', 'Please enter a valid Booking ID');
@@ -341,7 +321,7 @@ const TrackingScreen: React.FC = () => {
                 setBookingId(searchIdInput.trim());
               }}
             >
-              <Text style={{ color: '#FFF', fontWeight: 'bold', fontSize: 16 }}>Start Tracking</Text>
+              <Text style={styles.searchSubmitBtnText}>Start Tracking</Text>
             </TouchableOpacity>
           </GlassCard>
         </View>
@@ -714,6 +694,63 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: spacing.md,
     textAlign: 'center',
+  },
+  searchCard: {
+    margin: spacing.md,
+    padding: spacing.lg,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  searchLabel: {
+    ...typography.body,
+    fontWeight: '800',
+    color: colors.text,
+    marginBottom: spacing.sm,
+  },
+  typeSelectorRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  typeBtn: {
+    flex: 1,
+    padding: spacing.md,
+    borderRadius: 12,
+    borderWidth: 1,
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+  },
+  typeBtnText: {
+    fontWeight: '800',
+    fontSize: 14,
+    color: colors.text,
+  },
+  searchInput: {
+    height: 52,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+    borderRadius: 12,
+    paddingHorizontal: spacing.md,
+    color: colors.text,
+    fontSize: 15,
+    fontWeight: '700',
+    marginBottom: spacing.lg,
+    backgroundColor: 'rgba(255, 255, 255, 0.65)',
+  },
+  searchSubmitBtn: {
+    padding: spacing.md,
+    borderRadius: 12,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  searchSubmitBtnText: {
+    color: '#ffffff',
+    fontWeight: '900',
+    fontSize: 16,
   },
 });
 
