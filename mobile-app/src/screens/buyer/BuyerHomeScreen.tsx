@@ -428,7 +428,7 @@ const BuyerHomeScreen: React.FC = () => {
                 <Text style={styles.farmerRating}>⭐ {farmer.rating.toFixed(1)}</Text>
                 <TouchableOpacity
                   style={styles.viewListingsBtn}
-                  onPress={() => navigation.navigate('ProduceList', { farmerId: farmer.id })}
+                  onPress={() => navigation.navigate('BrowseTab', { screen: 'ProduceList', params: { farmerId: farmer.id } })}
                 >
                   <Text style={styles.viewListingsBtnText}>View Listings</Text>
                 </TouchableOpacity>
