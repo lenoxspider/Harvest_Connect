@@ -8,6 +8,7 @@ import AddTruckScreen from '../screens/transporter/AddTruckScreen';
 import MyListingsScreen from '../screens/transporter/MyListingsScreen';
 import IncomingBookingsScreen from '../screens/transporter/IncomingBookingsScreen';
 import SearchScreen from '../screens/buyer/SearchScreen';
+import MyTransactionsScreen from '../screens/common/MyTransactionsScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
 import NotificationsScreen from '../screens/common/NotificationsScreen';
 import TrackingScreen from '../screens/common/TrackingScreen';
@@ -36,9 +37,18 @@ const TransporterHomeStack: React.FC = () => {
   return (
     <Stack.Navigator screenOptions={transporterHeader}>
       <Stack.Screen name="Home" component={TransporterHomeScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="AddTruck" component={AddTruckScreen} options={{ title: 'Add Truck' }} />
+      <Stack.Screen name="AddTruck" component={AddTruckScreen} options={{ title: 'List Vehicle' }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Tracking' }} />
+    </Stack.Navigator>
+  );
+};
+
+const AccountStack: React.FC = () => {
+  return (
+    <Stack.Navigator screenOptions={transporterHeader}>
+      <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="MyTransactions" component={MyTransactionsScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 };
@@ -71,12 +81,11 @@ const TransporterNavigator: React.FC = () => {
         }}
       />
       <Tab.Screen
-        name="TrucksTab"
+        name="ListingsTab"
         component={MyListingsScreen}
         options={{
-          title: 'Trucks',
-          ...transporterHeader,
-          headerShown: true,
+          title: 'Vehicles',
+          headerShown: false,
           tabBarIcon: tabIcon(0x1f69a),
         }}
       />
@@ -92,10 +101,9 @@ const TransporterNavigator: React.FC = () => {
       />
       <Tab.Screen
         name="AccountTab"
-        component={ProfileScreen}
+        component={AccountStack}
         options={{
           title: 'Account',
-          headerShown: false,
           tabBarIcon: tabIcon(0x1f464),
         }}
       />

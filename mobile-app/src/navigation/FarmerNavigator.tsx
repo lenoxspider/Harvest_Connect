@@ -15,6 +15,7 @@ import TransportRequestScreen from '../screens/farmer/TransportRequestScreen';
 import MyTransportBookingsScreen from '../screens/farmer/MyTransportBookingsScreen';
 import MyTrackingScreen from '../screens/farmer/MyTrackingScreen';
 import ReviewSubmitScreen from '../screens/common/ReviewSubmitScreen';
+import MyTransactionsScreen from '../screens/common/MyTransactionsScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
 import NotificationsScreen from '../screens/common/NotificationsScreen';
 import TrackingScreen from '../screens/common/TrackingScreen';
@@ -67,6 +68,15 @@ const ListingsStack: React.FC = () => {
   );
 };
 
+const AccountStack: React.FC = () => {
+  return (
+    <Stack.Navigator screenOptions={farmerHeader}>
+      <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="MyTransactions" component={MyTransactionsScreen} options={{ headerShown: false }} />
+    </Stack.Navigator>
+  );
+};
+
 const FarmerNavigator: React.FC = () => {
   const insets = useSafeAreaInsets();
 
@@ -114,10 +124,9 @@ const FarmerNavigator: React.FC = () => {
       />
       <Tab.Screen
         name="AccountTab"
-        component={ProfileScreen}
+        component={AccountStack}
         options={{
           title: 'Account',
-          headerShown: false,
           tabBarIcon: tabIcon(0x1f464),
         }}
       />

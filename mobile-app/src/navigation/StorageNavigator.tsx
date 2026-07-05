@@ -8,6 +8,7 @@ import AddStorageScreen from '../screens/storage/AddStorageScreen';
 import MyFacilitiesScreen from '../screens/storage/MyFacilitiesScreen';
 import StorageBookingsScreen from '../screens/storage/StorageBookingsScreen';
 import SearchScreen from '../screens/buyer/SearchScreen';
+import MyTransactionsScreen from '../screens/common/MyTransactionsScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
 import NotificationsScreen from '../screens/common/NotificationsScreen';
 import TrackingScreen from '../screens/common/TrackingScreen';
@@ -40,6 +41,15 @@ const StorageHomeStack: React.FC = () => {
       <Stack.Screen name="AddStorage" component={AddStorageScreen} options={{ title: 'Add Storage Facility' }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Tracking' }} />
+    </Stack.Navigator>
+  );
+};
+
+const AccountStack: React.FC = () => {
+  return (
+    <Stack.Navigator screenOptions={storageHeader}>
+      <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="MyTransactions" component={MyTransactionsScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 };
@@ -92,10 +102,9 @@ const StorageNavigator: React.FC = () => {
       />
       <Tab.Screen
         name="AccountTab"
-        component={ProfileScreen}
+        component={AccountStack}
         options={{
           title: 'Account',
-          headerShown: false,
           tabBarIcon: tabIcon(0x1f464),
         }}
       />

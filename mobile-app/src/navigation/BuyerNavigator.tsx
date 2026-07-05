@@ -9,6 +9,7 @@ import ProduceListScreen from '../screens/buyer/ProduceListScreen';
 import ProduceDetailScreen from '../screens/buyer/ProduceDetailScreen';
 import MyOrdersScreen from '../screens/buyer/MyOrdersScreen';
 import ReviewSubmitScreen from '../screens/common/ReviewSubmitScreen';
+import MyTransactionsScreen from '../screens/common/MyTransactionsScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
 import NotificationsScreen from '../screens/common/NotificationsScreen';
 import TrackingScreen from '../screens/common/TrackingScreen';
@@ -57,6 +58,15 @@ const OrdersStack: React.FC = () => {
     <Stack.Navigator screenOptions={buyerHeader}>
       <Stack.Screen name="MyOrders" component={MyOrdersScreen} options={{ headerShown: false }} />
       <Stack.Screen name="SubmitReview" component={ReviewSubmitScreen} options={{ headerShown: false }} />
+    </Stack.Navigator>
+  );
+};
+
+const AccountStack: React.FC = () => {
+  return (
+    <Stack.Navigator screenOptions={buyerHeader}>
+      <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="MyTransactions" component={MyTransactionsScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 };
@@ -127,10 +137,9 @@ const BuyerNavigator: React.FC = () => {
       />
       <Tab.Screen
         name="AccountTab"
-        component={ProfileScreen}
+        component={AccountStack}
         options={{
           title: 'Account',
-          headerShown: false,
           tabBarIcon: tabIcon(0x1f464),
         }}
       />

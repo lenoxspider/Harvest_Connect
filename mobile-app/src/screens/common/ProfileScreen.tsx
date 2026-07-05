@@ -1,9 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 
 export const ProfileScreen: React.FC = () => {
   const { user, logout } = useAuth();
+  const navigation = useNavigation<NavigationProp<any>>();
 
   const getRoleThemeColor = (role?: string) => {
     switch (role) {
@@ -53,6 +55,15 @@ export const ProfileScreen: React.FC = () => {
             <Text style={styles.value}>#{user?.id ? String(user.id).substring(0, 8) : '—'}</Text>
           </View>
         </View>
+
+        {/* Transactions Button */}
+        <TouchableOpacity
+          style={[styles.txBtn, { borderColor: theme.primary }]}
+          onPress={() => navigation.navigate('MyTransactions')}
+          activeOpacity={0.8}
+        >
+          <Text style={[styles.txBtnText, { color: theme.primary }]}>🧾 My Transactions</Text>
+        </TouchableOpacity>
 
         {/* Logout Button */}
         <TouchableOpacity
@@ -155,6 +166,20 @@ const styles = StyleSheet.create({
   },
   logoutBtnText: {
     color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  txBtn: {
+    width: '100%',
+    height: 48,
+    borderRadius: 12,
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+    marginTop: 24,
+  },
+  txBtnText: {
     fontSize: 16,
     fontWeight: 'bold',
   },
