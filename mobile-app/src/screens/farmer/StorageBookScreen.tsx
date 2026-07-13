@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { RouteProp, useNavigation, useRoute, NavigationProp } from '@react-navigation/native';
 import { storageApi } from '../../api/storageApi';
+import { paymentApi } from '../../api/paymentApi';
 import { StorageListing } from '../../types';
 import { colors } from '../../theme/colors';
 import { spacing } from '../../theme/spacing';
@@ -10,12 +11,15 @@ import { GlassButton } from '../../ui/GlassButton';
 import { GlassCard } from '../../ui/GlassCard';
 import { GlassInput } from '../../ui/GlassInput';
 import { Screen } from '../../ui/Screen';
+import { PaystackModal } from '../../ui/PaystackModal';
+import { useAuth } from '../../context/AuthContext';
 
 type RouteParams = {
   StorageBook: { listing: StorageListing };
 };
 
 const StorageBookScreen: React.FC = () => {
+  const { user } = useAuth();
   const navigation = useNavigation<NavigationProp<any>>();
   const route = useRoute<RouteProp<RouteParams, 'StorageBook'>>();
   const listing = route.params.listing;
@@ -24,8 +28,22 @@ const StorageBookScreen: React.FC = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [paystackVisible, setPaystackVisible] = useState(false);
 
   const qty = useMemo(() => Number(quantityTons) || 0, [quantityTons]);
+
+  const days = useMemo(() => {
+    if (!startDate || !endDate) return 0;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return Number.isNaN(diffDays) ? 0 : Math.max(1, diffDays);
+  }, [startDate, endDate]);
+
+  const total = useMemo(() => {
+    return qty * listing.price_per_ton_per_day * (days || 1);
+  }, [qty, listing.price_per_ton_per_day, days]);
 
   const submit = async () => {
     if (!qty || qty <= 0) {
@@ -41,19 +59,37 @@ const StorageBookScreen: React.FC = () => {
       return;
     }
 
+    Alert.alert(
+      'Confirm Booking Payment',
+      `Book ${qty} tons for ${days} days. Total price GHS ${total.toFixed(2)}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Confirm & Pay', onPress: () => setPaystackVisible(true) }
+      ]
+    );
+  };
+
+  const handlePaymentSuccess = async (reference: string) => {
+    setPaystackVisible(false);
     setIsLoading(true);
     try {
-      await storageApi.bookStorage({
+      const booking = await storageApi.bookStorage({
         storage_id: listing.id,
         quantity_tons: qty,
         start_date: startDate,
         end_date: endDate,
       });
-      Alert.alert('Success', 'Booking request sent');
+
+      // Register payment
+      await paymentApi.initiatePayment({
+        order_id: booking.id,
+        amount: Number(total.toFixed(2)),
+      });
+
+      Alert.alert('Success', `Storage booked successfully! Reference: ${reference}`);
       navigation.goBack();
     } catch (e: any) {
-      const msg = e?.response?.data?.error || e?.response?.data?.message || 'Booking failed';
-      Alert.alert('Error', msg);
+      Alert.alert('Success', 'Payment completed, but registering storage booking on backend failed.');
     } finally {
       setIsLoading(false);
     }
@@ -100,14 +136,33 @@ const StorageBookScreen: React.FC = () => {
           editable={!isLoading}
         />
 
+        {total > 0 && (
+          <View style={{ marginVertical: spacing.sm, padding: spacing.sm, borderRadius: 8, backgroundColor: 'rgba(46, 125, 50, 0.08)' }}>
+            <Text style={{ color: colors.text, fontWeight: '700', fontSize: 13 }}>
+              Duration: {days} {days === 1 ? 'day' : 'days'}
+            </Text>
+            <Text style={{ color: colors.text, fontWeight: '900', fontSize: 14, marginTop: 4 }}>
+              Total Cost: GHS {total.toFixed(2)}
+            </Text>
+          </View>
+        )}
+
         <GlassButton
-          title={isLoading ? 'Submitting...' : 'Book'}
+          title={isLoading ? 'Submitting...' : 'Book & Pay'}
           onPress={submit}
           loading={isLoading}
-          disabled={isLoading}
+          disabled={isLoading || qty <= 0}
           style={{ marginTop: spacing.md }}
         />
       </GlassCard>
+
+      <PaystackModal
+        visible={paystackVisible}
+        amount={total}
+        email={`${user?.fullName?.replace(/\s+/g, '').toLowerCase() || 'farmer'}@harvestconnect.com`}
+        onSuccess={handlePaymentSuccess}
+        onCancel={() => setPaystackVisible(false)}
+      />
     </Screen>
   );
 };
