@@ -14,11 +14,16 @@ import { useFocusEffect, useNavigation, NavigationProp } from '@react-navigation
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { buyerApi, BuyerListing } from '../../api/buyerApi';
 import { produceApi } from '../../api/produceApi';
+import { paymentApi } from '../../api/paymentApi';
+import { PaystackModal } from '../../ui/PaystackModal';
+import { useAuth } from '../../context/AuthContext';
 
 export default function CartScreen() {
+  const { user } = useAuth();
   const navigation = useNavigation<NavigationProp<any>>();
   const [cartItems, setCartItems] = useState<BuyerListing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [paystackVisible, setPaystackVisible] = useState(false);
 
   const fetchCart = useCallback(async () => {
     try {
@@ -53,21 +58,32 @@ export default function CartScreen() {
   };
 
   const handleCheckout = async () => {
+    if (cartItems.length === 0) return;
+    setPaystackVisible(true);
+  };
+
+  const handlePaymentSuccess = async (reference: string) => {
+    setPaystackVisible(false);
     try {
       setIsLoading(true);
       for (const item of cartItems) {
-        await produceApi.placeOrder({
+        const order = await produceApi.placeOrder({
           listing_id: item.id,
           quantity_kg: 50, // default quantity per checkout item
+        });
+
+        await paymentApi.initiatePayment({
+          order_id: order.id,
+          amount: item.pricePerBag,
         });
       }
       await AsyncStorage.removeItem('cart_items');
       setCartItems([]);
-      alert('Order placed successfully!');
+      alert(`Checkout successful! Payment processed. Reference: ${reference}`);
       navigation.navigate('OrdersTab');
     } catch (e) {
       console.error('Error checkout:', e);
-      alert('Could not place order on backend');
+      alert('Payment completed, but order placement failed on backend.');
     } finally {
       setIsLoading(false);
     }
@@ -135,6 +151,13 @@ export default function CartScreen() {
           </View>
         </View>
       )}
+      <PaystackModal
+        visible={paystackVisible}
+        amount={total}
+        email={`${user?.fullName?.replace(/\s+/g, '').toLowerCase() || 'buyer'}@harvestconnect.com`}
+        onSuccess={handlePaymentSuccess}
+        onCancel={() => setPaystackVisible(false)}
+      />
     </SafeAreaView>
   );
 }

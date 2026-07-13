@@ -11,16 +11,20 @@ import { GlassCard } from '../../ui/GlassCard';
 import { GlassButton } from '../../ui/GlassButton';
 import { GlassInput } from '../../ui/GlassInput';
 import { Screen } from '../../ui/Screen';
+import { PaystackModal } from '../../ui/PaystackModal';
+import { useAuth } from '../../context/AuthContext';
 
 type RouteParams = {
   ProduceDetail: { listingId: string };
 };
 
 const ProduceDetailScreen: React.FC = () => {
+  const { user } = useAuth();
   const [listing, setListing] = useState<ProduceListing | null>(null);
   const [quantity, setQuantity] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isOrdering, setIsOrdering] = useState(false);
+  const [paystackVisible, setPaystackVisible] = useState(false);
   const route = useRoute<RouteProp<RouteParams, 'ProduceDetail'>>();
 
   useEffect(() => {
@@ -67,30 +71,35 @@ const ProduceDetailScreen: React.FC = () => {
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Confirm',
-          onPress: async () => {
-            setIsOrdering(true);
-            try {
-              const order = await produceApi.placeOrder({
-                listing_id: listing.id,
-                quantity_kg: quantityNum,
-              });
-
-              await paymentApi.initiatePayment({
-                order_id: order.id,
-                amount: Number(total.toFixed(2)),
-              });
-
-              Alert.alert('Success', 'Order placed! Awaiting confirmation.');
-              setQuantity('');
-            } catch (error: any) {
-              Alert.alert('Error', error.response?.data?.message || 'Order failed');
-            } finally {
-              setIsOrdering(false);
-            }
+          onPress: () => {
+            setPaystackVisible(true);
           },
         },
       ]
     );
+  };
+
+  const handlePaymentSuccess = async (reference: string) => {
+    setPaystackVisible(false);
+    setIsOrdering(true);
+    try {
+      const order = await produceApi.placeOrder({
+        listing_id: listing!.id,
+        quantity_kg: quantityNum,
+      });
+
+      await paymentApi.initiatePayment({
+        order_id: order.id,
+        amount: Number(total.toFixed(2)),
+      });
+
+      Alert.alert('Success', `Order placed and paid successfully! Reference: ${reference}`);
+      setQuantity('');
+    } catch (error: any) {
+      Alert.alert('Success', 'Payment completed, but order booking encountered an error.');
+    } finally {
+      setIsOrdering(false);
+    }
   };
 
   return (
@@ -157,6 +166,13 @@ const ProduceDetailScreen: React.FC = () => {
           {isLoading ? 'Loading details…' : 'Could not load this listing.'}
         </Text>
       )}
+      <PaystackModal
+        visible={paystackVisible}
+        amount={total}
+        email={`${user?.fullName?.replace(/\s+/g, '').toLowerCase() || 'buyer'}@harvestconnect.com`}
+        onSuccess={handlePaymentSuccess}
+        onCancel={() => setPaystackVisible(false)}
+      />
     </Screen>
   );
 };
