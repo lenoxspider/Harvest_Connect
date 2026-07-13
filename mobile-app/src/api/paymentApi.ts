@@ -15,4 +15,9 @@ export const paymentApi = {
     const response = await axiosInstance.get('/api/payments/history/my');
     return response.data;
   },
+
+  releaseEscrow: async (transactionId: string): Promise<any> => {
+    const response = await axiosInstance.post(`/api/payments/release/${transactionId}`);
+    return response.data;
+  },
 };

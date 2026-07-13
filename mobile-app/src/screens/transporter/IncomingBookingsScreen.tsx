@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, RefreshControl } from 'react-native';
 import { transportApi } from '../../api/transportApi';
+import { paymentApi } from '../../api/paymentApi';
 import { TransportBooking } from '../../types';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -62,6 +63,20 @@ const TransporterBookingsScreen: React.FC = () => {
         onPress: async () => {
           try {
             await transportApi.updateStatus(booking.id, newStatus);
+            
+            // If the booking is completed, release the payment from escrow
+            if (newStatus === 'COMPLETED') {
+              try {
+                const txs = await paymentApi.getMyTransactions();
+                const match = txs.find((t) => t.order_id === booking.id);
+                if (match) {
+                  await paymentApi.releaseEscrow(match.id);
+                }
+              } catch (txError) {
+                console.error('Failed to release escrow for transport:', txError);
+              }
+            }
+
             Alert.alert('Success', `Booking status updated to ${newStatus}!`);
             fetchBookings();
           } catch (error) {

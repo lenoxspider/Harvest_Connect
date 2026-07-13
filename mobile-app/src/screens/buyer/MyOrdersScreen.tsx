@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { produceApi } from '../../api/produceApi';
+import { paymentApi } from '../../api/paymentApi';
 import { ProduceOrder } from '../../types';
 
 const MyOrdersScreen: React.FC = () => {
@@ -64,11 +65,27 @@ const MyOrdersScreen: React.FC = () => {
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Confirm',
-          onPress: () => {
-            setOrders((prev) =>
-              prev.map((o) => (o.id === item.id ? { ...o, status: 'DELIVERED' } : o))
-            );
-            Alert.alert('Escrow Released', 'Receipt confirmed! Payment has been released to the Farmer.');
+          onPress: async () => {
+            try {
+              // 1. Fetch transactions to find the one associated with this order
+              const txs = await paymentApi.getMyTransactions();
+              const match = txs.find((t) => t.order_id === item.id);
+              if (match) {
+                // 2. Call backend release endpoint
+                await paymentApi.releaseEscrow(match.id);
+              }
+              
+              setOrders((prev) =>
+                prev.map((o) => (o.id === item.id ? { ...o, status: 'DELIVERED' } : o))
+              );
+              Alert.alert('Escrow Released', 'Receipt confirmed! Payment has been released to the Farmer.');
+            } catch (error) {
+              console.error('Escrow release error:', error);
+              Alert.alert('Error', 'Escrow release failed on backend, but marking status locally.');
+              setOrders((prev) =>
+                prev.map((o) => (o.id === item.id ? { ...o, status: 'DELIVERED' } : o))
+              );
+            }
           },
         },
       ]
