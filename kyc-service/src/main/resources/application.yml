@@ -1,0 +1,26 @@
+server:
+  port: ${SERVER_PORT:8087}
+
+spring:
+  application:
+    name: kyc-service
+  datasource:
+    url: ${DB_URL_KYC:jdbc:postgresql://localhost:5432/kyc_db}
+    username: ${DB_USERNAME_KYC:postgres}
+    password: ${DB_PASSWORD_KYC:password}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+# KYC-Chain integration settings.
+# Bind api-key and webhook-secret from environment variables - never hardcode.
+# Update base-url to the real KYC-Chain sandbox/production URL from their dev portal.
+kyc-chain:
+  base-url: ${KYC_CHAIN_BASE_URL:https://api.kyc-chain.com}
+  api-key: ${KYC_CHAIN_API_KEY:}
+  webhook-secret: ${KYC_CHAIN_WEBHOOK_SECRET:}
