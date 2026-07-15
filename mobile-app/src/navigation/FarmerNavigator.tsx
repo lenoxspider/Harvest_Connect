@@ -51,6 +51,7 @@ const FarmerHomeStack: React.FC = () => {
       <Stack.Screen name="StorageBook" component={StorageBookScreen} options={{ title: 'Book Storage' }} />
       <Stack.Screen name="MyStorageBookings" component={MyStorageBookingsScreen} options={{ title: 'My Storage', headerShown: false }} />
       <Stack.Screen name="TransportBrowse" component={TransportBrowseScreen} options={{ title: 'Find Transport', headerShown: false }} />
+      <Stack.Screen name="TransportRequest" component={TransportRequestScreen} options={{ title: 'Request Transport', headerShown: false }} />
       <Stack.Screen name="MyTransportBookings" component={MyTransportBookingsScreen} options={{ title: 'My Trips', headerShown: false }} />
       <Stack.Screen name="MyTracking" component={MyTrackingScreen} options={{ headerShown: false }} />
       <Stack.Screen name="SubmitReview" component={ReviewSubmitScreen} options={{ headerShown: false }} />

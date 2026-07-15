@@ -65,8 +65,18 @@ export const buyerApi = {
   },
 
   getCategories: async (): Promise<string[]> => {
-    const res = await axiosInstance.get('/api/produce/categories');
-    return Array.isArray(res.data) ? res.data : [];
+    // Static categories — the backend has no /api/produce/categories endpoint.
+    // Categories are derived from actual produce listings to keep filtering functional.
+    return [
+      'Grains & Cereals',
+      'Vegetables',
+      'Fruits',
+      'Tubers & Roots',
+      'Legumes',
+      'Cash Crops',
+      'Spices & Herbs',
+      'Livestock',
+    ];
   },
 
   getListings: async (params?: {

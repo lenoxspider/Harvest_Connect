@@ -65,33 +65,9 @@ export default function TransportBrowseScreen() {
     }, [])
   );
 
-  const handleBookNow = async (truck: TruckListing) => {
-    try {
-      const booking = await transportApi.bookTransport({
-        truck_id: truck.id,
-        pickup_location: truck.location || 'Kumasi',
-        delivery_location: 'Accra',
-        scheduled_date: new Date().toISOString(),
-      });
-      const driverName = `Transporter #${truck.transporter_id.substring(0, 4)}`;
-      navigation.navigate('Tracking', {
-        bookingId: booking.id,
-        type: 'transport',
-        transporterId: truck.transporter_id,
-        driverName: driverName,
-        vehicle: truck.truck_type,
-        price: `GHS ${truck.price_per_km} / km`,
-        jobDetails: JSON.stringify({
-          pickup: truck.location || 'Kumasi',
-          destination: 'Accra',
-          maxLoad: `${truck.capacity_kg / 1000} tons`,
-          produceType: 'Mixed Produce',
-          weight: '10 tons',
-        }),
-      });
-    } catch (error) {
-      console.error('Error booking transport:', error);
-      Alert.alert('Booking Failed', 'Could not create booking on backend.');
+  const handleBookNow = (truck: TruckListing) => {
+    navigation.navigate('TransportRequest', { truck });
+
     }
   };
 
