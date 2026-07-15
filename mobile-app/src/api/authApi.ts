@@ -28,4 +28,11 @@ export const authApi = {
     const response = await axiosInstance.get('/api/auth/me');
     return response.data;
   },
+
+  refreshToken: async (refreshToken: string): Promise<AuthResponse> => {
+    // Uses axiosInstance with the refresh URL (skipAuth list excludes /api/auth/refresh
+    // from attaching the old bearer token, so this is safe to call directly).
+    const response = await axiosInstance.post('/api/auth/refresh', { refreshToken });
+    return response.data as AuthResponse;
+  },
 };

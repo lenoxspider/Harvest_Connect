@@ -82,7 +82,18 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle 401 errors
+// ─── Token refresh state ────────────────────────────────────────────────────
+// isRefreshing prevents multiple simultaneous refresh calls.
+// failedQueue holds requests that arrived while a refresh was in-flight.
+let isRefreshing = false;
+let failedQueue: { resolve: (token: string) => void; reject: (err: unknown) => void }[] = [];
+
+const processQueue = (error: unknown, token: string | null) => {
+  failedQueue.forEach(p => (error ? p.reject(error) : p.resolve(token!)));
+  failedQueue = [];
+};
+
+// Response interceptor — handles 401 with silent token refresh
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -96,11 +107,63 @@ axiosInstance.interceptors.response.use(
       'data=',
       error?.response?.data
     );
-    if (error.response?.status === 401) {
-      await AsyncStorage.removeItem('jwt_token');
-      await AsyncStorage.removeItem('user');
-      // You'll need to implement navigation reset in AuthContext
+
+    const originalRequest = error.config;
+
+    // Only attempt refresh on 401s that are not already a retry or a refresh call itself
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      originalRequest.url !== '/api/auth/refresh'
+    ) {
+      if (isRefreshing) {
+        // Queue this request until the in-flight refresh completes
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return axiosInstance(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        const storedRefreshToken = await AsyncStorage.getItem('refresh_token');
+        if (!storedRefreshToken) throw new Error('No refresh token stored');
+
+        // POST /api/auth/refresh — skipAuth list ensures no stale Bearer is sent
+        const refreshRes = await axiosInstance.post('/api/auth/refresh', {
+          refreshToken: storedRefreshToken,
+        });
+
+        const { accessToken, refreshToken: newRefreshToken } = refreshRes.data;
+
+        // Persist new tokens
+        await AsyncStorage.setItem('jwt_token', accessToken);
+        await AsyncStorage.setItem('refresh_token', newRefreshToken);
+
+        // Update default header for future requests
+        axiosInstance.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+
+        processQueue(null, accessToken);
+
+        // Retry original request with new token
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        return axiosInstance(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+        // Refresh failed — wipe tokens so AuthContext redirects to login
+        await AsyncStorage.multiRemove(['jwt_token', 'refresh_token', 'user']);
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
     }
+
     return Promise.reject(error);
   }
 );

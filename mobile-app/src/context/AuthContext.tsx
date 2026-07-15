@@ -134,6 +134,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await authApi.login(phoneNumber, password);
       
       await AsyncStorage.setItem('jwt_token', response.accessToken);
+      if (response.refreshToken) {
+        await AsyncStorage.setItem('refresh_token', response.refreshToken);
+      }
       setToken(response.accessToken);
 
       const userData = await authApi.getMe();
@@ -189,7 +192,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = async () => {
-    await AsyncStorage.multiRemove(['jwt_token', 'user']);
+    await AsyncStorage.multiRemove(['jwt_token', 'refresh_token', 'user']);
     setToken(null);
     setUser(null);
   };
