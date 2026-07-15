@@ -7,4 +7,5 @@ CREATE DATABASE transport_db;
 CREATE DATABASE storage_db;
 CREATE DATABASE payment_db;
 CREATE DATABASE notification_db;
+CREATE DATABASE kyc_db;
 

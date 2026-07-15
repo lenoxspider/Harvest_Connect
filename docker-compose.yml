@@ -44,6 +44,7 @@ services:
       STORAGE_SERVICE_URL: http://storage-service:8084
       PAYMENT_SERVICE_URL: http://payment-service:8085
       NOTIFICATION_SERVICE_URL: http://notification-service:8086
+      KYC_SERVICE_URL: http://kyc-service:8087
     depends_on:
       auth-service:
         condition: service_started
@@ -56,6 +57,8 @@ services:
       payment-service:
         condition: service_started
       notification-service:
+        condition: service_started
+      kyc-service:
         condition: service_started
 
   auth-service:
@@ -155,6 +158,25 @@ services:
       DB_URL_NOTIFICATION: jdbc:postgresql://postgres:5432/notification_db
       DB_USERNAME_NOTIFICATION: ${POSTGRES_USER:-postgres}
       DB_PASSWORD_NOTIFICATION: ${POSTGRES_PASSWORD:-password}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  kyc-service:
+    build:
+      context: ./kyc-service
+      dockerfile: Dockerfile
+    container_name: harvestconnect-kyc-service
+    ports:
+      - "8087:8087"
+    environment:
+      SERVER_PORT: "8087"
+      DB_URL_KYC: jdbc:postgresql://postgres:5432/kyc_db
+      DB_USERNAME_KYC: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD_KYC: ${POSTGRES_PASSWORD:-password}
+      KYC_CHAIN_BASE_URL: ${KYC_CHAIN_BASE_URL:-https://api.kyc-chain.com}
+      KYC_CHAIN_API_KEY: ${KYC_CHAIN_API_KEY:-}
+      KYC_CHAIN_WEBHOOK_SECRET: ${KYC_CHAIN_WEBHOOK_SECRET:-}
     depends_on:
       postgres:
         condition: service_healthy
