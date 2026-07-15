@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import { User } from '../types';
 import { authApi } from '../api/authApi';
+import { registerForPushNotificationsAsync } from '../hooks/usePushNotifications';
 import { colors } from '../theme/colors';
 
 interface AuthContextType {
@@ -139,7 +140,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await AsyncStorage.setItem('user', JSON.stringify(userData));
       setUser(userData);
 
-      // Optional: request location permission (non-blocking)
+      // Request location permission (non-blocking)
       try {
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status === 'granted') {
@@ -148,6 +149,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } catch {
         // ignore
       }
+
+      // Register device for push notifications (non-blocking)
+      registerForPushNotificationsAsync().catch(e =>
+        console.warn('[Push] Registration error:', e)
+      );
     } catch (error) {
       throw error;
     }

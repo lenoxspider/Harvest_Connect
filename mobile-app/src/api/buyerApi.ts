@@ -155,12 +155,17 @@ export const buyerApi = {
     return params?.limit ? mapped.slice(0, params.limit) : mapped;
   },
 
-  addToCart: async (listingId: string): Promise<any> => {
+  addToCart: async (listingId: string, quantity_kg = 10): Promise<any> => {
     try {
-      const cartRaw = await AsyncStorage.getItem('cart_items');
-      const cart = cartRaw ? JSON.parse(cartRaw) : [];
-      cart.push(listingId);
-      await AsyncStorage.setItem('cart_items', JSON.stringify(cart));
+      const cartRaw = await AsyncStorage.getItem('cart_items_v2');
+      const cart: { id: string; quantity_kg: number }[] = cartRaw ? JSON.parse(cartRaw) : [];
+      const existing = cart.find(e => e.id === listingId);
+      if (existing) {
+        existing.quantity_kg = Math.min(10000, existing.quantity_kg + quantity_kg);
+      } else {
+        cart.push({ id: listingId, quantity_kg });
+      }
+      await AsyncStorage.setItem('cart_items_v2', JSON.stringify(cart));
       return { success: true };
     } catch {
       return { success: false };
@@ -169,7 +174,7 @@ export const buyerApi = {
 
   getCartCount: async (): Promise<number> => {
     try {
-      const cartRaw = await AsyncStorage.getItem('cart_items');
+      const cartRaw = await AsyncStorage.getItem('cart_items_v2');
       const cart = cartRaw ? JSON.parse(cartRaw) : [];
       return cart.length;
     } catch {
