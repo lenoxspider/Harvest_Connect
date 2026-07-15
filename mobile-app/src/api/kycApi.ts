@@ -9,7 +9,7 @@ export interface KycVerificationRequest {
 
 export interface KycVerificationResponse {
   userId: string;
-  status: 'PENDING' | 'IN_REVIEW' | 'VERIFIED' | 'REJECTED' | 'EXPIRED';
+  status: 'NOT_STARTED' | 'PENDING' | 'IN_REVIEW' | 'VERIFIED' | 'REJECTED' | 'EXPIRED';
   rejectionReason?: string;
   updatedAt?: string;
 }

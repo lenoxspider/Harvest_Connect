@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 //   base-url: https://api.kyc-chain.com   # replace with the real base URL from your dev portal
 //   api-key: ${KYC_CHAIN_API_KEY}
 //   webhook-secret: ${KYC_CHAIN_WEBHOOK_SECRET}
-@Configuration
 @ConfigurationProperties(prefix = "kyc-chain")
 public class KycChainProperties {
 

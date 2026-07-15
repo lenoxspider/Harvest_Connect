@@ -62,7 +62,20 @@ export default function ProfileScreen() {
       case 'PENDING': return '#E65100';
       case 'IN_REVIEW': return '#1565C0';
       case 'REJECTED': return '#D32F2F';
+      case 'EXPIRED': return '#795548';
       default: return '#7F8C8D';
+    }
+  };
+
+  const getKycStatusLabel = (status?: string) => {
+    switch (status) {
+      case 'NOT_STARTED': return 'NOT VERIFIED';
+      case 'PENDING': return 'PENDING';
+      case 'IN_REVIEW': return 'IN REVIEW';
+      case 'VERIFIED': return 'VERIFIED ✓';
+      case 'REJECTED': return 'REJECTED';
+      case 'EXPIRED': return 'EXPIRED';
+      default: return 'NOT VERIFIED';
     }
   };
 
@@ -78,10 +91,11 @@ export default function ProfileScreen() {
   const loadKycStatus = async () => {
     if (!user?.id) return;
     try {
-      const res = await kycApi.getStatus(user.id);
+      const res = await kycApi.getStatus(String(user.id));
       setKycStatus(res);
-    } catch (e) {
-      // If no KYC record exists yet, it throws a 400 or 500 error in current service. We keep status null.
+    } catch (e: any) {
+      // Service now returns NOT_STARTED instead of throwing; this handles network errors.
+      console.warn('[KYC] Status check error:', e?.message);
       setKycStatus(null);
     }
   };
@@ -230,7 +244,7 @@ export default function ProfileScreen() {
           <View style={[styles.row, { borderBottomWidth: 0 }]}>
             <Text style={styles.label}>KYC Status</Text>
             <Text style={[styles.value, { color: getKycStatusColor(kycStatus?.status) }]}>
-              {kycStatus?.status ?? 'UNVERIFIED'}
+              {getKycStatusLabel(kycStatus?.status)}
             </Text>
           </View>
         </View>

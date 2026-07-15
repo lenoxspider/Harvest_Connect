@@ -8,14 +8,14 @@ import java.util.UUID;
 // as base64, to keep this endpoint lightweight.
 public class KycVerificationRequest {
 
-    private UUID userId;
+    private String userId;
     private String documentType;      // NATIONAL_ID, PASSPORT, DRIVERS_LICENSE
     private String frontImageUrl;
     private String backImageUrl;      // optional, e.g. driver's license back
     private String selfieImageUrl;    // for facial match
 
-    public UUID getUserId() { return userId; }
-    public void setUserId(UUID userId) { this.userId = userId; }
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
 
     public String getDocumentType() { return documentType; }
     public void setDocumentType(String documentType) { this.documentType = documentType; }

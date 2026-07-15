@@ -24,7 +24,13 @@ public class KycController {
     }
 
     @GetMapping("/status/{userId}")
-    public ResponseEntity<KycVerificationResponse> getStatus(@PathVariable UUID userId) {
-        return ResponseEntity.ok(kycService.getLatestStatus(userId));
+    public ResponseEntity<KycVerificationResponse> getStatus(@PathVariable String userId) {
+        UUID userUuid;
+        try {
+            userUuid = UUID.fromString(userId);
+        } catch (IllegalArgumentException e) {
+            userUuid = UUID.nameUUIDFromBytes(userId.getBytes());
+        }
+        return ResponseEntity.ok(kycService.getLatestStatus(userUuid));
     }
 }
