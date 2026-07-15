@@ -15,6 +15,9 @@ import {
 import { useNavigation, useFocusEffect, NavigationProp } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 import { reviewApi, Review } from '../../api/reviewApi';
+import { kycApi, KycVerificationResponse } from '../../api/kycApi';
+import { Picker } from '@react-native-picker/picker';
+import { Modal } from 'react-native';
 
 export default function ProfileScreen() {
   const { user, logout, updateProfile } = useAuth();
@@ -27,6 +30,13 @@ export default function ProfileScreen() {
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState(user?.fullName ?? '');
   const [editedRegion, setEditedRegion] = useState(user?.region ?? '');
+
+  // KYC Verification States
+  const [kycStatus, setKycStatus] = useState<KycVerificationResponse | null>(null);
+  const [kycModalVisible, setKycModalVisible] = useState(false);
+  const [docType, setDocType] = useState<'PASSPORT' | 'DRIVER_LICENSE' | 'NATIONAL_ID'>('NATIONAL_ID');
+  const [docNumber, setDocNumber] = useState('');
+  const [kycSubmitting, setKycSubmitting] = useState(false);
 
   const getRoleTheme = useCallback(() => {
     if (!user) return { primary: '#2C3E50', bg: '#F8F9FA', accent: '#7F8C8D' };
@@ -46,6 +56,16 @@ export default function ProfileScreen() {
 
   const theme = getRoleTheme();
 
+  const getKycStatusColor = (status?: string) => {
+    switch (status) {
+      case 'VERIFIED': return '#2E7D32';
+      case 'PENDING': return '#E65100';
+      case 'IN_REVIEW': return '#1565C0';
+      case 'REJECTED': return '#D32F2F';
+      default: return '#7F8C8D';
+    }
+  };
+
   const loadReviews = async () => {
     try {
       const data = await reviewApi.getReviews();
@@ -55,10 +75,22 @@ export default function ProfileScreen() {
     }
   };
 
+  const loadKycStatus = async () => {
+    if (!user?.id) return;
+    try {
+      const res = await kycApi.getStatus(user.id);
+      setKycStatus(res);
+    } catch (e) {
+      // If no KYC record exists yet, it throws a 400 or 500 error in current service. We keep status null.
+      setKycStatus(null);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
       loadReviews();
-    }, [])
+      loadKycStatus();
+    }, [user?.id])
   );
 
   useEffect(() => {
@@ -68,9 +100,38 @@ export default function ProfileScreen() {
     }
   }, [user]);
 
+  const handleKycSubmit = async () => {
+    if (!docNumber.trim()) {
+      Alert.alert('Error', 'Please enter a document number');
+      return;
+    }
+    setKycSubmitting(true);
+    try {
+      // Simulate ID Image upload with standard base64 placeholder
+      const dummyBase64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+      
+      const res = await kycApi.startVerification({
+        userId: user!.id,
+        documentType: docType,
+        documentNumber: docNumber.trim(),
+        idImageBase64: dummyBase64,
+      });
+
+      setKycStatus(res);
+      setKycModalVisible(false);
+      setDocNumber('');
+      Alert.alert('Success', 'KYC submission request sent successfully!');
+    } catch (e: any) {
+      const msg = e?.response?.data?.message || 'KYC submission failed';
+      Alert.alert('Error', msg);
+    } finally {
+      setKycSubmitting(false);
+    }
+  };
+
   const onRefresh = async () => {
     setRefreshing(true);
-    await loadReviews();
+    await Promise.all([loadReviews(), loadKycStatus()]);
     setRefreshing(false);
   };
 
@@ -162,9 +223,15 @@ export default function ProfileScreen() {
               <Text style={styles.value}>{user?.region ?? '—'}</Text>
             )}
           </View>
-          <View style={[styles.row, { borderBottomWidth: 0 }]}>
+          <View style={styles.row}>
             <Text style={styles.label}>Account ID</Text>
             <Text style={styles.value}>#{user?.id ? String(user.id).substring(0, 8) : '—'}</Text>
+          </View>
+          <View style={[styles.row, { borderBottomWidth: 0 }]}>
+            <Text style={styles.label}>KYC Status</Text>
+            <Text style={[styles.value, { color: getKycStatusColor(kycStatus?.status) }]}>
+              {kycStatus?.status ?? 'UNVERIFIED'}
+            </Text>
           </View>
         </View>
 
@@ -210,6 +277,35 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         )}
 
+        {/* KYC Verify Button */}
+        {!isEditing && kycStatus?.status !== 'VERIFIED' && kycStatus?.status !== 'PENDING' && kycStatus?.status !== 'IN_REVIEW' && (
+          <TouchableOpacity
+            style={[styles.txBtn, { borderColor: '#E65100', marginTop: 0 }]}
+            onPress={() => setKycModalVisible(true)}
+            activeOpacity={0.8}
+          >
+            <Text style={[styles.txBtnText, { color: '#E65100' }]}>🛡️ Verify Identity (KYC)</Text>
+          </TouchableOpacity>
+        )}
+
+        {/* KYC Verification Info Banner */}
+        {!isEditing && (kycStatus?.status === 'PENDING' || kycStatus?.status === 'IN_REVIEW') && (
+          <View style={{ width: '100%', padding: 12, borderRadius: 12, backgroundColor: '#E3F2FD', borderLeftWidth: 4, borderLeftColor: '#1565C0', marginBottom: 16 }}>
+            <Text style={{ fontWeight: 'bold', color: '#1565C0', fontSize: 13 }}>Identity Verification In Progress</Text>
+            <Text style={{ fontSize: 11, color: '#000', marginTop: 4 }}>Our security compliance team is currently reviewing your document submissions.</Text>
+          </View>
+        )}
+
+        {!isEditing && kycStatus?.status === 'REJECTED' && (
+          <View style={{ width: '100%', padding: 12, borderRadius: 12, backgroundColor: '#FFEBEE', borderLeftWidth: 4, borderLeftColor: '#C62828', marginBottom: 16 }}>
+            <Text style={{ fontWeight: 'bold', color: '#C62828', fontSize: 13 }}>Identity Verification Rejected</Text>
+            <Text style={{ fontSize: 11, color: '#000', marginTop: 4 }}>Reason: {kycStatus.rejectionReason || 'Invalid documents'}. Please try again.</Text>
+            <TouchableOpacity onPress={() => setKycModalVisible(true)} style={{ marginTop: 8 }}>
+              <Text style={{ fontSize: 12, fontWeight: 'bold', color: '#C62828', textDecorationLine: 'underline' }}>Resubmit KYC Documents</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
         {/* Reviews Section */}
         {myReviews.length > 0 && !isEditing && (
           <View style={styles.reviewsSection}>
@@ -239,6 +335,59 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         )}
       </ScrollView>
+
+      {/* KYC Submit Modal */}
+      <Modal visible={kycModalVisible} animationType="slide" transparent={true}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Identity Verification (KYC)</Text>
+            <Text style={styles.modalSubtitle}>Please submit your legal identification details to enable fully secure escrow trading.</Text>
+            
+            <Text style={styles.inputLabel}>Select ID Type</Text>
+            <View style={styles.pickerWrapper}>
+              <Picker
+                selectedValue={docType}
+                onValueChange={(val: any) => setDocType(val)}
+                style={styles.picker}
+              >
+                <Picker.Item label="National ID (Ghana Card)" value="NATIONAL_ID" />
+                <Picker.Item label="Passport" value="PASSPORT" />
+                <Picker.Item label="Driver's License" value="DRIVER_LICENSE" />
+              </Picker>
+            </View>
+
+            <Text style={styles.inputLabel}>ID Document Number</Text>
+            <TextInput
+              style={styles.textInput}
+              value={docNumber}
+              onChangeText={setDocNumber}
+              placeholder="e.g. GHA-723924719-2"
+              placeholderTextColor="#999"
+              editable={!kycSubmitting}
+            />
+
+            <View style={styles.modalActions}>
+              <TouchableOpacity 
+                style={[styles.modalBtn, styles.modalCancelBtn]} 
+                onPress={() => {
+                  setKycModalVisible(false);
+                  setDocNumber('');
+                }}
+                disabled={kycSubmitting}
+              >
+                <Text style={styles.modalCancelBtnText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.modalBtn, { backgroundColor: theme.primary }]} 
+                onPress={handleKycSubmit}
+                disabled={kycSubmitting}
+              >
+                <Text style={styles.modalSubmitBtnText}>{kycSubmitting ? 'Submitting...' : 'Submit ID'}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -447,5 +596,91 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#424242',
     lineHeight: 18,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  modalContent: {
+    width: '100%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#212121',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  modalSubtitle: {
+    fontSize: 12,
+    color: '#666666',
+    textAlign: 'center',
+    lineHeight: 16,
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#333333',
+    marginBottom: 6,
+    marginTop: 12,
+  },
+  pickerWrapper: {
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 8,
+    backgroundColor: '#FAFAFA',
+    overflow: 'hidden',
+  },
+  picker: {
+    height: 48,
+    width: '100%',
+  },
+  textInput: {
+    height: 48,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    fontSize: 14,
+    color: '#333333',
+    backgroundColor: '#FAFAFA',
+  },
+  modalActions: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 24,
+  },
+  modalBtn: {
+    flex: 1,
+    height: 48,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalCancelBtn: {
+    borderWidth: 1,
+    borderColor: '#999999',
+  },
+  modalCancelBtnText: {
+    color: '#666666',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  modalSubmitBtnText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
 });
