@@ -39,6 +39,19 @@ export const produceApi = {
     return normalizeListing(response.data);
   },
 
+  updateListing: async (id: string, data: Partial<Omit<ProduceListing, 'id' | 'farmer_id' | 'status' | 'created_at'>>) => {
+    const payload = {
+      title: data.title,
+      category: data.category,
+      description: data.description,
+      location: data.location,
+      quantityKg: data.quantity_kg,
+      pricePerKg: data.price_per_kg,
+    };
+    const response = await axiosInstance.put(`/api/produce/listings/${id}`, payload);
+    return normalizeListing(response.data);
+  },
+
   getListings: async (): Promise<ProduceListing[]> => {
     const response = await axiosInstance.get('/api/produce/listings');
     return (Array.isArray(response.data) ? response.data : []).map(normalizeListing);

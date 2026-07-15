@@ -44,7 +44,7 @@ const FarmerListingsScreen: React.FC = () => {
   };
 
   const handleEdit = (listing: ProduceListing) => {
-    Alert.alert('Edit', 'Edit functionality coming soon');
+    navigation.navigate('EditProduce', { listing });
   };
 
   const handleDelete = (listing: ProduceListing) => {

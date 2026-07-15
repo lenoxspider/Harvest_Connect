@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Text } from 'react-native';
 import FarmerHomeScreen from '../screens/farmer/FarmerHomeScreen';
 import AddProduceScreen from '../screens/farmer/AddProduceScreen';
+import EditProduceScreen from '../screens/farmer/EditProduceScreen';
 import MyListingsScreen from '../screens/farmer/MyListingsScreen';
 import IncomingOrdersScreen from '../screens/farmer/IncomingOrdersScreen';
 import StorageBrowseScreen from '../screens/farmer/StorageBrowseScreen';
@@ -47,6 +48,7 @@ const FarmerHomeStack: React.FC = () => {
       <Stack.Screen name="Home" component={FarmerHomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AddProduce" component={AddProduceScreen} options={{ title: 'Add Produce' }} />
+      <Stack.Screen name="EditProduce" component={EditProduceScreen} options={{ title: 'Edit Listing' }} />
       <Stack.Screen name="StorageBrowse" component={StorageBrowseScreen} options={{ title: 'Find Storage', headerShown: false }} />
       <Stack.Screen name="StorageBook" component={StorageBookScreen} options={{ title: 'Book Storage' }} />
       <Stack.Screen name="MyStorageBookings" component={MyStorageBookingsScreen} options={{ title: 'My Storage', headerShown: false }} />
@@ -65,6 +67,7 @@ const ListingsStack: React.FC = () => {
     <Stack.Navigator screenOptions={farmerHeader}>
       <Stack.Screen name="MyListings" component={MyListingsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AddProduce" component={AddProduceScreen} options={{ title: 'Add Produce' }} />
+      <Stack.Screen name="EditProduce" component={EditProduceScreen} options={{ title: 'Edit Listing' }} />
     </Stack.Navigator>
   );
 };

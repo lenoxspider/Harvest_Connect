@@ -82,6 +82,11 @@ export const storageApi = {
     return normalizeBooking(response.data);
   },
 
+  completeBooking: async (bookingId: string): Promise<StorageBooking> => {
+    const response = await axiosInstance.put(`/api/storage/bookings/${bookingId}/complete`);
+    return normalizeBooking(response.data);
+  },
+
   getListings: async (filters?: {
     location?: string;
     available_tons?: number;

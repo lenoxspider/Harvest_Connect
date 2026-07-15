@@ -70,18 +70,36 @@ const StorageBookingsScreen: React.FC = () => {
     ]);
   };
 
+  const handleComplete = async (booking: StorageBooking) => {
+    Alert.alert(
+      'Complete Booking',
+      'Mark this storage booking as completed? This will release the stored goods back to the farmer.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Complete',
+          onPress: async () => {
+            try {
+              await storageApi.completeBooking(booking.id);
+              Alert.alert('Done', 'Booking marked as completed!');
+              fetchBookings();
+            } catch (error) {
+              Alert.alert('Error', 'Could not complete booking');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'PENDING':
-        return { bg: '#FFE0B2', text: '#E65100' };
-      case 'CONFIRMED':
-        return { bg: '#E3F2FD', text: '#1565C0' };
-      case 'ACTIVE':
-        return { bg: '#E8F5E9', text: '#2E7D32' };
-      case 'CANCELLED':
-        return { bg: '#FFCDD2', text: '#C62828' };
-      default:
-        return { bg: '#EEEEEE', text: '#757575' };
+      case 'PENDING':    return { bg: '#FFE0B2', text: '#E65100' };
+      case 'CONFIRMED':  return { bg: '#E3F2FD', text: '#1565C0' };
+      case 'ACTIVE':     return { bg: '#E8F5E9', text: '#2E7D32' };
+      case 'COMPLETED':  return { bg: '#E8F5E9', text: '#1B5E20' };
+      case 'CANCELLED':  return { bg: '#FFCDD2', text: '#C62828' };
+      default:           return { bg: '#EEEEEE', text: '#757575' };
     }
   };
 
@@ -106,6 +124,17 @@ const StorageBookingsScreen: React.FC = () => {
           <View style={styles.actionsRow}>
             <TouchableOpacity style={styles.confirmButton} onPress={() => handleConfirm(item)}>
               <Text style={styles.confirmButtonText}>Confirm</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.cancelButton} onPress={() => handleCancel(item)}>
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {item.status === 'CONFIRMED' && (
+          <View style={styles.actionsRow}>
+            <TouchableOpacity style={styles.completeButton} onPress={() => handleComplete(item)}>
+              <Text style={styles.confirmButtonText}>✓ Mark Complete</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.cancelButton} onPress={() => handleCancel(item)}>
               <Text style={styles.cancelButtonText}>Cancel</Text>
@@ -216,6 +245,14 @@ const styles = StyleSheet.create({
   confirmButtonText: {
     color: '#FFFFFF',
     fontWeight: '600',
+  },
+  completeButton: {
+    flex: 1,
+    height: 40,
+    backgroundColor: '#2E7D32',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   actionsRow: {
     flexDirection: 'row',
