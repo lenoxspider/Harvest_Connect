@@ -3,11 +3,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-// src/screens/farmer/AddProduceScreen.tsx
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
