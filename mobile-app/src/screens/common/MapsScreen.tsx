@@ -35,7 +35,7 @@ const KNOWN_COORDS: Record<string, { latitude: number; longitude: number }> = {
   kumasi:      { latitude: 6.6885,  longitude: -1.6244  },
   tamale:      { latitude: 9.4008,  longitude: -0.8393  },
   takoradi:    { latitude: 4.8845,  longitude: -1.7554  },
-  cape coast:  { latitude: 5.1053,  longitude: -1.2466  },
+  'cape coast':{ latitude: 5.1053,  longitude: -1.2466  },
   sunyani:     { latitude: 7.3349,  longitude: -2.3284  },
   bolgatanga:  { latitude: 10.7855, longitude: -0.8514  },
   wa:          { latitude: 10.0601, longitude: -2.5099  },
