@@ -169,7 +169,7 @@ const ProduceDetailScreen: React.FC = () => {
       <PaystackModal
         visible={paystackVisible}
         amount={total}
-        email={`${user?.fullName?.replace(/\s+/g, '').toLowerCase() || 'buyer'}@harvestconnect.com`}
+        email={`${(user?.phoneNumber ?? 'buyer').replace(/[^a-z0-9]/gi, '')}@harvestconnect.com`}
         onSuccess={handlePaymentSuccess}
         onCancel={() => setPaystackVisible(false)}
       />

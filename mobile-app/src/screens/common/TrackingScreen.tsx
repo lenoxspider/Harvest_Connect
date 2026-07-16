@@ -421,8 +421,8 @@ const TrackingScreen: React.FC = () => {
             <Text style={styles.detailLabel}>Total Price</Text>
             <Text style={styles.priceValue}>
               {type === 'storage' 
-                ? `${meta?.total_price || 0} GHS` 
-                : `${meta?.total_cost || 0} GHS`}
+                ? `GHS ${meta?.total_price || 0}` 
+                : `GHS ${meta?.total_cost || 0}`}
             </Text>
           </View>
         </View>
