@@ -33,6 +33,8 @@ const TransportRequestScreen: React.FC = () => {
   // Estimate a default distance of 120km for transport bookings
   const estimatedDistance = 120;
   const total = truck.price_per_km * estimatedDistance;
+  const fee = total * 0.05;
+  const grandTotal = total + fee;
 
   const submit = async () => {
     if (!pickup || !delivery || !date) {
@@ -42,7 +44,7 @@ const TransportRequestScreen: React.FC = () => {
 
     Alert.alert(
       'Confirm Transport Payment',
-      `Request transport for an estimated distance of ${estimatedDistance}km. Total price GHS ${total.toFixed(2)}?`,
+      `Request transport for an estimated distance of ${estimatedDistance}km. Total price GHS ${grandTotal.toFixed(2)} (includes 5% fee)?`,
       [
         { text: 'Cancel', style: 'cancel' },
         { text: 'Confirm & Pay', onPress: () => setPaystackVisible(true) }
@@ -64,7 +66,7 @@ const TransportRequestScreen: React.FC = () => {
       // Register payment
       await paymentApi.initiatePayment({
         order_id: booking.id,
-        amount: Number(total.toFixed(2)),
+        amount: Number(grandTotal.toFixed(2)),
       });
 
       Alert.alert('Success', `Transport requested and paid! Reference: ${reference}`);
@@ -106,8 +108,16 @@ const TransportRequestScreen: React.FC = () => {
             <Text style={{ color: colors.text, fontWeight: '700', fontSize: 13 }}>
               Estimated Distance: {estimatedDistance} km
             </Text>
-            <Text style={{ color: colors.text, fontWeight: '900', fontSize: 14, marginTop: 4 }}>
-              Estimated Cost: GHS {total.toFixed(2)}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
+              <Text style={{ color: colors.muted, fontWeight: '600', fontSize: 12 }}>Subtotal</Text>
+              <Text style={{ color: colors.text, fontWeight: '700', fontSize: 12 }}>GHS {total.toFixed(2)}</Text>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
+              <Text style={{ color: colors.muted, fontWeight: '600', fontSize: 12 }}>Platform Fee (5%)</Text>
+              <Text style={{ color: colors.text, fontWeight: '700', fontSize: 12 }}>GHS {fee.toFixed(2)}</Text>
+            </View>
+            <Text style={{ color: colors.text, fontWeight: '900', fontSize: 14, marginTop: 6, textAlign: 'right' }}>
+              Estimated Cost: GHS {grandTotal.toFixed(2)}
             </Text>
           </View>
         )}
@@ -122,8 +132,8 @@ const TransportRequestScreen: React.FC = () => {
 
       <PaystackModal
         visible={paystackVisible}
-        amount={total}
-        email={`${user?.fullName?.replace(/\s+/g, '').toLowerCase() || 'farmer'}@harvestconnect.com`}
+        amount={grandTotal}
+        email={`${(user?.phoneNumber ?? 'farmer').replace(/[^a-z0-9]/gi, '')}@harvestconnect.com`}
         onSuccess={handlePaymentSuccess}
         onCancel={() => setPaystackVisible(false)}
       />

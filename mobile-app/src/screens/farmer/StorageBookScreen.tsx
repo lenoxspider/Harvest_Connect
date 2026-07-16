@@ -41,8 +41,10 @@ const StorageBookScreen: React.FC = () => {
     return Number.isNaN(diffDays) ? 0 : Math.max(1, diffDays);
   }, [startDate, endDate]);
 
-  const total = useMemo(() => {
-    return qty * listing.price_per_ton_per_day * (days || 1);
+  const { total, fee, grandTotal } = useMemo(() => {
+    const t = qty * listing.price_per_ton_per_day * (days || 1);
+    const f = t * 0.05;
+    return { total: t, fee: f, grandTotal: t + f };
   }, [qty, listing.price_per_ton_per_day, days]);
 
   const submit = async () => {
@@ -61,7 +63,7 @@ const StorageBookScreen: React.FC = () => {
 
     Alert.alert(
       'Confirm Booking Payment',
-      `Book ${qty} tons for ${days} days. Total price GHS ${total.toFixed(2)}?`,
+      `Book ${qty} tons for ${days} days. Total price GHS ${grandTotal.toFixed(2)} (includes 5% fee)?`,
       [
         { text: 'Cancel', style: 'cancel' },
         { text: 'Confirm & Pay', onPress: () => setPaystackVisible(true) }
@@ -83,7 +85,7 @@ const StorageBookScreen: React.FC = () => {
       // Register payment
       await paymentApi.initiatePayment({
         order_id: booking.id,
-        amount: Number(total.toFixed(2)),
+        amount: Number(grandTotal.toFixed(2)),
       });
 
       Alert.alert('Success', `Storage booked successfully! Reference: ${reference}`);
@@ -141,8 +143,16 @@ const StorageBookScreen: React.FC = () => {
             <Text style={{ color: colors.text, fontWeight: '700', fontSize: 13 }}>
               Duration: {days} {days === 1 ? 'day' : 'days'}
             </Text>
-            <Text style={{ color: colors.text, fontWeight: '900', fontSize: 14, marginTop: 4 }}>
-              Total Cost: GHS {total.toFixed(2)}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
+              <Text style={{ color: colors.muted, fontWeight: '600', fontSize: 12 }}>Subtotal</Text>
+              <Text style={{ color: colors.text, fontWeight: '700', fontSize: 12 }}>GHS {total.toFixed(2)}</Text>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
+              <Text style={{ color: colors.muted, fontWeight: '600', fontSize: 12 }}>Platform Fee (5%)</Text>
+              <Text style={{ color: colors.text, fontWeight: '700', fontSize: 12 }}>GHS {fee.toFixed(2)}</Text>
+            </View>
+            <Text style={{ color: colors.text, fontWeight: '900', fontSize: 14, marginTop: 6, textAlign: 'right' }}>
+              Total Cost: GHS {grandTotal.toFixed(2)}
             </Text>
           </View>
         )}
@@ -158,8 +168,8 @@ const StorageBookScreen: React.FC = () => {
 
       <PaystackModal
         visible={paystackVisible}
-        amount={total}
-        email={`${user?.fullName?.replace(/\s+/g, '').toLowerCase() || 'farmer'}@harvestconnect.com`}
+        amount={grandTotal}
+        email={`${(user?.phoneNumber ?? 'farmer').replace(/[^a-z0-9]/gi, '')}@harvestconnect.com`}
         onSuccess={handlePaymentSuccess}
         onCancel={() => setPaystackVisible(false)}
       />

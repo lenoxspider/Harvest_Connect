@@ -43,8 +43,7 @@ public class PaymentTransaction {
     // Commission logic embedded in entity for strong encapsulation
     public void calculateAndSetCommission() {
         BigDecimal commissionRate = switch (this.transactionType) {
-            case PRODUCE -> new BigDecimal("0.10");
-            case TRANSPORT, STORAGE -> new BigDecimal("0.05");
+            case PRODUCE, TRANSPORT, STORAGE -> new BigDecimal("0.05");
         };
         this.commission = this.amount.multiply(commissionRate);
         this.netAmount = this.amount.subtract(this.commission);

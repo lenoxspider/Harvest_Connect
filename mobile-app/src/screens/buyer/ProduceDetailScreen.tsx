@@ -49,9 +49,11 @@ const ProduceDetailScreen: React.FC = () => {
     return Number.isFinite(n) ? n : 0;
   }, [quantity]);
 
-  const total = useMemo(() => {
-    if (!listing || quantityNum <= 0) return 0;
-    return quantityNum * listing.price_per_kg;
+  const { total, fee, grandTotal } = useMemo(() => {
+    if (!listing || quantityNum <= 0) return { total: 0, fee: 0, grandTotal: 0 };
+    const t = quantityNum * listing.price_per_kg;
+    const f = t * 0.05;
+    return { total: t, fee: f, grandTotal: t + f };
   }, [listing, quantityNum]);
 
   const handleBuyNow = async () => {
@@ -66,7 +68,7 @@ const ProduceDetailScreen: React.FC = () => {
 
     Alert.alert(
       'Confirm Purchase',
-      `Buy ${quantityNum}kg of ${listing.title} for GHS ${total.toFixed(2)}?`,
+      `Buy ${quantityNum}kg of ${listing.title} for GHS ${grandTotal.toFixed(2)} (includes 5% fee)?`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -90,7 +92,7 @@ const ProduceDetailScreen: React.FC = () => {
 
       await paymentApi.initiatePayment({
         order_id: order.id,
-        amount: Number(total.toFixed(2)),
+        amount: Number(grandTotal.toFixed(2)),
       });
 
       Alert.alert('Success', `Order placed and paid successfully! Reference: ${reference}`);
@@ -147,9 +149,17 @@ const ProduceDetailScreen: React.FC = () => {
               placeholder="e.g. 5"
             />
 
+            <View style={styles.feeRow}>
+              <Text style={styles.feeLabel}>Subtotal</Text>
+              <Text style={styles.feeValue}>GHS {total > 0 ? total.toFixed(2) : '0.00'}</Text>
+            </View>
+            <View style={styles.feeRow}>
+              <Text style={styles.feeLabel}>Platform Fee (5%)</Text>
+              <Text style={styles.feeValue}>GHS {fee > 0 ? fee.toFixed(2) : '0.00'}</Text>
+            </View>
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Total</Text>
-              <Text style={styles.totalValue}>GHS {total > 0 ? total.toFixed(2) : '0.00'}</Text>
+              <Text style={styles.totalValue}>GHS {grandTotal > 0 ? grandTotal.toFixed(2) : '0.00'}</Text>
             </View>
 
             <GlassButton
@@ -168,7 +178,7 @@ const ProduceDetailScreen: React.FC = () => {
       )}
       <PaystackModal
         visible={paystackVisible}
-        amount={total}
+        amount={grandTotal}
         email={`${(user?.phoneNumber ?? 'buyer').replace(/[^a-z0-9]/gi, '')}@harvestconnect.com`}
         onSuccess={handlePaymentSuccess}
         onCancel={() => setPaystackVisible(false)}
@@ -210,6 +220,9 @@ const styles = StyleSheet.create({
   },
   totalLabel: { color: colors.text, fontWeight: '800' },
   totalValue: { color: colors.accent, fontWeight: '900', fontSize: 16 },
+  feeRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8, paddingHorizontal: 4 },
+  feeLabel: { color: colors.muted, fontSize: 13, fontWeight: '600' },
+  feeValue: { color: colors.text, fontSize: 13, fontWeight: '700' },
 });
 
 export default ProduceDetailScreen;

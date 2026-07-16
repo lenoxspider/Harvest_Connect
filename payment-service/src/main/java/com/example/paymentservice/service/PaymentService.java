@@ -27,6 +27,8 @@ public class PaymentService {
                 .status(TransactionStatus.PENDING)
                 .build();
 
+        transaction.calculateAndSetCommission();
+
         transaction = repository.save(transaction);
 
         String authorizationUrl = "";

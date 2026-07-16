@@ -107,7 +107,7 @@ export default function CartScreen() {
         });
         await paymentApi.initiatePayment({
           order_id: order.id,
-          amount: item.pricePerBag * item.quantity_kg,
+          amount: (item.pricePerBag * item.quantity_kg) * 1.05,
         });
       }
       await AsyncStorage.removeItem(CART_KEY);
@@ -124,6 +124,8 @@ export default function CartScreen() {
 
   // Total = sum of (pricePerBag × quantity) for each item
   const total = cartItems.reduce((sum, item) => sum + item.pricePerBag * item.quantity_kg, 0);
+  const fee = total * 0.05;
+  const grandTotal = total + fee;
   const totalKg = cartItems.reduce((sum, item) => sum + item.quantity_kg, 0);
 
   return (
@@ -201,14 +203,22 @@ export default function CartScreen() {
           </ScrollView>
 
           <View style={styles.footer}>
+            <View style={styles.feeRow}>
+              <Text style={styles.feeLabel}>Subtotal</Text>
+              <Text style={styles.feeValue}>GHS {total.toLocaleString()}</Text>
+            </View>
+            <View style={styles.feeRow}>
+              <Text style={styles.feeLabel}>Platform Fee (5%)</Text>
+              <Text style={styles.feeValue}>GHS {fee.toLocaleString()}</Text>
+            </View>
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>
-                {cartItems.length} item{cartItems.length !== 1 ? 's' : ''} · {totalKg} kg
+                {cartItems.length} item{cartItems.length !== 1 ? 's' : ''} • {totalKg} kg
               </Text>
-              <Text style={styles.totalValue}>GHS {total.toLocaleString()}</Text>
+              <Text style={styles.totalValue}>GHS {grandTotal.toLocaleString()}</Text>
             </View>
             <TouchableOpacity style={styles.checkoutBtn} onPress={handleCheckout}>
-              <Text style={styles.checkoutBtnText}>Checkout · GHS {total.toLocaleString()}</Text>
+              <Text style={styles.checkoutBtnText}>Checkout • GHS {grandTotal.toLocaleString()}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -216,7 +226,7 @@ export default function CartScreen() {
 
       <PaystackModal
         visible={paystackVisible}
-        amount={total}
+        amount={grandTotal}
         email={`${(user?.phoneNumber ?? 'buyer').replace(/[^a-z0-9]/gi, '')}@harvestconnect.com`}
         onSuccess={handlePaymentSuccess}
         onCancel={() => setPaystackVisible(false)}
@@ -271,7 +281,7 @@ const styles = StyleSheet.create({
   },
   stepBtnText: { color: '#FFF', fontSize: 18, fontWeight: 'bold', lineHeight: 20 },
   qtyLabel: { fontSize: 14, fontWeight: 'bold', color: '#212121', minWidth: 56, textAlign: 'center' },
-  removeBtn: { marginLeft: 'auto' as any, padding: 4 },
+  removeBtn: { marginLeft: 'auto', padding: 4 },
   removeBtnText: { fontSize: 16 },
   lineTotal: { fontSize: 13, fontWeight: 'bold', color: '#7B1FA2' },
   footer: {
@@ -293,6 +303,9 @@ const styles = StyleSheet.create({
   },
   totalLabel: { fontSize: 13, color: '#757575', fontWeight: '600' },
   totalValue: { fontSize: 20, fontWeight: 'bold', color: '#7B1FA2' },
+  feeRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 0, marginBottom: 6 },
+  feeLabel: { fontSize: 13, color: '#757575', fontWeight: '600' },
+  feeValue: { fontSize: 13, color: '#333333', fontWeight: '700' },
   checkoutBtn: {
     backgroundColor: '#7B1FA2',
     height: 52,
