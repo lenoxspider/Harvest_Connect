@@ -67,8 +67,6 @@ export default function TransportBrowseScreen() {
 
   const handleBookNow = (truck: TruckListing) => {
     navigation.navigate('TransportRequest', { truck });
-
-    }
   };
 
   // Filter Logic
