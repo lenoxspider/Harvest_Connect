@@ -1,5 +1,5 @@
 // src/screens/buyer/BuyerHomeScreen.tsx
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { buyerApi, BuyerStats, FarmerProfile, BuyerOrder, BuyerListing } from '../../api/buyerApi';
+import { useHomepageSettings } from '../../hooks/useHomepageSettings';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = (SCREEN_WIDTH - 44) / 2;
@@ -44,6 +45,11 @@ const BuyerHomeScreen: React.FC = () => {
   const [featuredProduce, setFeaturedProduce] = useState<BuyerListing[]>([]);
   const [farmers, setFarmers] = useState<FarmerProfile[]>([]);
   const [recentOrders, setRecentOrders] = useState<BuyerOrder[]>([]);
+
+  // Hero banner state
+  const { settings: hpSettings } = useHomepageSettings();
+  const [heroBannerIndex, setHeroBannerIndex] = useState(0);
+  const heroBannerRef = useRef<any>(null);
 
   // Loading States
   const [isStatsLoading, setIsStatsLoading] = useState(true);
@@ -143,6 +149,25 @@ const BuyerHomeScreen: React.FC = () => {
   useEffect(() => {
     loadInitialData();
   }, []);
+
+  // Auto-scroll hero banner
+  useEffect(() => {
+    const heroImages = [
+      hpSettings.heroImage1,
+      hpSettings.heroImage2,
+      hpSettings.heroImage3,
+      hpSettings.heroImage4,
+    ].filter(Boolean);
+    if (heroImages.length < 2) return;
+    const timer = setInterval(() => {
+      setHeroBannerIndex(prev => {
+        const next = (prev + 1) % heroImages.length;
+        heroBannerRef.current?.scrollTo({ x: next * SCREEN_WIDTH, animated: true });
+        return next;
+      });
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [hpSettings]);
 
   useFocusEffect(
     useCallback(() => {
@@ -259,6 +284,55 @@ const BuyerHomeScreen: React.FC = () => {
           />
         </View>
       </View>
+
+      {/* HERO BANNER — only shown when backend provides at least one image URL */}
+      {(() => {
+        const heroImages = [
+          hpSettings.heroImage1,
+          hpSettings.heroImage2,
+          hpSettings.heroImage3,
+          hpSettings.heroImage4,
+        ].filter(Boolean);
+        if (heroImages.length === 0) return null;
+        return (
+          <View style={styles.heroBannerContainer}>
+            <ScrollView
+              ref={heroBannerRef}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              scrollEventThrottle={16}
+              onMomentumScrollEnd={e => {
+                const idx = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
+                setHeroBannerIndex(idx);
+              }}
+            >
+              {heroImages.map((uri, idx) => (
+                <Image
+                  key={idx}
+                  source={{ uri }}
+                  style={styles.heroBannerImage}
+                  resizeMode="cover"
+                />
+              ))}
+            </ScrollView>
+            {/* Dot indicators */}
+            {heroImages.length > 1 && (
+              <View style={styles.heroDots}>
+                {heroImages.map((_, i) => (
+                  <View
+                    key={i}
+                    style={[
+                      styles.heroDot,
+                      i === heroBannerIndex && styles.heroDotActive,
+                    ]}
+                  />
+                ))}
+              </View>
+            )}
+          </View>
+        );
+      })()}
 
       {/* SCROLLABLE CONTENT */}
       <ScrollView
@@ -591,6 +665,33 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginTop: -16,
     marginBottom: 24,
+  },
+  heroBannerContainer: {
+    width: SCREEN_WIDTH,
+    height: 180,
+    marginBottom: 12,
+    position: 'relative',
+  },
+  heroBannerImage: {
+    width: SCREEN_WIDTH,
+    height: 180,
+  },
+  heroDots: {
+    position: 'absolute',
+    bottom: 10,
+    alignSelf: 'center',
+    flexDirection: 'row',
+    gap: 6,
+  },
+  heroDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: 'rgba(255,255,255,0.5)',
+  },
+  heroDotActive: {
+    backgroundColor: '#FFFFFF',
+    width: 18,
   },
   statCard: {
     width: '30%',

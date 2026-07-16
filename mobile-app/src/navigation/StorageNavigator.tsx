@@ -41,6 +41,7 @@ const StorageHomeStack: React.FC = () => {
       <Stack.Screen name="AddStorage" component={AddStorageScreen} options={{ title: 'Add Storage Facility' }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Tracking' }} />
+      <Stack.Screen name="Search" component={SearchScreen} options={{ title: 'Search Produce', headerShown: false }} />
     </Stack.Navigator>
   );
 };
