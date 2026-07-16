@@ -14,6 +14,7 @@ import ProfileScreen from '../screens/common/ProfileScreen';
 import NotificationsScreen from '../screens/common/NotificationsScreen';
 import TrackingScreen from '../screens/common/TrackingScreen';
 import CartScreen from '../screens/buyer/CartScreen';
+import MapsScreen from '../screens/common/MapsScreen';
 import { buyerApi } from '../api/buyerApi';
 
 const Stack = createStackNavigator();
@@ -40,6 +41,7 @@ const HomeStack: React.FC = () => {
       <Stack.Screen name="Home" component={BuyerHomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Track Order' }} />
+      <Stack.Screen name="Maps" component={MapsScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 };

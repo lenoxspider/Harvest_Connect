@@ -12,6 +12,7 @@ import MyTransactionsScreen from '../screens/common/MyTransactionsScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
 import NotificationsScreen from '../screens/common/NotificationsScreen';
 import TrackingScreen from '../screens/common/TrackingScreen';
+import MapsScreen from '../screens/common/MapsScreen';
 import { navStyles } from './navStyles';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -41,6 +42,7 @@ const StorageHomeStack: React.FC = () => {
       <Stack.Screen name="AddStorage" component={AddStorageScreen} options={{ title: 'Add Storage Facility' }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Tracking' }} />
+      <Stack.Screen name="Maps" component={MapsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Search" component={SearchScreen} options={{ title: 'Search Produce', headerShown: false }} />
     </Stack.Navigator>
   );

@@ -20,6 +20,7 @@ import MyTransactionsScreen from '../screens/common/MyTransactionsScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
 import NotificationsScreen from '../screens/common/NotificationsScreen';
 import TrackingScreen from '../screens/common/TrackingScreen';
+import MapsScreen from '../screens/common/MapsScreen';
 import { navStyles } from './navStyles';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -58,6 +59,7 @@ const FarmerHomeStack: React.FC = () => {
       <Stack.Screen name="MyTracking" component={MyTrackingScreen} options={{ headerShown: false }} />
       <Stack.Screen name="SubmitReview" component={ReviewSubmitScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Track Order' }} />
+      <Stack.Screen name="Maps" component={MapsScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 };

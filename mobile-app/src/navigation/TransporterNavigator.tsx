@@ -12,6 +12,7 @@ import MyTransactionsScreen from '../screens/common/MyTransactionsScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
 import NotificationsScreen from '../screens/common/NotificationsScreen';
 import TrackingScreen from '../screens/common/TrackingScreen';
+import MapsScreen from '../screens/common/MapsScreen';
 import { navStyles } from './navStyles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -40,6 +41,7 @@ const TransporterHomeStack: React.FC = () => {
       <Stack.Screen name="AddTruck" component={AddTruckScreen} options={{ title: 'List Vehicle' }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Tracking" component={TrackingScreen} options={{ title: 'Tracking' }} />
+      <Stack.Screen name="Maps" component={MapsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Search" component={SearchScreen} options={{ title: 'Search Produce', headerShown: false }} />
     </Stack.Navigator>
   );
