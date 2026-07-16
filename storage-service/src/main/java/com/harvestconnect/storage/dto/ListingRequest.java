@@ -24,5 +24,6 @@ public record ListingRequest(
         @Positive(message = "Price must be positive")
         BigDecimal pricePerTonPerDay,
 
-        String temperatureRange
+        String temperatureRange,
+        String imageUrl
 ) {}

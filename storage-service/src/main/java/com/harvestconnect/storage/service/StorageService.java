@@ -42,6 +42,7 @@ public class StorageService {
         listing.setAvailableTons(req.capacityTons());
         listing.setPricePerTonPerDay(req.pricePerTonPerDay());
         listing.setTemperatureRange(req.temperatureRange());
+        listing.setImageUrl(req.imageUrl());
         listing.setIsAvailable(true);
         return listingRepo.save(listing);
     }

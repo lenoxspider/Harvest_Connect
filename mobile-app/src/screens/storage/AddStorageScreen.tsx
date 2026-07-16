@@ -8,8 +8,11 @@ import {
   StyleSheet,
   Alert,
   ScrollView,
+  Image,
 } from 'react-native';
 import { storageApi } from '../../api/storageApi';
+import { produceApi } from '../../api/produceApi';
+import * as ImagePicker from 'expo-image-picker';
 import { NavigationProp } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 
@@ -21,8 +24,21 @@ const AddStorageScreen: React.FC = () => {
     location: '',
     temperature_range: '',
   });
+  const [imageUri, setImageUri] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation<NavigationProp<any>>();
+
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [16, 9],
+      quality: 0.8,
+    });
+    if (!result.canceled) {
+      setImageUri(result.assets[0].uri);
+    }
+  };
 
   const handleSubmit = async () => {
     if (
@@ -37,12 +53,18 @@ const AddStorageScreen: React.FC = () => {
 
     setIsLoading(true);
     try {
+      let uploadedUrl = null;
+      if (imageUri) {
+        uploadedUrl = await produceApi.uploadImage(imageUri);
+      }
+
       await storageApi.addStorage({
         ...formData,
         capacity_tons: parseFloat(formData.capacity_tons),
         available_tons: parseFloat(formData.capacity_tons),
         price_per_ton_per_day: parseFloat(formData.price_per_ton_per_day),
         is_available: true,
+        imageUrl: uploadedUrl || undefined,
       });
       Alert.alert('Success', 'Storage facility added successfully');
       navigation.goBack();
@@ -103,6 +125,14 @@ const AddStorageScreen: React.FC = () => {
           editable={!isLoading}
         />
 
+        <Text style={styles.label}>Facility Photo (Optional)</Text>
+        <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage} disabled={isLoading}>
+          <Text style={styles.imagePickerText}>{imageUri ? 'Change Photo' : 'Select Photo'}</Text>
+        </TouchableOpacity>
+        {imageUri && (
+          <Image source={{ uri: imageUri }} style={styles.previewImage} />
+        )}
+
         <TouchableOpacity
           style={[styles.button, isLoading && styles.buttonDisabled]}
           onPress={handleSubmit}
@@ -159,6 +189,27 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  imagePickerButton: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#DDDDDD',
+    borderStyle: 'dashed',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F9F9F9',
+  },
+  imagePickerText: {
+    color: '#555555',
+    fontSize: 16,
+  },
+  previewImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginTop: 10,
+    resizeMode: 'cover',
   },
 });
 

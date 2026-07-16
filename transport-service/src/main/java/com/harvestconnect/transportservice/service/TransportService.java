@@ -36,6 +36,7 @@ public class TransportService {
                 .pricePerKm(request.pricePerKm())
                 .availableFrom(request.availableFrom())
                 .location(request.location())
+                .imageUrl(request.imageUrl())
                 .status("AVAILABLE")
                 .build();
         return listingRepository.save(listing);

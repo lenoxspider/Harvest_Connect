@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View, Image } from 'react-native';
 import { RouteProp, useNavigation, useRoute, NavigationProp } from '@react-navigation/native';
 import { storageApi } from '../../api/storageApi';
 import { paymentApi } from '../../api/paymentApi';
@@ -99,6 +99,9 @@ const StorageBookScreen: React.FC = () => {
 
   return (
     <Screen scroll>
+      {listing?.imageUrl ? (
+        <Image source={{ uri: listing.imageUrl }} style={styles.coverImage} />
+      ) : null}
       <View style={styles.header}>
         <Text style={styles.title}>Book Storage</Text>
         <Text style={styles.subtitle}>{listing.facility_name}</Text>
@@ -178,6 +181,7 @@ const StorageBookScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  coverImage: { width: '100%', height: 250, resizeMode: 'cover', borderRadius: 16, marginBottom: spacing.md },
   header: { marginBottom: spacing.md },
   title: { ...typography.h2, color: colors.text },
   subtitle: { marginTop: 6, color: colors.muted, fontWeight: '700' },

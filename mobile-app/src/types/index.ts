@@ -19,6 +19,7 @@ export interface ProduceListing {
   description: string;
   status: 'AVAILABLE' | 'SOLD' | 'RESERVED';
   created_at: string;
+  images?: string[];
 }
 
 export interface ProduceOrder {
@@ -40,6 +41,7 @@ export interface TruckListing {
   available_from: string;
   location: string;
   status: 'AVAILABLE' | 'BOOKED';
+  imageUrl?: string;
 }
 
 export interface TransportBooking {
@@ -63,6 +65,7 @@ export interface StorageListing {
   location: string;
   temperature_range?: string | null;
   is_available: boolean;
+  imageUrl?: string;
 }
 
 export interface StorageBooking {

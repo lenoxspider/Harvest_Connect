@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View, Image } from 'react-native';
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { transportApi } from '../../api/transportApi';
 import { paymentApi } from '../../api/paymentApi';
@@ -80,6 +80,9 @@ const TransportRequestScreen: React.FC = () => {
 
   return (
     <Screen scroll>
+      {listing?.imageUrl ? (
+        <Image source={{ uri: listing.imageUrl }} style={styles.coverImage} />
+      ) : null}
       <View style={styles.header}>
         <Text style={styles.title}>Request Transport</Text>
         <Text style={styles.subtitle}>{truck.truck_type}</Text>
@@ -142,6 +145,7 @@ const TransportRequestScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  coverImage: { width: '100%', height: 250, resizeMode: 'cover', borderRadius: 16, marginBottom: spacing.md },
   header: { marginBottom: spacing.md },
   title: { ...typography.h2, color: colors.text },
   subtitle: { marginTop: 6, color: colors.muted, fontWeight: '700' },

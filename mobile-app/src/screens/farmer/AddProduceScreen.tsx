@@ -3,14 +3,21 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
+// src/screens/farmer/AddProduceScreen.tsx
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
   Alert,
   ScrollView,
+  Image,
 } from 'react-native';
 import { produceApi } from '../../api/produceApi';
 import * as Location from 'expo-location';
+import * as ImagePicker from 'expo-image-picker';
 import { NavigationProp } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 
@@ -23,6 +30,7 @@ const AddProduceScreen: React.FC = () => {
     location: '',
     description: '',
   });
+  const [imageUri, setImageUri] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation<NavigationProp<any>>();
 
@@ -44,6 +52,18 @@ const AddProduceScreen: React.FC = () => {
     }
   };
 
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.8,
+    });
+    if (!result.canceled) {
+      setImageUri(result.assets[0].uri);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!formData.title || !formData.category || !formData.quantity_kg || !formData.price_per_kg || !formData.location) {
       Alert.alert('Error', 'Please fill all required fields');
@@ -52,10 +72,16 @@ const AddProduceScreen: React.FC = () => {
 
     setIsLoading(true);
     try {
+      let uploadedUrl = null;
+      if (imageUri) {
+        uploadedUrl = await produceApi.uploadImage(imageUri);
+      }
+
       await produceApi.createListing({
         ...formData,
         quantity_kg: parseFloat(formData.quantity_kg),
         price_per_kg: parseFloat(formData.price_per_kg),
+        images: uploadedUrl ? [uploadedUrl] : [],
       });
       Alert.alert('Success', 'Produce listing created successfully');
       navigation.goBack();
@@ -136,6 +162,14 @@ const AddProduceScreen: React.FC = () => {
           numberOfLines={4}
           editable={!isLoading}
         />
+
+        <Text style={styles.label}>Photo (Optional)</Text>
+        <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage} disabled={isLoading}>
+          <Text style={styles.imagePickerText}>{imageUri ? 'Change Photo' : 'Select Photo'}</Text>
+        </TouchableOpacity>
+        {imageUri && (
+          <Image source={{ uri: imageUri }} style={styles.previewImage} />
+        )}
 
         <TouchableOpacity
           style={[styles.button, isLoading && styles.buttonDisabled]}
@@ -224,6 +258,27 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  imagePickerButton: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#DDDDDD',
+    borderStyle: 'dashed',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F9F9F9',
+  },
+  imagePickerText: {
+    color: '#555555',
+    fontSize: 16,
+  },
+  previewImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginTop: 10,
+    resizeMode: 'cover',
   },
 });
 

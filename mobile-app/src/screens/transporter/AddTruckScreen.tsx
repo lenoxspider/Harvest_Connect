@@ -10,7 +10,10 @@ import {
   ScrollView,
 } from 'react-native';
 import { transportApi } from '../../api/transportApi';
+import { produceApi } from '../../api/produceApi';
+import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
+import { Image } from 'react-native';
 
 const AddTruckScreen: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -20,8 +23,21 @@ const AddTruckScreen: React.FC = () => {
     available_from: '',
     location: '',
   });
+  const [imageUri, setImageUri] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
+
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [16, 9],
+      quality: 0.8,
+    });
+    if (!result.canceled) {
+      setImageUri(result.assets[0].uri);
+    }
+  };
 
   const handleSubmit = async () => {
     if (
@@ -36,10 +52,16 @@ const AddTruckScreen: React.FC = () => {
 
     setIsLoading(true);
     try {
+      let uploadedUrl = null;
+      if (imageUri) {
+        uploadedUrl = await produceApi.uploadImage(imageUri);
+      }
+
       await transportApi.addTruck({
         ...formData,
         capacity_kg: parseFloat(formData.capacity_kg),
         price_per_km: parseFloat(formData.price_per_km),
+        imageUrl: uploadedUrl || undefined,
       });
       Alert.alert('Success', 'Truck added successfully');
       navigation.goBack();
@@ -100,6 +122,14 @@ const AddTruckScreen: React.FC = () => {
           editable={!isLoading}
         />
 
+        <Text style={styles.label}>Truck Photo (Optional)</Text>
+        <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage} disabled={isLoading}>
+          <Text style={styles.imagePickerText}>{imageUri ? 'Change Photo' : 'Select Photo'}</Text>
+        </TouchableOpacity>
+        {imageUri && (
+          <Image source={{ uri: imageUri }} style={styles.previewImage} />
+        )}
+
         <TouchableOpacity
           style={[styles.button, isLoading && styles.buttonDisabled]}
           onPress={handleSubmit}
@@ -156,6 +186,27 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  imagePickerButton: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#DDDDDD',
+    borderStyle: 'dashed',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F9F9F9',
+  },
+  imagePickerText: {
+    color: '#555555',
+    fontSize: 16,
+  },
+  previewImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginTop: 10,
+    resizeMode: 'cover',
   },
 });
 

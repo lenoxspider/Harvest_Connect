@@ -37,10 +37,11 @@ public class TruckListing {
     @Column(nullable = false)
     private String status;
 
+    private String imageUrl;
+
     @Column(nullable = false)
     private Instant availableFrom;
 
     @Builder.Default
     private Instant createdAt = Instant.now();
 }
-

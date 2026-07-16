@@ -8,6 +8,7 @@ public record ListingRequest(
         BigDecimal capacityKg,
         BigDecimal pricePerKm,
         Instant availableFrom,
-        String location
+        String location,
+        String imageUrl
 ) {}
 

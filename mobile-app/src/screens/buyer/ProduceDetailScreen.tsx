@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View, Image } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { produceApi } from '../../api/produceApi';
 import { paymentApi } from '../../api/paymentApi';
@@ -119,6 +119,9 @@ const ProduceDetailScreen: React.FC = () => {
 
   return (
     <Screen scroll>
+      {listing?.images && listing.images.length > 0 ? (
+        <Image source={{ uri: listing.images[0] }} style={styles.coverImage} />
+      ) : null}
       <View style={styles.header}>
         <Text style={styles.title}>{listing?.title ?? (isLoading ? 'Loading…' : 'Not found')}</Text>
         {listing ? (
@@ -221,6 +224,7 @@ const ProduceDetailScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  coverImage: { width: '100%', height: 250, resizeMode: 'cover', borderRadius: 16, marginBottom: spacing.md },
   header: { marginBottom: spacing.md },
   title: { ...typography.h2, color: colors.text },
   tag: {

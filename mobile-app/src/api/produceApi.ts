@@ -97,4 +97,21 @@ export const produceApi = {
   deleteListing: async (id: string): Promise<void> => {
     await axiosInstance.delete(`/api/produce/listings/${id}`);
   },
+
+  uploadImage: async (uri: string): Promise<string> => {
+    const formData = new FormData();
+    const filename = uri.split('/').pop() || 'upload.jpg';
+    const match = /\.(\w+)$/.exec(filename);
+    const type = match ? `image/${match[1]}` : 'image/jpeg';
+    
+    // @ts-ignore
+    formData.append('file', { uri, name: filename, type });
+
+    const response = await axiosInstance.post('/api/produce/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data.url;
+  },
 };

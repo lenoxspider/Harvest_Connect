@@ -48,6 +48,8 @@ public class StorageListing {
     @Column(name = "is_available", nullable = false)
     private Boolean isAvailable = true;
 
+    private String imageUrl;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
