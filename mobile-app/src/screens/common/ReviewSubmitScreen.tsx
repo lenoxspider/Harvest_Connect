@@ -72,9 +72,12 @@ export default function ReviewSubmitScreen() {
       Alert.alert('Review Submitted', `Thank you for reviewing ${targetName}!`, [
         { text: 'OK', onPress: () => navigation.goBack() }
       ]);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      Alert.alert('Error', 'Failed to save review.');
+      const msg = e?.message?.includes('already submitted')
+        ? e.message
+        : 'Failed to submit review. Please try again.';
+      Alert.alert('Error', msg);
     } finally {
       setIsSubmitting(false);
     }
