@@ -69,7 +69,9 @@ const AddStorageScreen: React.FC = () => {
       Alert.alert('Success', 'Storage facility added successfully');
       navigation.goBack();
     } catch (error: any) {
-      Alert.alert('Error', error.response?.data?.message || 'Failed to add storage');
+      const errorMsg = error.response?.data?.error || error.response?.data?.message || 'Failed to add storage';
+      const details = error.response?.data?.details ? JSON.stringify(error.response.data.details) : '';
+      Alert.alert('Error', `${errorMsg} ${details}`);
     } finally {
       setIsLoading(false);
     }

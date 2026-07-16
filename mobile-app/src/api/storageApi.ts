@@ -33,6 +33,7 @@ export const storageApi = {
       capacityTons: data.capacity_tons,
       pricePerTonPerDay: data.price_per_ton_per_day,
       temperatureRange: data.temperature_range ?? undefined,
+      imageUrl: data.imageUrl,
     });
     return normalizeListing(response.data);
   },

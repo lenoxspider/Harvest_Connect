@@ -66,7 +66,9 @@ const AddTruckScreen: React.FC = () => {
       Alert.alert('Success', 'Truck added successfully');
       navigation.goBack();
     } catch (error: any) {
-      Alert.alert('Error', error.response?.data?.message || 'Failed to add truck');
+      const errorMsg = error.response?.data?.error || error.response?.data?.message || 'Failed to add truck';
+      const details = error.response?.data?.details ? JSON.stringify(error.response.data.details) : '';
+      Alert.alert('Error', `${errorMsg} ${details}`);
     } finally {
       setIsLoading(false);
     }

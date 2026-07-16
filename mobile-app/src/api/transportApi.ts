@@ -37,6 +37,7 @@ export const transportApi = {
       pricePerKm: data.price_per_km,
       availableFrom: data.available_from ? new Date(data.available_from).toISOString() : new Date().toISOString(),
       location: data.location,
+      imageUrl: data.imageUrl,
     });
     return normalizeTruck(response.data);
   },
