@@ -80,8 +80,8 @@ const TransportRequestScreen: React.FC = () => {
 
   return (
     <Screen scroll>
-      {listing?.imageUrl ? (
-        <Image source={{ uri: listing.imageUrl }} style={styles.coverImage} />
+      {truck?.imageUrl ? (
+        <Image source={{ uri: truck.imageUrl }} style={styles.coverImage} />
       ) : null}
       <View style={styles.header}>
         <Text style={styles.title}>Request Transport</Text>
