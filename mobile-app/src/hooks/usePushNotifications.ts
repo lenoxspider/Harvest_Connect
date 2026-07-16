@@ -2,6 +2,7 @@
 import { useEffect, useRef } from 'react';
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
+import Constants from 'expo-constants';
 import { Platform, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -25,9 +26,9 @@ Notifications.setNotificationHandler({
  * @returns The Expo push token string, or null if unavailable.
  */
 export async function registerForPushNotificationsAsync(): Promise<string | null> {
-  if (!Device.isDevice) {
-    // Push notifications only work on a physical device
-    console.log('[Push] Running on simulator/emulator — push notifications skipped.');
+  if (!Device.isDevice || Constants.appOwnership === 'expo') {
+    // Push notifications only work on a physical device and standalone builds
+    console.log('[Push] Running on simulator/emulator or Expo Go — push notifications skipped.');
     return null;
   }
 
