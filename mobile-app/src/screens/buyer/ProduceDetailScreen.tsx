@@ -3,6 +3,7 @@ import { Alert, StyleSheet, Text, View } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { produceApi } from '../../api/produceApi';
 import { paymentApi } from '../../api/paymentApi';
+import { reviewApi, Review } from '../../api/reviewApi';
 import { ProduceListing } from '../../types';
 import { colors } from '../../theme/colors';
 import { spacing } from '../../theme/spacing';
@@ -27,9 +28,21 @@ const ProduceDetailScreen: React.FC = () => {
   const [paystackVisible, setPaystackVisible] = useState(false);
   const route = useRoute<RouteProp<RouteParams, 'ProduceDetail'>>();
 
+  const [reviews, setReviews] = useState<Review[]>([]);
+
   useEffect(() => {
     void fetchListing();
+    void fetchReviews();
   }, []);
+
+  const fetchReviews = async () => {
+    try {
+      const data = await reviewApi.getReviewsForListing(route.params.listingId);
+      setReviews(data);
+    } catch (e) {
+      console.warn('Could not load reviews', e);
+    }
+  };
 
   const fetchListing = async () => {
     try {
@@ -170,6 +183,26 @@ const ProduceDetailScreen: React.FC = () => {
               style={{ marginTop: spacing.md }}
             />
           </GlassCard>
+
+          <View style={{ height: spacing.lg }} />
+          <GlassCard>
+            <Text style={styles.sectionTitle}>Reviews ({reviews.length})</Text>
+            {reviews.length === 0 ? (
+              <Text style={styles.desc}>No reviews yet.</Text>
+            ) : (
+              reviews.map(r => (
+                <View key={r.id} style={styles.reviewCard}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={styles.reviewRating}>{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</Text>
+                    <Text style={styles.reviewDate}>
+                      {new Date(r.createdAt).toLocaleDateString()}
+                    </Text>
+                  </View>
+                  <Text style={styles.reviewComment}>{r.comment}</Text>
+                </View>
+              ))
+            )}
+          </GlassCard>
         </>
       ) : (
         <Text style={{ marginTop: spacing.md, color: colors.muted }}>
@@ -223,6 +256,10 @@ const styles = StyleSheet.create({
   feeRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8, paddingHorizontal: 4 },
   feeLabel: { color: colors.muted, fontSize: 13, fontWeight: '600' },
   feeValue: { color: colors.text, fontSize: 13, fontWeight: '700' },
+  reviewCard: { marginTop: 12, padding: 12, borderRadius: 8, backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  reviewRating: { color: '#FFD700', fontSize: 14, letterSpacing: 2 },
+  reviewDate: { color: colors.muted, fontSize: 12 },
+  reviewComment: { color: colors.text, fontSize: 14, marginTop: 6, fontStyle: 'italic' },
 });
 
 export default ProduceDetailScreen;
