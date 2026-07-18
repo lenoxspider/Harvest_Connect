@@ -38,7 +38,7 @@ const TransporterBookingsScreen: React.FC = () => {
   };
 
   const handleAccept = async (booking: TransportBooking) => {
-    Alert.alert('Accept Booking', `Accept this transport request for $${booking.total_cost}?`, [
+    Alert.alert('Accept Booking', `Accept this transport request for GHS ${booking.total_cost}?`, [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Accept',

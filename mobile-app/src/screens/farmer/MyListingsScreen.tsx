@@ -95,7 +95,7 @@ const FarmerListingsScreen: React.FC = () => {
       <Text style={styles.listingCategory}>{item.category}</Text>
 
       <View style={styles.listingDetails}>
-        <Text style={styles.price}>${item.price_per_kg}/kg</Text>
+        <Text style={styles.price}>GHS {item.price_per_kg}/kg</Text>
         <Text style={styles.quantity}>{item.quantity_kg}kg</Text>
       </View>
 

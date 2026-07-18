@@ -95,7 +95,7 @@ const IncomingOrdersScreen: React.FC = () => {
 
       <View style={styles.orderDetails}>
         <Text style={styles.detailText}>Quantity: {item.quantity_kg}kg</Text>
-        <Text style={styles.priceText}>Total: ${item.total_price}</Text>
+        <Text style={styles.priceText}>Total: GHS {item.total_price}</Text>
       </View>
 
       <View style={styles.actionButtons}>
