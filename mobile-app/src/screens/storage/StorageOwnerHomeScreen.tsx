@@ -1,5 +1,5 @@
 // src/screens/storage/StorageOwnerHomeScreen.tsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -14,26 +14,37 @@ import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation
 import { colors } from '../../theme/colors';
 import { spacing } from '../../theme/spacing';
 import { storageApi } from '../../api/storageApi';
+import { useAuth } from '../../context/AuthContext';
+import { notificationApi } from '../../api/notificationApi';
 import { StorageListing, StorageBooking } from '../../types';
 
 const StorageOwnerHomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<any>>();
+  const { user } = useAuth();
   const [facilities, setFacilities] = useState<StorageListing[]>([]);
   const [bookings, setBookings] = useState<StorageBooking[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       let isMounted = true;
       const fetchData = async () => {
         try {
-          const [facData, bookData] = await Promise.all([
+          const promises: [Promise<StorageListing[]>, Promise<StorageBooking[]>, Promise<any>?] = [
             storageApi.getMyFacilities(),
             storageApi.getIncomingBookings(),
-          ]);
+          ];
+          if (user?.id) {
+            promises.push(notificationApi.getMyNotifications(user.id));
+          }
+          const results = await Promise.all(promises);
           if (isMounted) {
-            setFacilities(facData);
-            setBookings(bookData);
+            setFacilities(results[0]);
+            setBookings(results[1]);
+            if (results[2]) {
+              setUnreadCount(results[2].filter((n: any) => !n.read).length);
+            }
           }
         } catch (error) {
           console.error('Error fetching storage owner data:', error);
@@ -47,7 +58,7 @@ const StorageOwnerHomeScreen: React.FC = () => {
       return () => {
         isMounted = false;
       };
-    }, [])
+    }, [user?.id])
   );
 
   const stats = useMemo(() => {
@@ -82,7 +93,7 @@ const StorageOwnerHomeScreen: React.FC = () => {
             onPress={() => navigation.navigate('Notifications')}
           >
             <Text style={styles.bellIcon}>🔔</Text>
-            <View style={styles.badgeDot} />
+            {unreadCount > 0 && <View style={styles.badgeDot} />}
           </TouchableOpacity>
         </View>
       </View>
@@ -119,7 +130,7 @@ const StorageOwnerHomeScreen: React.FC = () => {
             >
               <Text style={styles.actionEmoji}>🔔</Text>
               <Text style={styles.actionLabel}>Notifications</Text>
-              <View style={styles.cardBadgeDot} />
+              {unreadCount > 0 && <View style={styles.cardBadgeDot} />}
             </TouchableOpacity>
 
             {/* Tracking */}

@@ -1,5 +1,5 @@
 // src/screens/transporter/TransporterHomeScreen.tsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -14,26 +14,37 @@ import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation
 import { colors } from '../../theme/colors';
 import { spacing } from '../../theme/spacing';
 import { transportApi } from '../../api/transportApi';
+import { useAuth } from '../../context/AuthContext';
+import { notificationApi } from '../../api/notificationApi';
 import { TruckListing, TransportBooking } from '../../types';
 
 const TransporterHomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<any>>();
+  const { user } = useAuth();
   const [trucks, setTrucks] = useState<TruckListing[]>([]);
   const [bookings, setBookings] = useState<TransportBooking[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       let isMounted = true;
       const fetchData = async () => {
         try {
-          const [truckData, bookData] = await Promise.all([
+          const promises: [Promise<TruckListing[]>, Promise<TransportBooking[]>, Promise<any>?] = [
             transportApi.getMyTrucks(),
             transportApi.getIncomingBookings(),
-          ]);
+          ];
+          if (user?.id) {
+            promises.push(notificationApi.getMyNotifications(user.id));
+          }
+          const results = await Promise.all(promises);
           if (isMounted) {
-            setTrucks(truckData);
-            setBookings(bookData);
+            setTrucks(results[0]);
+            setBookings(results[1]);
+            if (results[2]) {
+              setUnreadCount(results[2].filter((n: any) => !n.read).length);
+            }
           }
         } catch (error) {
           console.error('Error fetching transporter data:', error);
@@ -47,7 +58,7 @@ const TransporterHomeScreen: React.FC = () => {
       return () => {
         isMounted = false;
       };
-    }, [])
+    }, [user?.id])
   );
 
   const stats = useMemo(() => {
@@ -80,7 +91,7 @@ const TransporterHomeScreen: React.FC = () => {
             onPress={() => navigation.navigate('Notifications')}
           >
             <Text style={styles.bellIcon}>🔔</Text>
-            <View style={styles.badgeDot} />
+            {unreadCount > 0 && <View style={styles.badgeDot} />}
           </TouchableOpacity>
         </View>
       </View>
@@ -117,7 +128,7 @@ const TransporterHomeScreen: React.FC = () => {
             >
               <Text style={styles.actionEmoji}>🔔</Text>
               <Text style={styles.actionLabel}>Notifications</Text>
-              <View style={styles.cardBadgeDot} />
+              {unreadCount > 0 && <View style={styles.cardBadgeDot} />}
             </TouchableOpacity>
 
             {/* Tracking */}

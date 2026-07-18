@@ -1,5 +1,5 @@
 // src/screens/farmer/FarmerHomeScreen.tsx
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -10,12 +10,33 @@ import {
   StatusBar,
   ScrollView,
 } from 'react-native';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { colors } from '../../theme/colors';
 import { spacing } from '../../theme/spacing';
+import { useAuth } from '../../context/AuthContext';
+import { notificationApi } from '../../api/notificationApi';
 
 const FarmerHomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<any>>();
+  const { user } = useAuth();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const fetchUnreadCount = useCallback(async () => {
+    if (!user?.id) return;
+    try {
+      const data = await notificationApi.getMyNotifications(user.id);
+      const count = data.filter((n) => !n.read).length;
+      setUnreadCount(count);
+    } catch (e) {
+      console.warn('[Home] Failed to load unread count:', e);
+    }
+  }, [user?.id]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUnreadCount();
+    }, [fetchUnreadCount])
+  );
 
   const menuItems = [
     { label: 'Add Produce', emoji: '🌽', screen: 'AddProduce' },
@@ -41,7 +62,7 @@ const FarmerHomeScreen: React.FC = () => {
             onPress={() => navigation.navigate('Notifications')}
           >
             <Text style={styles.bellIcon}>🔔</Text>
-            <View style={styles.badgeDot} />
+            {unreadCount > 0 && <View style={styles.badgeDot} />}
           </TouchableOpacity>
         </View>
 
@@ -73,7 +94,7 @@ const FarmerHomeScreen: React.FC = () => {
                 <Text style={styles.cardEmoji}>{item.emoji}</Text>
                 <Text style={styles.cardLabel}>{item.label}</Text>
                 
-                {item.badge && (
+                {item.badge && unreadCount > 0 && (
                   <View style={styles.cardBadgeDot} />
                 )}
               </View>
