@@ -2,6 +2,16 @@ import axiosInstance from './axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Transaction } from '../types';
 
+const normalizeTransaction = (raw: any): Transaction => ({
+  id: String(raw?.id ?? ''),
+  user_id: String(raw?.payerPhone ?? ''),
+  order_id: String(raw?.referenceId ?? ''),
+  amount: Number(raw?.amount ?? 0),
+  type: (raw?.transactionType ?? 'PRODUCE') as any,
+  status: (raw?.status ?? 'PENDING') as any,
+  created_at: String(raw?.createdAt ?? raw?.created_at ?? new Date().toISOString()),
+});
+
 export const paymentApi = {
   initiatePayment: async (data: {
     order_id: string;
@@ -20,12 +30,12 @@ export const paymentApi = {
     };
 
     const response = await axiosInstance.post('/api/payments/initiate', payload);
-    return response.data;
+    return normalizeTransaction(response.data);
   },
 
   getMyTransactions: async (): Promise<Transaction[]> => {
     const response = await axiosInstance.get('/api/payments/history/my');
-    return response.data;
+    return (Array.isArray(response.data) ? response.data : []).map(normalizeTransaction);
   },
 
   releaseEscrow: async (transactionId: string): Promise<any> => {
