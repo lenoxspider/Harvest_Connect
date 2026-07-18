@@ -108,6 +108,7 @@ export default function CartScreen() {
         await paymentApi.initiatePayment({
           order_id: order.id,
           amount: (item.pricePerBag * item.quantity_kg) * 1.05,
+          transaction_type: 'PRODUCE',
         });
       }
       await AsyncStorage.removeItem(CART_KEY);

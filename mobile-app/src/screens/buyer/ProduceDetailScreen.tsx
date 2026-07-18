@@ -106,6 +106,7 @@ const ProduceDetailScreen: React.FC = () => {
       await paymentApi.initiatePayment({
         order_id: order.id,
         amount: Number(grandTotal.toFixed(2)),
+        transaction_type: 'PRODUCE',
       });
 
       Alert.alert('Success', `Order placed and paid successfully! Reference: ${reference}`);

@@ -158,6 +158,8 @@ public class ProduceListing {
     @ElementCollection
     private List<String> images;
 
+    private String imageUrl;
+
     private String status = "AVAILABLE";
 
     @Column(nullable = false)

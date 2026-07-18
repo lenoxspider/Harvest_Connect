@@ -67,6 +67,7 @@ const TransportRequestScreen: React.FC = () => {
       await paymentApi.initiatePayment({
         order_id: booking.id,
         amount: Number(grandTotal.toFixed(2)),
+        transaction_type: 'TRANSPORT',
       });
 
       Alert.alert('Success', `Transport requested and paid! Reference: ${reference}`);

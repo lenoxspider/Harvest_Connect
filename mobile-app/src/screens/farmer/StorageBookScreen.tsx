@@ -86,6 +86,7 @@ const StorageBookScreen: React.FC = () => {
       await paymentApi.initiatePayment({
         order_id: booking.id,
         amount: Number(grandTotal.toFixed(2)),
+        transaction_type: 'STORAGE',
       });
 
       Alert.alert('Success', `Storage booked successfully! Reference: ${reference}`);
