@@ -5,8 +5,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 
 // Toggle between Render cloud deployment and local Docker backup
-const USE_RENDER_CLOUD = false; 
-const RENDER_GATEWAY_URL = 'https://YOUR-API-GATEWAY-URL.onrender.com'; // <-- REPLACE with your actual Render API Gateway URL
+const USE_RENDER_CLOUD = true; 
+const RENDER_GATEWAY_URL = 'https://harvestconnect-api-gateway.onrender.com/'; // <-- REPLACE with your actual Render API Gateway URL
 
 const getBaseUrl = () => {
   if (USE_RENDER_CLOUD) {
