@@ -71,7 +71,7 @@ const LoginScreen: React.FC = () => {
           {/* Phone Number Field */}
           <Text style={styles.label}>Phone Number</Text>
           <View style={[styles.inputContainer, styles.phoneInputContainer]}>
-            <Text style={styles.inputIcon}>📱</Text>
+            <Ionicons name="call-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
               value={phone_number}
@@ -87,7 +87,7 @@ const LoginScreen: React.FC = () => {
           {/* Password Field */}
           <Text style={styles.label}>Password</Text>
           <View style={[styles.inputContainer, styles.passwordInputContainer]}>
-            <Text style={styles.inputIcon}>🔒</Text>
+            <Ionicons name="lock-closed-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
               value={password}

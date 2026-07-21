@@ -124,7 +124,7 @@ const MyOrdersScreen: React.FC = () => {
           style={styles.reviewBtn}
           onPress={() =>
             navigation.navigate('SubmitReview', {
-              targetId: item.listing_id || 'farmer-placeholder',
+              targetId: item.listing_id || item.id,
               targetType: 'FARMER',
               targetName: 'Farmer Partner',
               referenceId: item.id,

@@ -103,7 +103,7 @@ const RegisterScreen: React.FC = () => {
         <View style={styles.form}>
           {/* Full Name */}
           <View style={styles.inputContainer}>
-            <Text style={styles.inputIcon}>👤</Text>
+            <Ionicons name="person-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
               value={formData.full_name}
@@ -117,7 +117,7 @@ const RegisterScreen: React.FC = () => {
 
           {/* Phone Number */}
           <View style={styles.inputContainer}>
-            <Text style={styles.inputIcon}>📱</Text>
+            <Ionicons name="call-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
               value={formData.phone_number}
@@ -132,7 +132,7 @@ const RegisterScreen: React.FC = () => {
 
           {/* Password */}
           <View style={styles.inputContainer}>
-            <Text style={styles.inputIcon}>🔒</Text>
+            <Ionicons name="lock-closed-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
               value={formData.password}
@@ -159,7 +159,7 @@ const RegisterScreen: React.FC = () => {
 
           {/* Region */}
           <View style={styles.inputContainer}>
-            <Text style={styles.inputIcon}>📍</Text>
+            <Ionicons name="location-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
               value={formData.region}

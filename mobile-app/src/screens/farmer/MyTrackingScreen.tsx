@@ -163,7 +163,7 @@ export default function MyTrackingScreen() {
             style={styles.reviewBtn}
             onPress={() =>
               navigation.navigate('SubmitReview', {
-                targetId: item.storage_id || 'storage-placeholder',
+                targetId: item.storage_id || item.id,
                 targetType: 'STORAGE',
                 targetName: item.listing?.facility_name ?? item.facility_name ?? 'Cold Storage Facility',
                 referenceId: item.id,

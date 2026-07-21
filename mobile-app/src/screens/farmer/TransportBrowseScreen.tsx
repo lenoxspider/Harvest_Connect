@@ -21,6 +21,7 @@ import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { transportApi } from '../../api/transportApi';
 import { TruckListing } from '../../types';
+import { Ionicons } from '@expo/vector-icons';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = (SCREEN_WIDTH - 44) / 2;
@@ -308,10 +309,10 @@ export default function TransportBrowseScreen() {
               {/* Location filter */}
               <Text style={styles.filterSectionTitle}>Location</Text>
               <View style={styles.locationInputWrapper}>
-                <Text style={styles.locationInputIcon}>📍</Text>
+                <Ionicons name="location-outline" size={18} color="#9E9E9E" style={{ marginRight: 8 }} />
                 <TextInput
                   style={styles.locationInput}
-                  placeholder="Location Placeholder"
+                  placeholder="Enter city or region (e.g. Accra, Kumasi)..."
                   placeholderTextColor="#9E9E9E"
                   value={locationFilter}
                   onChangeText={setLocationFilter}
