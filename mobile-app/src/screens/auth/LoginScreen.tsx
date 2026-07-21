@@ -5,6 +5,8 @@ import { useAuth } from '../../context/AuthContext';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { colors } from '../../theme/colors';
 
+import { Ionicons } from '@expo/vector-icons';
+
 type RootStackParamList = {
   Login: undefined;
   Register: undefined;
@@ -102,7 +104,11 @@ const LoginScreen: React.FC = () => {
               style={styles.eyeButton}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <Text style={styles.eyeEmoji}>{showPassword ? '👁️' : '🙈'}</Text>
+              <Ionicons
+                name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                size={22}
+                color="#7F8C8D"
+              />
             </TouchableOpacity>
           </View>
 
