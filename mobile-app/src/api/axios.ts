@@ -4,7 +4,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Constants from 'expo-constants';
 
+// Toggle between Render cloud deployment and local Docker backup
+const USE_RENDER_CLOUD = false; 
+const RENDER_GATEWAY_URL = 'https://YOUR-API-GATEWAY-URL.onrender.com'; // <-- REPLACE with your actual Render API Gateway URL
+
 const getBaseUrl = () => {
+  if (USE_RENDER_CLOUD) {
+    return RENDER_GATEWAY_URL;
+  }
+
   // 1. Check if env variable is explicitly defined
   if (process.env.EXPO_PUBLIC_API_BASE_URL) {
     return process.env.EXPO_PUBLIC_API_BASE_URL;
