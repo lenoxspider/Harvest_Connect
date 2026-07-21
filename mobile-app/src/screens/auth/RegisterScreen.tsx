@@ -33,6 +33,7 @@ const RegisterScreen: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [regionDropdownOpen, setRegionDropdownOpen] = useState(false);
   const { register } = useAuth();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
@@ -67,6 +68,25 @@ const RegisterScreen: React.FC = () => {
     { label: 'Buyer (BUYER)', value: 'BUYER', icon: '🛒' },
     { label: 'Transporter (TRANSPORTER)', value: 'TRANSPORTER', icon: '🚚' },
     { label: 'Storage Owner (STORAGE_OWNER)', value: 'STORAGE_OWNER', icon: '🏭' },
+  ];
+
+  const regions = [
+    'Ahafo',
+    'Ashanti',
+    'Bono',
+    'Bono East',
+    'Central',
+    'Eastern',
+    'Greater Accra',
+    'North East',
+    'Northern',
+    'Oti',
+    'Savannah',
+    'Upper East',
+    'Upper West',
+    'Volta',
+    'Western',
+    'Western North'
   ];
 
   const getActiveRole = () => {
@@ -157,18 +177,47 @@ const RegisterScreen: React.FC = () => {
             </TouchableOpacity>
           </View>
 
-          {/* Region */}
-          <View style={styles.inputContainer}>
-            <Ionicons name="location-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              value={formData.region}
-              onChangeText={(text) => setFormData({ ...formData, region: text })}
-              placeholder="Region"
-              placeholderTextColor="#95A5A6"
-              editable={!isLoading}
-              autoCapitalize="words"
-            />
+          {/* Custom Region Dropdown */}
+          <View style={[styles.dropdownContainer, regionDropdownOpen && styles.dropdownContainerActive, { marginBottom: 20 }]}>
+            <Text style={[styles.dropdownLabel, regionDropdownOpen && styles.dropdownLabelActive]}>
+              Select Region
+            </Text>
+            
+            <TouchableOpacity 
+              style={styles.dropdownTrigger}
+              onPress={() => setRegionDropdownOpen(!regionDropdownOpen)}
+              activeOpacity={0.8}
+              disabled={isLoading}
+            >
+              <View style={styles.dropdownTriggerLeft}>
+                <Ionicons name="location-outline" size={18} color="#7F8C8D" style={{ marginRight: 10 }} />
+                <Text style={styles.dropdownRoleText}>
+                  {formData.region || 'Choose Region...'}
+                </Text>
+              </View>
+              <Text style={[styles.dropdownArrow, regionDropdownOpen && { transform: [{ rotate: '180deg' }] }]}>
+                ▼
+              </Text>
+            </TouchableOpacity>
+
+            {regionDropdownOpen && (
+              <ScrollView style={{ maxHeight: 200 }} nestedScrollEnabled={true}>
+                <View style={styles.dropdownOptions}>
+                  {regions.map((reg) => (
+                    <TouchableOpacity
+                      key={reg}
+                      style={styles.dropdownOption}
+                      onPress={() => {
+                        setFormData({ ...formData, region: reg });
+                        setRegionDropdownOpen(false);
+                      }}
+                    >
+                      <Text style={styles.optionText}>{reg}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </ScrollView>
+            )}
           </View>
 
           {/* Custom Role Dropdown */}
