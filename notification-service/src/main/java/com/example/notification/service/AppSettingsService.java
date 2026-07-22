@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AppSettingsService {
 
-    private static final String HOMEPAGE_KEY = "homepage_images_v1";
+    private static final String HOMEPAGE_KEY = "homepage_images_v2";
 
     private final AppSettingRepository appSettingRepository;
     private final ObjectMapper objectMapper;
