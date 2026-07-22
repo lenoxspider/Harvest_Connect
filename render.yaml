@@ -178,34 +178,34 @@ services:
         fromService:
           name: harvestconnect-auth-service
           type: web
-          property: hostport
+          property: url
       - key: PRODUCE_SERVICE_URL
         fromService:
           name: harvestconnect-produce-service
           type: web
-          property: hostport
+          property: url
       - key: TRANSPORT_SERVICE_URL
         fromService:
           name: harvestconnect-transport-service
           type: web
-          property: hostport
+          property: url
       - key: STORAGE_SERVICE_URL
         fromService:
           name: harvestconnect-storage-service
           type: web
-          property: hostport
+          property: url
       - key: PAYMENT_SERVICE_URL
         fromService:
           name: harvestconnect-payment-service
           type: web
-          property: hostport
+          property: url
       - key: NOTIFICATION_SERVICE_URL
         fromService:
           name: harvestconnect-notification-service
           type: web
-          property: hostport
+          property: url
       - key: KYC_SERVICE_URL
         fromService:
           name: harvestconnect-kyc-service
           type: web
-          property: hostport
+          property: url
