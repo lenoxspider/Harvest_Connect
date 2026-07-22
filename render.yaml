@@ -1,0 +1,211 @@
+databases:
+  - name: harvestconnect-db
+    plan: free
+    databaseName: harvestconnect
+    user: hc_admin
+    region: frankfurt
+
+services:
+  # ── Auth Service ──
+  - type: web
+    name: harvestconnect-auth-service
+    runtime: docker
+    region: frankfurt
+    plan: free
+    rootDir: ./auth-service
+    envVars:
+      - key: SERVER_PORT
+        value: "8081"
+      - key: DB_URL
+        fromDatabase:
+          name: harvestconnect-db
+          property: connectionString
+        # Override below after creation — see instructions
+      - key: DB_USERNAME
+        fromDatabase:
+          name: harvestconnect-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: harvestconnect-db
+          property: password
+
+  # ── Produce Service ──
+  - type: web
+    name: harvestconnect-produce-service
+    runtime: docker
+    region: frankfurt
+    plan: free
+    rootDir: ./produce-service
+    envVars:
+      - key: DB_URL_PRODUCE
+        fromDatabase:
+          name: harvestconnect-db
+          property: connectionString
+      - key: DB_USERNAME_PRODUCE
+        fromDatabase:
+          name: harvestconnect-db
+          property: user
+      - key: DB_PASSWORD_PRODUCE
+        fromDatabase:
+          name: harvestconnect-db
+          property: password
+
+  # ── Transport Service ──
+  - type: web
+    name: harvestconnect-transport-service
+    runtime: docker
+    region: frankfurt
+    plan: free
+    rootDir: ./transport-service
+    envVars:
+      - key: SERVER_PORT
+        value: "8083"
+      - key: DB_URL_TRANSPORT
+        fromDatabase:
+          name: harvestconnect-db
+          property: connectionString
+      - key: DB_USERNAME_TRANSPORT
+        fromDatabase:
+          name: harvestconnect-db
+          property: user
+      - key: DB_PASSWORD_TRANSPORT
+        fromDatabase:
+          name: harvestconnect-db
+          property: password
+
+  # ── Storage Service ──
+  - type: web
+    name: harvestconnect-storage-service
+    runtime: docker
+    region: frankfurt
+    plan: free
+    rootDir: ./storage-service
+    envVars:
+      - key: SERVER_PORT
+        value: "8084"
+      - key: DB_URL_STORAGE
+        fromDatabase:
+          name: harvestconnect-db
+          property: connectionString
+      - key: DB_USERNAME
+        fromDatabase:
+          name: harvestconnect-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: harvestconnect-db
+          property: password
+
+  # ── Payment Service ──
+  - type: web
+    name: harvestconnect-payment-service
+    runtime: docker
+    region: frankfurt
+    plan: free
+    rootDir: ./payment-service
+    envVars:
+      - key: SERVER_PORT
+        value: "8085"
+      - key: DB_URL_PAYMENT
+        fromDatabase:
+          name: harvestconnect-db
+          property: connectionString
+      - key: DB_USERNAME_PAYMENT
+        fromDatabase:
+          name: harvestconnect-db
+          property: user
+      - key: DB_PASSWORD_PAYMENT
+        fromDatabase:
+          name: harvestconnect-db
+          property: password
+
+  # ── Notification Service ──
+  - type: web
+    name: harvestconnect-notification-service
+    runtime: docker
+    region: frankfurt
+    plan: free
+    rootDir: ./notification-service
+    envVars:
+      - key: SERVER_PORT
+        value: "8086"
+      - key: DB_URL_NOTIFICATION
+        fromDatabase:
+          name: harvestconnect-db
+          property: connectionString
+      - key: DB_USERNAME_NOTIFICATION
+        fromDatabase:
+          name: harvestconnect-db
+          property: user
+      - key: DB_PASSWORD_NOTIFICATION
+        fromDatabase:
+          name: harvestconnect-db
+          property: password
+
+  # ── KYC Service ──
+  - type: web
+    name: harvestconnect-kyc-service
+    runtime: docker
+    region: frankfurt
+    plan: free
+    rootDir: ./kyc-service
+    envVars:
+      - key: SERVER_PORT
+        value: "8087"
+      - key: DB_URL_KYC
+        fromDatabase:
+          name: harvestconnect-db
+          property: connectionString
+      - key: DB_USERNAME_KYC
+        fromDatabase:
+          name: harvestconnect-db
+          property: user
+      - key: DB_PASSWORD_KYC
+        fromDatabase:
+          name: harvestconnect-db
+          property: password
+
+  # ── API Gateway ──
+  - type: web
+    name: harvestconnect-api-gateway
+    runtime: docker
+    region: frankfurt
+    plan: free
+    rootDir: ./api-gateway
+    envVars:
+      - key: AUTH_SERVICE_URL
+        fromService:
+          name: harvestconnect-auth-service
+          type: web
+          property: hostport
+      - key: PRODUCE_SERVICE_URL
+        fromService:
+          name: harvestconnect-produce-service
+          type: web
+          property: hostport
+      - key: TRANSPORT_SERVICE_URL
+        fromService:
+          name: harvestconnect-transport-service
+          type: web
+          property: hostport
+      - key: STORAGE_SERVICE_URL
+        fromService:
+          name: harvestconnect-storage-service
+          type: web
+          property: hostport
+      - key: PAYMENT_SERVICE_URL
+        fromService:
+          name: harvestconnect-payment-service
+          type: web
+          property: hostport
+      - key: NOTIFICATION_SERVICE_URL
+        fromService:
+          name: harvestconnect-notification-service
+          type: web
+          property: hostport
+      - key: KYC_SERVICE_URL
+        fromService:
+          name: harvestconnect-kyc-service
+          type: web
+          property: hostport
