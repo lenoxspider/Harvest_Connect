@@ -49,19 +49,19 @@ public class AppSettingsService {
 
     private static HomepageSettingsDto defaultHomepageSettings() {
         HomepageSettingsDto d = new HomepageSettingsDto();
-        d.setCategoryStorageImage("https://picsum.photos/400/300?random=71");
-        d.setCategoryProduceImage("https://picsum.photos/400/300?random=72");
-        d.setCategoryTransportImage("https://picsum.photos/400/300?random=73");
-        d.setCategoryLogisticsImage("https://picsum.photos/400/300?random=74");
+        d.setCategoryStorageImage("");
+        d.setCategoryProduceImage("");
+        d.setCategoryTransportImage("");
+        d.setCategoryLogisticsImage("");
 
-        d.setHeroImage1("https://picsum.photos/800/450?random=81");
-        d.setHeroImage2("https://picsum.photos/800/450?random=82");
-        d.setHeroImage3("https://picsum.photos/800/450?random=83");
-        d.setHeroImage4("https://picsum.photos/800/450?random=84");
+        d.setHeroImage1("");
+        d.setHeroImage2("");
+        d.setHeroImage3("");
+        d.setHeroImage4("");
 
-        d.setFeaturedImage1("https://picsum.photos/400/300?random=91");
-        d.setFeaturedImage2("https://picsum.photos/400/300?random=92");
-        d.setFeaturedImage3("https://picsum.photos/400/300?random=93");
+        d.setFeaturedImage1("");
+        d.setFeaturedImage2("");
+        d.setFeaturedImage3("");
         return d;
     }
 }
