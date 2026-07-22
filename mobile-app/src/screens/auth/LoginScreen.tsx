@@ -1,6 +1,6 @@
 // src/screens/auth/LoginScreen.tsx
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, SafeAreaView, StatusBar } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, SafeAreaView, StatusBar, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { colors } from '../../theme/colors';
@@ -56,7 +56,16 @@ const LoginScreen: React.FC = () => {
         <Text style={styles.backText}>←</Text>
       </TouchableOpacity>
 
-      <View style={styles.content}>
+      <KeyboardAvoidingView 
+        style={{ flex: 1 }} 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        <ScrollView 
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.contentContainer}
+          keyboardShouldPersistTaps="handled"
+        >
         {/* Wheat Logo */}
         <View style={styles.logoCircle}>
           <Text style={styles.logoEmoji}>🌾</Text>
@@ -133,7 +142,8 @@ const LoginScreen: React.FC = () => {
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -155,12 +165,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000000',
   },
-  content: {
-    flex: 1,
+  contentContainer: {
     paddingHorizontal: 24,
-    justifyContent: 'center',
+    paddingTop: 100,
+    paddingBottom: 40,
     alignItems: 'center',
-    paddingTop: 40,
   },
   logoCircle: {
     width: 80,
