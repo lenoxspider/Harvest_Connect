@@ -34,6 +34,7 @@ export const produceApi = {
       location: data.location,
       quantityKg: data.quantity_kg,
       pricePerKg: data.price_per_kg,
+      images: data.images,
     };
     const response = await axiosInstance.post('/api/produce/listings', payload);
     return normalizeListing(response.data);
