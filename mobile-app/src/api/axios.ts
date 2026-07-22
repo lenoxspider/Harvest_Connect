@@ -41,7 +41,7 @@ console.log('[HarvestConnect] API_BASE_URL =', API_BASE_URL);
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: USE_RENDER_CLOUD ? 60000 : 10000, // 60s for Render cold starts, 10s for local
   headers: {
     'Content-Type': 'application/json',
   },
