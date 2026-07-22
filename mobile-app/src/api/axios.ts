@@ -10,7 +10,8 @@ const RENDER_GATEWAY_URL = 'https://harvestconnect-api-gateway.onrender.com/'; /
 
 const getBaseUrl = () => {
   if (USE_RENDER_CLOUD) {
-    return RENDER_GATEWAY_URL;
+    // Strip trailing slash if the user accidentally included it
+    return RENDER_GATEWAY_URL.trim().replace(/\/$/, '');
   }
 
   // 1. Check if env variable is explicitly defined
