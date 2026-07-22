@@ -41,6 +41,10 @@ public class ProduceListingService {
         return produceListingRepository.findByFarmerId(farmerId);
     }
 
+    public List<String> getCategories() {
+        return produceListingRepository.findDistinctCategories();
+    }
+
     public ProduceListing getListingById(UUID id) {
         return produceListingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Listing not found"));
