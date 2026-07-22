@@ -28,7 +28,7 @@ public class NotificationController {
     // 2. Get my notifications
     // Using a header to simulate the auth token containing the user ID for now
     @GetMapping("/my")
-    public ResponseEntity<List<NotificationResponse>> getMyNotifications(@RequestHeader("X-User-Id") UUID userId) {
+    public ResponseEntity<List<NotificationResponse>> getMyNotifications(@RequestHeader("X-User-Id") Long userId) {
         List<NotificationResponse> notifications = notificationService.getUserNotifications(userId);
         return ResponseEntity.ok(notifications);
     }

@@ -10,5 +10,5 @@ import java.util.UUID;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, UUID> {
     // Fetches notifications for a specific user, newest first
-    List<Notification> findByUserIdOrderByCreatedAtDesc(UUID userId);
+    List<Notification> findByUserIdOrderByCreatedAtDesc(Long userId);
 }

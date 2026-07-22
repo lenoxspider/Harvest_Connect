@@ -40,9 +40,8 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
-    public List<NotificationResponse> getUserNotifications(UUID userId) {
-        return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId)
-                .stream()
+    public List<NotificationResponse> getUserNotifications(Long userId) {
+        return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }

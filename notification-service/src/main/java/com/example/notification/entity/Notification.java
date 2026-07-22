@@ -21,7 +21,7 @@ public class Notification {
     private UUID id;
 
     @Column(name = "user_id", nullable = false)
-    private UUID userId;
+    private Long userId;
 
     @Column(nullable = false)
     private String title;
