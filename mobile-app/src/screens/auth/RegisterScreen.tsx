@@ -10,6 +10,8 @@ import {
   ScrollView,
   SafeAreaView,
   StatusBar,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
@@ -106,10 +108,16 @@ const RegisterScreen: React.FC = () => {
         <Text style={styles.backText}>←</Text>
       </TouchableOpacity>
 
-      <ScrollView 
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.contentContainer}
+      <KeyboardAvoidingView 
+        style={{ flex: 1 }} 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
+        <ScrollView 
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.contentContainer}
+          keyboardShouldPersistTaps="handled"
+        >
         {/* Wheat Logo */}
         <View style={styles.logoCircle}>
           <Text style={styles.logoEmoji}>🌾</Text>
@@ -201,7 +209,11 @@ const RegisterScreen: React.FC = () => {
             </TouchableOpacity>
 
             {regionDropdownOpen && (
-              <ScrollView style={{ maxHeight: 200 }} nestedScrollEnabled={true}>
+              <ScrollView 
+                style={{ maxHeight: 200 }} 
+                nestedScrollEnabled={true}
+                keyboardShouldPersistTaps="handled"
+              >
                 <View style={styles.dropdownOptions}>
                   {regions.map((reg) => (
                     <TouchableOpacity
@@ -281,6 +293,7 @@ const RegisterScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
