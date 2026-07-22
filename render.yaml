@@ -146,37 +146,16 @@ services:
     rootDir: ./api-gateway
     envVars:
       - key: AUTH_SERVICE_URL
-        fromService:
-          name: harvestconnect-auth-service
-          type: web
-          property: hostport
+        value: "https://harvestconnect-auth-service.onrender.com"
       - key: PRODUCE_SERVICE_URL
-        fromService:
-          name: harvestconnect-produce-service
-          type: web
-          property: hostport
+        value: "https://harvestconnect-produce-service.onrender.com"
       - key: TRANSPORT_SERVICE_URL
-        fromService:
-          name: harvestconnect-transport-service
-          type: web
-          property: hostport
+        value: "https://harvestconnect-transport-service.onrender.com"
       - key: STORAGE_SERVICE_URL
-        fromService:
-          name: harvestconnect-storage-service
-          type: web
-          property: hostport
+        value: "https://harvestconnect-storage-service.onrender.com"
       - key: PAYMENT_SERVICE_URL
-        fromService:
-          name: harvestconnect-payment-service
-          type: web
-          property: hostport
+        value: "https://harvestconnect-payment-service.onrender.com"
       - key: NOTIFICATION_SERVICE_URL
-        fromService:
-          name: harvestconnect-notification-service
-          type: web
-          property: hostport
+        value: "https://harvestconnect-notification-service.onrender.com"
       - key: KYC_SERVICE_URL
-        fromService:
-          name: harvestconnect-kyc-service
-          type: web
-          property: hostport
+        value: "https://harvestconnect-kyc-service.onrender.com"
