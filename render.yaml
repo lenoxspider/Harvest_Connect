@@ -19,17 +19,11 @@ services:
       - key: PORT
         value: "8081"
       - key: DB_URL
-        fromDatabase:
-          name: harvestconnect-db
-          property: connectionString
+        sync: false
       - key: DB_USERNAME
-        fromDatabase:
-          name: harvestconnect-db
-          property: user
+        sync: false
       - key: DB_PASSWORD
-        fromDatabase:
-          name: harvestconnect-db
-          property: password
+        sync: false
 
   # ── Produce Service ──
   - type: web
@@ -42,17 +36,11 @@ services:
       - key: PORT
         value: "8082"
       - key: DB_URL_PRODUCE
-        fromDatabase:
-          name: harvestconnect-db
-          property: connectionString
+        sync: false
       - key: DB_USERNAME_PRODUCE
-        fromDatabase:
-          name: harvestconnect-db
-          property: user
+        sync: false
       - key: DB_PASSWORD_PRODUCE
-        fromDatabase:
-          name: harvestconnect-db
-          property: password
+        sync: false
 
   # ── Transport Service ──
   - type: web
@@ -67,17 +55,11 @@ services:
       - key: PORT
         value: "8083"
       - key: DB_URL_TRANSPORT
-        fromDatabase:
-          name: harvestconnect-db
-          property: connectionString
+        sync: false
       - key: DB_USERNAME_TRANSPORT
-        fromDatabase:
-          name: harvestconnect-db
-          property: user
+        sync: false
       - key: DB_PASSWORD_TRANSPORT
-        fromDatabase:
-          name: harvestconnect-db
-          property: password
+        sync: false
 
   # ── Storage Service ──
   - type: web
@@ -92,17 +74,11 @@ services:
       - key: PORT
         value: "8084"
       - key: DB_URL_STORAGE
-        fromDatabase:
-          name: harvestconnect-db
-          property: connectionString
+        sync: false
       - key: DB_USERNAME
-        fromDatabase:
-          name: harvestconnect-db
-          property: user
+        sync: false
       - key: DB_PASSWORD
-        fromDatabase:
-          name: harvestconnect-db
-          property: password
+        sync: false
 
   # ── Payment Service ──
   - type: web
@@ -117,17 +93,11 @@ services:
       - key: PORT
         value: "8085"
       - key: DB_URL_PAYMENT
-        fromDatabase:
-          name: harvestconnect-db
-          property: connectionString
+        sync: false
       - key: DB_USERNAME_PAYMENT
-        fromDatabase:
-          name: harvestconnect-db
-          property: user
+        sync: false
       - key: DB_PASSWORD_PAYMENT
-        fromDatabase:
-          name: harvestconnect-db
-          property: password
+        sync: false
 
   # ── Notification Service ──
   - type: web
@@ -142,17 +112,11 @@ services:
       - key: PORT
         value: "8086"
       - key: DB_URL_NOTIFICATION
-        fromDatabase:
-          name: harvestconnect-db
-          property: connectionString
+        sync: false
       - key: DB_USERNAME_NOTIFICATION
-        fromDatabase:
-          name: harvestconnect-db
-          property: user
+        sync: false
       - key: DB_PASSWORD_NOTIFICATION
-        fromDatabase:
-          name: harvestconnect-db
-          property: password
+        sync: false
 
   # ── KYC Service ──
   - type: web
@@ -167,17 +131,11 @@ services:
       - key: PORT
         value: "8087"
       - key: DB_URL_KYC
-        fromDatabase:
-          name: harvestconnect-db
-          property: connectionString
+        sync: false
       - key: DB_USERNAME_KYC
-        fromDatabase:
-          name: harvestconnect-db
-          property: user
+        sync: false
       - key: DB_PASSWORD_KYC
-        fromDatabase:
-          name: harvestconnect-db
-          property: password
+        sync: false
 
   # ── API Gateway ──
   - type: web
