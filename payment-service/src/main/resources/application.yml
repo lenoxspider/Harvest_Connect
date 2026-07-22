@@ -2,7 +2,7 @@ spring:
   application:
     name: payment-service
   datasource:
-    url: ${DB_URL_PAYMENT:jdbc:postgresql://localhost:5432/payment_db}
+    url: jdbc:${DB_URL_PAYMENT:postgresql://localhost:5432/payment_db}?currentSchema=payment
     username: ${DB_USERNAME_PAYMENT:postgres}
     password: ${DB_PASSWORD_PAYMENT:password}
   jpa:

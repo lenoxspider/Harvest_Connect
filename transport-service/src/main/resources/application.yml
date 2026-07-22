@@ -2,7 +2,7 @@ spring:
   application:
     name: transport-service
   datasource:
-    url: ${DB_URL_TRANSPORT:jdbc:postgresql://localhost:5432/transport_db}
+    url: jdbc:${DB_URL_TRANSPORT:postgresql://localhost:5432/transport_db}?currentSchema=transport
     username: ${DB_USERNAME_TRANSPORT:postgres}
     password: ${DB_PASSWORD_TRANSPORT:password}
   jpa:

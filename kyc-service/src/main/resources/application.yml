@@ -5,7 +5,7 @@ spring:
   application:
     name: kyc-service
   datasource:
-    url: ${DB_URL_KYC:jdbc:postgresql://localhost:5432/kyc_db}
+    url: jdbc:${DB_URL_KYC:postgresql://localhost:5432/kyc_db}?currentSchema=kyc
     username: ${DB_USERNAME_KYC:postgres}
     password: ${DB_PASSWORD_KYC:password}
     driver-class-name: org.postgresql.Driver
