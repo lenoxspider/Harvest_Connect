@@ -23,36 +23,36 @@ spring:
       # Define routing rules
       routes:
         - id: auth-service
-          uri: ${AUTH_SERVICE_URL:http://localhost:8081}
+          uri: http://${AUTH_SERVICE_URL:localhost:8081}
           predicates:
             - Path=/api/auth/**
 
         - id: produce-service
-          uri: ${PRODUCE_SERVICE_URL:http://localhost:8082}
+          uri: http://${PRODUCE_SERVICE_URL:localhost:8082}
           predicates:
             - Path=/api/produce/**
 
         - id: transport-service
-          uri: ${TRANSPORT_SERVICE_URL:http://localhost:8083}
+          uri: http://${TRANSPORT_SERVICE_URL:localhost:8083}
           predicates:
             - Path=/api/transport/**
 
         - id: storage-service
-          uri: ${STORAGE_SERVICE_URL:http://localhost:8084}
+          uri: http://${STORAGE_SERVICE_URL:localhost:8084}
           predicates:
             - Path=/api/storage/**
 
         - id: payments-service
-          uri: ${PAYMENT_SERVICE_URL:http://localhost:8085}
+          uri: http://${PAYMENT_SERVICE_URL:localhost:8085}
           predicates:
             - Path=/api/payments/**
 
         - id: notifications-service
-          uri: ${NOTIFICATION_SERVICE_URL:http://localhost:8086}
+          uri: http://${NOTIFICATION_SERVICE_URL:localhost:8086}
           predicates:
             - Path=/api/notifications/**
 
         - id: kyc-service
-          uri: ${KYC_SERVICE_URL:http://localhost:8087}
+          uri: http://${KYC_SERVICE_URL:localhost:8087}
           predicates:
             - Path=/api/kyc/**

@@ -16,11 +16,12 @@ services:
     envVars:
       - key: SERVER_PORT
         value: "8081"
+      - key: PORT
+        value: "8081"
       - key: DB_URL
         fromDatabase:
           name: harvestconnect-db
           property: connectionString
-        # Override below after creation — see instructions
       - key: DB_USERNAME
         fromDatabase:
           name: harvestconnect-db
@@ -38,6 +39,8 @@ services:
     plan: free
     rootDir: ./produce-service
     envVars:
+      - key: PORT
+        value: "8082"
       - key: DB_URL_PRODUCE
         fromDatabase:
           name: harvestconnect-db
@@ -60,6 +63,8 @@ services:
     rootDir: ./transport-service
     envVars:
       - key: SERVER_PORT
+        value: "8083"
+      - key: PORT
         value: "8083"
       - key: DB_URL_TRANSPORT
         fromDatabase:
@@ -84,6 +89,8 @@ services:
     envVars:
       - key: SERVER_PORT
         value: "8084"
+      - key: PORT
+        value: "8084"
       - key: DB_URL_STORAGE
         fromDatabase:
           name: harvestconnect-db
@@ -106,6 +113,8 @@ services:
     rootDir: ./payment-service
     envVars:
       - key: SERVER_PORT
+        value: "8085"
+      - key: PORT
         value: "8085"
       - key: DB_URL_PAYMENT
         fromDatabase:
@@ -130,6 +139,8 @@ services:
     envVars:
       - key: SERVER_PORT
         value: "8086"
+      - key: PORT
+        value: "8086"
       - key: DB_URL_NOTIFICATION
         fromDatabase:
           name: harvestconnect-db
@@ -152,6 +163,8 @@ services:
     rootDir: ./kyc-service
     envVars:
       - key: SERVER_PORT
+        value: "8087"
+      - key: PORT
         value: "8087"
       - key: DB_URL_KYC
         fromDatabase:
@@ -178,34 +191,34 @@ services:
         fromService:
           name: harvestconnect-auth-service
           type: web
-          property: url
+          property: hostport
       - key: PRODUCE_SERVICE_URL
         fromService:
           name: harvestconnect-produce-service
           type: web
-          property: url
+          property: hostport
       - key: TRANSPORT_SERVICE_URL
         fromService:
           name: harvestconnect-transport-service
           type: web
-          property: url
+          property: hostport
       - key: STORAGE_SERVICE_URL
         fromService:
           name: harvestconnect-storage-service
           type: web
-          property: url
+          property: hostport
       - key: PAYMENT_SERVICE_URL
         fromService:
           name: harvestconnect-payment-service
           type: web
-          property: url
+          property: hostport
       - key: NOTIFICATION_SERVICE_URL
         fromService:
           name: harvestconnect-notification-service
           type: web
-          property: url
+          property: hostport
       - key: KYC_SERVICE_URL
         fromService:
           name: harvestconnect-kyc-service
           type: web
-          property: url
+          property: hostport
